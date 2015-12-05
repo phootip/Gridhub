@@ -28,7 +28,7 @@ public class WelcomeScreen extends Scene {
 	public void update(int step) {
 		cumulativeStep += step;
 
-		if (cumulativeStep > 100 * 60 * 4) {
+		if (cumulativeStep >= 100 * 180) {
 			SceneManager.getInstance().setNextScene(new TestScene2());
 		}
 	}

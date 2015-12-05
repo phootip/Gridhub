@@ -15,6 +15,8 @@ public class Main {
 			// Create JFrame
 			JFrame frame = new JFrame(Constants.PROGRAM_NAME);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			// TODO: Let the window resizable, and update the canvas size instead
+			frame.setResizable(false);
 
 			if (Constants.IS_FULLSCREEN) {
 				frame.setUndecorated(true);

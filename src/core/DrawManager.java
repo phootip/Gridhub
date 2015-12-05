@@ -127,6 +127,7 @@ final class DrawManager {
 		if (graphic == null) {
 			graphic = (Graphics2D) strategy.getDrawGraphics();
 			graphic.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+			graphic.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		}
 		graphic.setClip(0, 0, this.canvasWidth, this.canvasHeight);
 		return graphic;

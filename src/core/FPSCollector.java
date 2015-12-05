@@ -57,6 +57,7 @@ class FPSCollector {
 	 *            the width of the canvas
 	 */
 	protected static void drawMonitor(Graphics2D g, int canvasWidth) {
+
 		g.setColor(new Color(0, 0, 0, 0x33));
 		g.setStroke(new BasicStroke(1));
 		g.fillRect(canvasWidth - MAX_DATA_SIZE, 0, MAX_DATA_SIZE, MONITOR_HEIGHT);
@@ -68,6 +69,7 @@ class FPSCollector {
 					canvasWidth - MAX_DATA_SIZE + i,
 					MONITOR_HEIGHT - framePerSeconds.get(i) * MONITOR_HEIGHT / util.Constants.MAX_FRAME_PER_SECOND);
 		}
+		
 	}
 
 }

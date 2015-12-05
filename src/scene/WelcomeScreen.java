@@ -1,15 +1,14 @@
 package scene;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
 
 import core.SceneManager;
 import scene.core.Scene;
+import scene.test.TestScene2;
 import util.Resource;
 import util.Constants;
 import util.Constants.ColorSwatch;
@@ -70,12 +69,12 @@ public class WelcomeScreen extends Scene {
 		if (cumulativeStep > 100 * 30 && cumulativeStep < 100 * 75) {
 			float topLineStartRatio = 1;
 			if (cumulativeStep < 100 * 60) {
-				topLineStartRatio = (float) Math.cos(Math.PI * (cumulativeStep - 100 * 30) / 100 / 30) / -2 + 0.5f;
+				topLineStartRatio = Helper.sineInterpolate((cumulativeStep - 100 * 30) / 100f / 30);
 				topLineStartRatio *= topLineStartRatio; // For more power
 			}
 			float lineEndRatio = 0;
 			if (cumulativeStep > 100 * 45) {
-				lineEndRatio = (float) Math.cos(Math.PI * (cumulativeStep - 100 * 45) / 100 / 30) / -2 + 0.5f;
+				lineEndRatio = Helper.sineInterpolate((cumulativeStep - 100 * 45) / 100f / 30);
 				lineEndRatio *= lineEndRatio; // For more power
 			}
 
@@ -88,14 +87,12 @@ public class WelcomeScreen extends Scene {
 		if (cumulativeStep > 100 * (30 + bottomDelay) && cumulativeStep < 100 * (75 + bottomDelay)) {
 			float topLineStartRatio = 1;
 			if (cumulativeStep < 100 * (60 + bottomDelay)) {
-				topLineStartRatio = (float) Math.cos(Math.PI * (cumulativeStep - 100 * (30 + bottomDelay)) / 100 / 30)
-						/ -2 + 0.5f;
+				topLineStartRatio = Helper.sineInterpolate((cumulativeStep - 100 * (30 + bottomDelay)) / 100f / 30);
 				topLineStartRatio *= topLineStartRatio; // For more power
 			}
 			float lineEndRatio = 0;
 			if (cumulativeStep > 100 * (45 + bottomDelay)) {
-				lineEndRatio = (float) Math.cos(Math.PI * (cumulativeStep - 100 * (45 + bottomDelay)) / 100 / 30) / -2
-						+ 0.5f;
+				lineEndRatio = Helper.sineInterpolate((cumulativeStep - 100 * (45 + bottomDelay)) / 100f / 30);
 				lineEndRatio *= lineEndRatio; // For more power
 			}
 

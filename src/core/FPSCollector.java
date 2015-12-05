@@ -1,9 +1,12 @@
 package core;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
+
+import util.Constants.ColorSwatch;
 
 /**
  * A helper class for collecting FPS data, record only last constant data.
@@ -57,9 +60,10 @@ class FPSCollector {
 	 */
 	protected static void drawMonitor(Graphics2D g, int canvasWidth) {
 		g.setColor(new Color(0, 0, 0, 0x33));
+		g.setStroke(new BasicStroke(1));
 		g.fillRect(canvasWidth - MAX_DATA_SIZE, 0, MAX_DATA_SIZE, MONITOR_HEIGHT);
 
-		g.setColor(Color.WHITE);
+		g.setColor(new Color(0xFF, 0xFF, 0xFF, 128));
 		for (int i = 1; i < framePerSeconds.size(); i++) {
 			g.drawLine(canvasWidth - MAX_DATA_SIZE + i - 1,
 					MONITOR_HEIGHT - framePerSeconds.get(i - 1) * MONITOR_HEIGHT / util.Constants.MAX_FRAME_PER_SECOND,

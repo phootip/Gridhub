@@ -5,6 +5,7 @@ import java.awt.Container;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.Transparency;
 import java.awt.image.BufferStrategy;
@@ -124,6 +125,7 @@ final class DrawManager {
 	protected Graphics2D getGraphic() {
 		if (graphic == null) {
 			graphic = (Graphics2D) strategy.getDrawGraphics();
+			graphic.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		}
 		graphic.setClip(0, 0, this.canvasWidth, this.canvasHeight);
 		return graphic;

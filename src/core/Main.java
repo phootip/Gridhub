@@ -4,6 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import util.Constants;
+import util.InputManager;
 import util.Resource;
 
 public class Main {
@@ -22,6 +23,8 @@ public class Main {
 				frame.getContentPane().setPreferredSize(Constants.DEFAULT_SCREEN_SIZE);
 				frame.pack();
 			}
+			
+			InputManager.setListenerTo(frame);
 
 			// Add canvas to the frame
 			DrawManager.getInstance().addCanvasInto(frame);

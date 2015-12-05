@@ -3,6 +3,7 @@ package core;
 import java.awt.Graphics2D;
 
 import scene.core.Scene;
+import util.InputManager;
 
 /**
  * This class manage all the game scenes and call the draw the appropriate one.
@@ -56,6 +57,8 @@ public class SceneManager {
 				Graphics2D graphic = DrawManager.getInstance().getGraphic();
 				this.currentScene.draw(graphic, DrawManager.getInstance().getCanvasWidth(),
 						DrawManager.getInstance().getCanvasHeight());
+				
+				InputManager.getInstance().resetTriggerer();
 				
 				if (util.Constants.SHOW_FPS_MONITOR) {
 					FPSCollector.drawMonitor(graphic, DrawManager.getInstance().getCanvasWidth());

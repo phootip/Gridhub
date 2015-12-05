@@ -3,7 +3,6 @@ package scene;
 import java.awt.Graphics2D;
 
 import scene.core.Scene;
-import util.Constants;
 import util.Resource;
 import util.Constants.ColorSwatch;
 

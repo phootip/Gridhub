@@ -115,6 +115,7 @@ final class DrawManager {
 	private DrawManager() {
 		gConfig = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
 		canvas = new Canvas(gConfig);
+		canvas.setFocusable(false);
 	}
 
 	/**

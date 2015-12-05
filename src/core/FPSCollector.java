@@ -6,8 +6,6 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import util.Constants.ColorSwatch;
-
 /**
  * A helper class for collecting FPS data, record only last constant data.
  * 

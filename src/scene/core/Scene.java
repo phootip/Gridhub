@@ -37,7 +37,7 @@ public abstract class Scene {
 	/**
 	 * Draw the scene. This is part of the draw section in the game looping.
 	 * Note that this might be called multiple time in the same frame, and every
-	 * time that this function called should cause the same result.
+	 * time that this function is called should cause the same result.
 	 * 
 	 * @param g
 	 *            the Graphics2D object that can be used for painting operation.

@@ -62,9 +62,9 @@ class FPSCollector {
 		g.setColor(Color.WHITE);
 		for (int i = 1; i < framePerSeconds.size(); i++) {
 			g.drawLine(canvasWidth - MAX_DATA_SIZE + i - 1,
-					framePerSeconds.get(i - 1) * MONITOR_HEIGHT / util.Constants.MAX_FRAME_PER_SECOND,
+					MONITOR_HEIGHT - framePerSeconds.get(i - 1) * MONITOR_HEIGHT / util.Constants.MAX_FRAME_PER_SECOND,
 					canvasWidth - MAX_DATA_SIZE + i,
-					framePerSeconds.get(i) * MONITOR_HEIGHT / util.Constants.MAX_FRAME_PER_SECOND);
+					MONITOR_HEIGHT - framePerSeconds.get(i) * MONITOR_HEIGHT / util.Constants.MAX_FRAME_PER_SECOND);
 		}
 	}
 

@@ -25,30 +25,30 @@ public class Main {
 
 		frame.setBackground(java.awt.Color.BLACK);
 		frame.setVisible(true);
-		
+
 		// Set initial scene
-		
+
 		SceneManager.getInstance().setNextScene(new scene.TestScene());
 
 		// Game looper
-		final long maximumWaitTime = 1000000 / Constants.MAX_FRAME_PER_SECOND;
+		final long maximumWaitTime = 1000000000 / Constants.MAX_FRAME_PER_SECOND;
 		long updateTime;
 		while (true) {
 			// Perform a game update (including game logic and painting)
 			updateTime = System.nanoTime();
 			SceneManager.getInstance().update();
 			updateTime = System.nanoTime() - updateTime;
-			
+
 			if (updateTime < maximumWaitTime) {
 				FPSCollector.add(Constants.MAX_FRAME_PER_SECOND);
 			} else {
-				FPSCollector.add(Math.round(1000000 / updateTime));
+				FPSCollector.add(Math.round(1000000000 / updateTime));
 			}
 
 			// Perform sleeping to limit maximum FPS
 			if (updateTime < maximumWaitTime) {
 				try {
-					Thread.sleep(maximumWaitTime - updateTime);
+					Thread.sleep((maximumWaitTime - updateTime) / 1000000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

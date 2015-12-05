@@ -1,5 +1,6 @@
 package scene;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 
 import scene.core.Scene;
@@ -10,7 +11,7 @@ public class TestScene extends Scene {
 	float positionX;
 	int elapsedTime = 0;
 	int gridDensity = 10;
-	int oscillationPeriod = 10000;
+	int oscillationPeriod = 20000;
 	int oscillationAmplitude = 50;
 
 	public TestScene() {
@@ -46,6 +47,13 @@ public class TestScene extends Scene {
 		while (currentY < sceneHeight) {
 			g.drawLine(0, currentY, sceneWidth, currentY);
 			currentY += oscillationAmplitude;
+		}
+
+		int rectCount = (int) Math.round(Math.sin(Math.PI * 2 * elapsedTime / oscillationPeriod) * 1000);
+		for (i = 0; i < rectCount; i++) {
+			g.setColor(new Color(0xFF, 0xFF, 0xFF, 0x20));
+			g.fillOval((int) Math.floor(Math.random() * sceneWidth), (int) Math.floor(Math.random() * sceneHeight), 10,
+					10);
 		}
 	}
 }

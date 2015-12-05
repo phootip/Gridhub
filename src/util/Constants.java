@@ -25,7 +25,7 @@ public final class Constants {
 	/**
 	 * The maximum frame per second of game looping.
 	 */
-	public static int MAX_FRAME_PER_SECOND = 15;
+	public static int MAX_FRAME_PER_SECOND = 60;
 
 	public final static class ColorSwatch {
 		public static final Color BACKGROUND = new Color(25, 38, 69);

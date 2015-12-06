@@ -1,5 +1,7 @@
 package geom;
 
+import java.util.HashMap;
+
 /**
  * The 2-dimensional vector (or 2-tuple) for easier geometry operation. This
  * class support method chaining.
@@ -199,6 +201,9 @@ public class Vector2 {
 
 		return this;
 	}
+	
+	HashMap<Float, Float> sinCache = new HashMap<>();
+	HashMap<Float, Float> cosCache = new HashMap<>();
 
 	/**
 	 * Rotate this vector counterclockwise with the specified degree.
@@ -210,8 +215,20 @@ public class Vector2 {
 	 * @see Vector2#rotateCW
 	 * @see Vector2#negate
 	 */
-	public Vector2 rotate(double angle) {
+	public Vector2 rotate(float angle) {
 		float temp = this.x;
+		
+		float sinAngle, cosAngle;
+		if (sinCache.containsKey(angle)) {
+			sinAngle = sinCache.get(angle);
+			cosAngle = cosCache.get(angle);
+		} else {
+			sinAngle = (float) Math.sin(angle);
+			cosAngle = (float) Math.cos(angle);
+			sinCache.put(angle, sinAngle);
+			cosCache.put(angle, cosAngle);
+		}
+		
 		this.x = (float) (Math.cos(angle) * temp - Math.sin(angle) * this.y);
 		this.y = (float) (Math.sin(angle) * temp + Math.cos(angle) * this.y);
 

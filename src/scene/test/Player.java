@@ -19,7 +19,7 @@ class Player {
 
 	protected static float BALL_RADIUS = 0.5f;
 	private static float BALL_TRAIL_RADIUS = 0.5f;
-	private static int MAX_TRAIL_LENGTH = 20;
+	private static int MAX_TRAIL_LENGTH = 100;
 
 	private float x;
 	private float y;
@@ -94,8 +94,8 @@ class Player {
 
 	private void updateTrail(float diffX, float diffY) {
 
-		float angleXZ = diffX / BALL_RADIUS;
-		float angleYZ = diffY / BALL_RADIUS;
+		float angleXZ = -diffX / BALL_RADIUS;
+		float angleYZ = -diffY / BALL_RADIUS;
 
 		for (int i = 0; i < trailPosition.size(); i++) {
 			ArrayList<Vector3> trail = trailPosition.get(i);
@@ -113,27 +113,50 @@ class Player {
 		}
 	}
 
-	public void update(int step) {
+	public void update(int step, int cameraDirection) {
 		float ballDiffX = 0;
 		float ballDiffY = 0;
 
 		if (!isMoving) {
+			// Not correlated with x-y axis of grid, just the keyboard.
+			int yDir = 0;
+			int xDir = 0;
+
 			if (InputManager.getInstance().isKeyPressing(KeyEvent.VK_UP)) {
-				isMoving = true;
-				cellY--;
+				yDir--;
 			}
 			if (InputManager.getInstance().isKeyPressing(KeyEvent.VK_DOWN)) {
-				isMoving = true;
-				cellY++;
+				yDir++;
 			}
 			if (InputManager.getInstance().isKeyPressing(KeyEvent.VK_LEFT)) {
-				isMoving = true;
-				cellX--;
+				xDir--;
 			}
 			if (InputManager.getInstance().isKeyPressing(KeyEvent.VK_RIGHT)) {
-				isMoving = true;
-				cellX++;
+				xDir++;
 			}
+
+			if (xDir != 0 || yDir != 0) {
+				isMoving = true;
+				switch (cameraDirection) {
+				case 0:
+					cellX += xDir;
+					cellY += yDir;
+					break;
+				case 1:
+					cellX += yDir;
+					cellY -= xDir;
+					break;
+				case 2:
+					cellX -= xDir;
+					cellY -= yDir;
+					break;
+				case 3:
+					cellX -= yDir;
+					cellY += xDir;
+					break;
+				}
+			}
+
 		}
 		if (isMoving) {
 			walkStep += step;
@@ -170,7 +193,7 @@ class Player {
 
 		float ballRadius = camera.getDrawSizeZ(BALL_RADIUS);
 		Vector2 ballCenter = camera.getDrawPosition(x, y, z).subtract(0, ballRadius);
-		
+
 		g.setColor(ColorSwatch.BACKGROUND);
 		g.fill(new Ellipse2D.Float(ballCenter.getX() - ballRadius, ballCenter.getY() - ballRadius, ballRadius * 2,
 				ballRadius * 2));
@@ -203,7 +226,7 @@ class Player {
 				// Vector2 startPoint = camera.getDrawPosition(startTrail);
 				// Vector2 endPoint = camera.getDrawPosition(endTrail);
 
-				Vector3 trail = new Vector3(shiftedTrailPosition.get(i).get(j)).subtract(0, 0, BALL_RADIUS);
+				Vector3 trail = new Vector3(shiftedTrailPosition.get(i).get(j)).add(0, 0, BALL_RADIUS);
 				Vector2 pos = camera.getDrawPosition(trail);
 				xPos[j] = (int) pos.getX();
 				yPos[j] = (int) pos.getY();
@@ -233,7 +256,7 @@ class Player {
 			}
 
 		}
-		
+
 		// Draw a ball
 
 		g.setStroke(new BasicStroke(3));

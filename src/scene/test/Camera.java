@@ -1,7 +1,11 @@
 package scene.test;
 
+import com.sun.glass.events.KeyEvent;
+
 import geom.Vector2;
 import geom.Vector3;
+import util.Helper;
+import util.InputManager;
 
 class Camera {
 	private float zoomFactor = 50;
@@ -26,25 +30,74 @@ class Camera {
 
 	private final float FOLLOW_SPEED = (float) Math.pow(5, 1.0 / 60);
 
+	private int rotation = 0;
+	private int oldRotation = 0;
+	private float shiftedAngle = 0.1f;
+	private float rotationAngle = shiftedAngle;
+	private boolean isRotating = false;
+	private int rotationFrame = 0;
+	private final int rotationDuration = 100 * 30;
+
+	protected int getRotation() {
+		return rotation;
+	}
+
 	public void update(int step) {
 		centerX += (player.getX() - centerX) / Math.pow(FOLLOW_SPEED, step);
 		centerY += (player.getY() - centerY) / Math.pow(FOLLOW_SPEED, step);
+
+		if (!isRotating) {
+			int direction = 0;
+
+			if (InputManager.getInstance().isKeyPressing(KeyEvent.VK_Q)) {
+				direction += 3;
+			} else if (InputManager.getInstance().isKeyPressing(KeyEvent.VK_E)) {
+				direction += 1;
+			}
+
+			direction %= 4;
+			if (direction != 0) {
+				isRotating = true;
+				rotation = (rotation + direction) % 4;
+			}
+		}
+		if (isRotating) {
+			rotationFrame += step;
+			if (rotationFrame >= rotationDuration) {
+				oldRotation = rotation;
+				isRotating = false;
+				rotationFrame = 0;
+				rotationAngle = (float) (rotation * Math.PI / 2) + shiftedAngle;
+			} else {
+				if (rotation - oldRotation == 1 || rotation - oldRotation == -1) {
+					rotationAngle = Helper.sineInterpolate((float) (oldRotation * Math.PI / 2),
+							(float) (rotation * Math.PI / 2), (float) rotationFrame / rotationDuration) + shiftedAngle;
+				} else {
+					rotationAngle = Helper.sineInterpolate((float) ((oldRotation == 0 ? 4 : oldRotation) * Math.PI / 2),
+							(float) ((rotation == 0 ? 4 : rotation) * Math.PI / 2),
+							(float) rotationFrame / rotationDuration) + shiftedAngle;
+				}
+			}
+		}
 	}
 
+	private final float yFactor = 2f;
+
 	public Vector2 getDrawPosition(float x, float y, float z) {
-		return new Vector2(getXPosition(x), getYPosition(y, z));
+		return new Vector2(x - centerX, y - centerY).rotate(rotationAngle).multiply(zoomFactor, zoomFactor / yFactor)
+				.add(sceneWidth / 2f, sceneHeight / 2f - getDrawSizeZ(z));
 	}
 
 	public Vector2 getDrawPosition(Vector3 v) {
 		return getDrawPosition(v.getX(), v.getY(), v.getZ());
 	}
 
-	public float getXPosition(float x) {
-		return sceneWidth / 2f + getDrawSizeX(x - centerX);
+	public float getXPosition(float x, float y) {
+		return getDrawPosition(x, y, 0).getX();
 	}
 
-	public float getYPosition(float y, float z) {
-		return sceneHeight / 2f + getDrawSizeY(y - centerY) + getDrawSizeZ(z);
+	public float getYPosition(float x, float y, float z) {
+		return getDrawPosition(x, y, z).getY();
 	}
 
 	public float getDrawSizeX(float size) {
@@ -52,7 +105,7 @@ class Camera {
 	}
 
 	public float getDrawSizeY(float size) {
-		return size * zoomFactor / 2f;
+		return size * zoomFactor / yFactor;
 	}
 
 	public float getDrawSizeZ(float size) {

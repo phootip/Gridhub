@@ -3,6 +3,7 @@ package scene.test;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
+import java.util.ArrayList;
 
 import scene.core.Scene;
 import util.Resource;
@@ -12,10 +13,15 @@ public class TestScene2 extends Scene {
 
 	private Camera camera;
 	private Player player1;
+	
+	ArrayList<Block> blocks = new ArrayList<>();
 
 	public TestScene2() {
 		player1 = new Player();
 		camera = new Camera(player1);
+		
+		blocks.add(new Block(0, 2, 0));
+		blocks.add(new Block(2, 0, 0));
 	}
 
 	@Override
@@ -28,7 +34,6 @@ public class TestScene2 extends Scene {
 
 	@Override
 	public void draw(Graphics2D g, int sceneWidth, int sceneHeight) {
-		int i;
 
 		camera.setSceneSize(sceneWidth, sceneHeight);
 
@@ -65,6 +70,10 @@ public class TestScene2 extends Scene {
 		}
 
 		player1.draw(g, camera);
+		
+		for (Block b : blocks) {
+			b.draw(g, camera);
+		}
 	}
 
 }

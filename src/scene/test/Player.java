@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
 import com.sun.glass.events.KeyEvent;
@@ -171,6 +170,10 @@ class Player {
 
 		float ballRadius = camera.getDrawSizeZ(BALL_RADIUS);
 		Vector2 ballCenter = camera.getDrawPosition(x, y, z).subtract(0, ballRadius);
+		
+		g.setColor(ColorSwatch.BACKGROUND);
+		g.fill(new Ellipse2D.Float(ballCenter.getX() - ballRadius, ballCenter.getY() - ballRadius, ballRadius * 2,
+				ballRadius * 2));
 
 		// Draw trail
 		Stroke mainTrailStroke = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);

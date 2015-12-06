@@ -8,14 +8,20 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+import com.sun.xml.internal.bind.v2.TODO;
+
 import geom.Vector2;
+import objectInterface.IDrawable;
+import objectInterface.PushableObject;
+import objectInterface.WalkThroughable;
 import util.Constants.ColorSwatch;
 
-class Block {
+class Block implements PushableObject, WalkThroughable {
 
 	protected static final float BLOCK_HEIGHT = 0.75f;
 
-	private int x, y, z;
+	private int x, y, z, nextX, nextY, nextZ, weight;
+	private boolean isWalkThroughable;
 
 	protected int getX() {
 		return x;
@@ -29,10 +35,68 @@ class Block {
 		return z;
 	}
 
+	protected int getWeight() {
+		return weight;
+	}
+
 	public Block(int x, int y, int z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+		this.nextX = x;
+		this.nextY = y;
+		this.nextZ = z;
+	}
+
+	public Block(int x, int y, int z, int weight, boolean isWalkThroughable) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.nextX = x;
+		this.nextY = y;
+		this.nextZ = z;
+		this.weight = weight;
+		this.isWalkThroughable = isWalkThroughable;
+	}
+
+	public boolean isPushable() {
+		if (weight >= 100)
+			return false;
+		return true;
+	}
+
+	public boolean push(int previousWeight, int diffX, int diffY, int diffZ) {
+		// TO-DO
+		if (this.weight + previousWeight > 100)
+			return false;
+		IDrawable nextObjectObstacles = ObjectMap.drawableObjectHashMap.get((x+diffX) + " " + (y+diffY) + " " + (z+diffZ));
+		if (nextObjectObstacles == null) {
+			ObjectMap.drawableObjectHashMap.put((x+diffX) + " " + (y+diffY) + " " + (z+diffZ), this);
+			ObjectMap.drawableObjectHashMap.remove(x + " " + y + " " + z);
+			this.x += diffX;
+			this.y += diffY;
+			this.z += diffZ;
+			return true;
+
+		} else {
+			if (nextObjectObstacles instanceof PushableObject) {
+				boolean isPushed = ((PushableObject) nextObjectObstacles).push(previousWeight + this.weight, diffX, diffY, diffZ);
+				if(isPushed) {
+					ObjectMap.drawableObjectHashMap.put((x+diffX) + " " + (y+diffY) + " " + (z+diffZ), this);
+					ObjectMap.drawableObjectHashMap.remove(x + " " + y + " " + z);
+					this.x += diffX;
+					this.y += diffY;
+					this.z += diffZ;
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean isWalkThroughable() {
+		return isWalkThroughable;
 	}
 
 	private final float[][] cornerShifter = new float[][] { { -0.5f, -0.5f }, { +0.5f, -0.5f }, { +0.5f, +0.5f },

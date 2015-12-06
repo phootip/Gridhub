@@ -11,11 +11,14 @@ import com.sun.glass.events.KeyEvent;
 
 import geom.Vector2;
 import geom.Vector3;
+import objectInterface.IDrawable;
+import objectInterface.PushableObject;
+import objectInterface.WalkThroughable;
 import util.Constants.ColorSwatch;
 import util.Helper;
 import util.InputManager;
 
-class Player {
+class Player implements IDrawable {
 
 	protected static float BALL_RADIUS = 0.5f;
 	private static float BALL_TRAIL_RADIUS = 0.5f;
@@ -32,6 +35,10 @@ class Player {
 	private int cellX;
 	private int cellY;
 	private int cellZ;
+
+	private int nextCellX;
+	private int nextCellY;
+	private int nextCellZ;
 
 	private ArrayList<ArrayList<Vector3>> trailPosition;
 	private ArrayList<ArrayList<Vector3>> shiftedTrailPosition;
@@ -61,7 +68,7 @@ class Player {
 	}
 
 	public Player() {
-		x = y = z = cellX = cellY = cellZ = oldCellX = oldCellY = oldCellZ = 0;
+		x = y = z = cellX = cellY = cellZ = oldCellX = oldCellY = oldCellZ = nextCellX = nextCellY = nextCellZ = 0;
 
 		// Create initial trail dots
 		float rotationX = 1.234f;
@@ -139,23 +146,65 @@ class Player {
 				isMoving = true;
 				switch (cameraDirection) {
 				case 0:
-					cellX += xDir;
-					cellY += yDir;
+					nextCellX += xDir;
+					nextCellY += yDir;
 					break;
 				case 1:
-					cellX += yDir;
-					cellY -= xDir;
+					nextCellX += yDir;
+					nextCellY -= xDir;
 					break;
 				case 2:
-					cellX -= xDir;
-					cellY -= yDir;
+					nextCellX -= xDir;
+					nextCellY -= yDir;
 					break;
 				case 3:
-					cellX -= yDir;
-					cellY += xDir;
+					nextCellX -= yDir;
+					nextCellY += xDir;
 					break;
 				}
 			}
+
+		}
+		// check for NextStepCell
+		IDrawable nextCellObstacle = ObjectMap.drawableObjectHashMap.get(nextCellX + " " + nextCellY + " " + nextCellZ);
+		if (nextCellObstacle == null) {
+			
+			ObjectMap.drawableObjectHashMap.remove(cellX + " " + cellY + " " + cellZ);
+			ObjectMap.drawableObjectHashMap.put(nextCellX + " " + nextCellY + " " + nextCellZ, this);
+			cellX = nextCellX;
+			cellY = nextCellY;
+			cellZ = nextCellZ;
+
+		} else if (nextCellObstacle != null && nextCellObstacle != this) {
+			
+			if (nextCellObstacle instanceof PushableObject) {
+
+				System.out.println("There is an obstacle!!");
+				System.out.println((nextCellX - cellX) + " " + (nextCellY - cellY) + " " + (nextCellZ - cellZ));
+				boolean isPushed = ((PushableObject) nextCellObstacle).push(0, nextCellX - cellX, nextCellY - cellY,
+						nextCellZ - cellZ);
+
+				if (isPushed) {
+					ObjectMap.drawableObjectHashMap.remove(cellX + " " + cellY + " " + cellZ);
+					ObjectMap.drawableObjectHashMap.put(nextCellX + " " + nextCellY + " " + nextCellZ, this);
+					cellX = nextCellX;
+					cellY = nextCellY;
+					cellZ = nextCellZ;
+
+				} else {
+					nextCellX = cellX;
+					nextCellY = cellY;
+					nextCellZ = cellZ;
+				}
+
+			}
+			// if (nextCellObstacle instanceof WalkThroughable) {
+			// if (((WalkThroughable) nextCellObstacle).isWalkThroughable()) {
+			// // In case there is an walkthroughable Objects
+			//
+			// }
+			//
+			// }
 
 		}
 		if (isMoving) {

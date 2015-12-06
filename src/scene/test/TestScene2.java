@@ -4,8 +4,10 @@ import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import geom.Vector2;
+import objectInterface.IDrawable;
 import scene.core.Scene;
 import util.Resource;
 import util.Constants.ColorSwatch;
@@ -16,13 +18,23 @@ public class TestScene2 extends Scene {
 	private Player player1;
 
 	ArrayList<Block> blocks = new ArrayList<>();
-
+	
+	
 	public TestScene2() {
+		ObjectMap.drawableObjectHashMap = new HashMap<String , IDrawable>();
 		player1 = new Player();
 		camera = new Camera(player1);
-
-		blocks.add(new Block(0, 2, 0));
-		blocks.add(new Block(2, 0, 0));
+		
+//		blocks.add(new Block(0, 2, 0));
+//		blocks.add(new Block(2, 0, 0));
+		blocks.add(new Block(0, 5, 0, 5, false));
+		blocks.add(new Block(7, 2, 0, 15, true));
+		blocks.add(new Block(-5, 2, 0, 110, true));
+		
+		for(Block eachBlock : blocks) {
+			ObjectMap.drawableObjectHashMap.put(eachBlock.getX() +" "+eachBlock.getY() + " " + eachBlock.getZ(), eachBlock);
+		}
+		ObjectMap.drawableObjectHashMap.put(player1.getCellX()+ " " + player1.getCellY() + " " + player1.getCellZ(), player1);
 	}
 
 	@Override

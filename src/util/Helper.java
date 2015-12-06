@@ -2,6 +2,9 @@ package util;
 
 import java.awt.Color;
 
+import geom.Vector2;
+import geom.Vector3;
+
 public class Helper {
 
 	public static Color getAlphaColor(Color baseColor, int alpha) {
@@ -20,10 +23,10 @@ public class Helper {
 		} else if (blendRatio < 0 || blendRatio > 1) {
 			throw new IllegalArgumentException("Invalid blend ratio: " + blendRatio);
 		} else {
-			return new Color((int) (a.getRed() * (1 - blendRatio) + b.getRed() * blendRatio),
-					(int) (a.getGreen() * (1 - blendRatio) + b.getGreen() * blendRatio),
-					(int) (a.getBlue() * (1 - blendRatio) + b.getBlue() * blendRatio),
-					(int) (a.getAlpha() * (1 - blendRatio) + b.getAlpha() * blendRatio));
+			return new Color((int) interpolate(a.getRed(), b.getRed(), blendRatio),
+					(int) interpolate(a.getGreen(), b.getGreen(), blendRatio),
+					(int) interpolate(a.getBlue(), b.getBlue(), blendRatio),
+					(int) interpolate(a.getAlpha(), b.getAlpha(), blendRatio));
 		}
 	}
 
@@ -60,5 +63,14 @@ public class Helper {
 		} else {
 			return a * (1 - t) + b * t;
 		}
+	}
+
+	public static Vector2 interpolate(Vector2 a, Vector2 b, float t) {
+		return new Vector2(interpolate(a.getX(), b.getX(), t), interpolate(a.getY(), b.getY(), t));
+	}
+
+	public static Vector3 interpolate(Vector3 a, Vector3 b, float t) {
+		return new Vector3(interpolate(a.getX(), b.getX(), t), interpolate(a.getY(), b.getY(), t),
+				interpolate(a.getZ(), b.getZ(), t));
 	}
 }

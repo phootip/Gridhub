@@ -230,6 +230,8 @@ class Player {
 			}
 
 		}
+		
+		// Draw a ball
 
 		g.setStroke(new BasicStroke(3));
 		g.setColor(ColorSwatch.FOREGROUND);

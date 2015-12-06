@@ -16,6 +16,7 @@ public class TestScene2 extends Scene {
 	private Player player1;
 
 	ArrayList<Block> blocks = new ArrayList<>();
+	ArrayList<FloorSwitch> floorSwitches = new ArrayList<>();
 
 	public TestScene2() {
 		player1 = new Player();
@@ -23,6 +24,12 @@ public class TestScene2 extends Scene {
 
 		blocks.add(new Block(0, 2, 0));
 		blocks.add(new Block(2, 0, 0));
+
+		floorSwitches.add(new FloorSwitch(6, 1, 0, false, 5));
+		floorSwitches.add(new FloorSwitch(6, 3, 0, false, 10));
+		floorSwitches.add(new FloorSwitch(6, 5, 0, false, 20));
+		floorSwitches.add(new FloorSwitch(6, 7, 0, true, 10));
+		floorSwitches.add(new FloorSwitch(6, 9, 0, true, 20));
 	}
 
 	@Override
@@ -30,6 +37,10 @@ public class TestScene2 extends Scene {
 
 		camera.update(step);
 		player1.update(step, camera.getRotation());
+		
+		for (FloorSwitch fs : floorSwitches) {
+			fs.update(step, player1);
+		}
 
 	}
 
@@ -51,7 +62,7 @@ public class TestScene2 extends Scene {
 
 		g.setStroke(new BasicStroke(1));
 		g.setColor(ColorSwatch.SHADOW);
-		for (int i = -9; i <= 9; i++) {
+		for (int i = -9; i <= 10; i++) {
 			Vector2 startPos = camera.getDrawPosition(i - 0.5f, -10 - 0.5f, 0);
 			Vector2 endPos = camera.getDrawPosition(i - 0.5f, 10 + 0.5f, 0);
 			g.draw(new Line2D.Float(startPos.getX(), startPos.getY(), endPos.getX(), endPos.getY()));
@@ -84,6 +95,10 @@ public class TestScene2 extends Scene {
 
 		for (Block b : blocks) {
 			b.draw(g, camera);
+		}
+		
+		for (FloorSwitch fs : floorSwitches) {
+			fs.draw(g, camera);
 		}
 	}
 

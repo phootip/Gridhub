@@ -19,7 +19,7 @@ class Player {
 
 	protected static float BALL_RADIUS = 0.5f;
 	private static float BALL_TRAIL_RADIUS = 0.5f;
-	private static int MAX_TRAIL_LENGTH = 100;
+	private static int MAX_TRAIL_LENGTH = 50;
 
 	private float x;
 	private float y;
@@ -259,8 +259,12 @@ class Player {
 
 		// Draw a ball
 
+		g.setStroke(new BasicStroke(9));
+		g.setColor(new Color(0xFF, 0, 0, 128));
+		g.draw(new Ellipse2D.Float(ballCenter.getX() - ballRadius, ballCenter.getY() - ballRadius, ballRadius * 2,
+				ballRadius * 2));
 		g.setStroke(new BasicStroke(3));
-		g.setColor(ColorSwatch.FOREGROUND);
+		g.setColor(new Color(0xFF, 0xFF, 0xFF));
 		g.draw(new Ellipse2D.Float(ballCenter.getX() - ballRadius, ballCenter.getY() - ballRadius, ballRadius * 2,
 				ballRadius * 2));
 	}

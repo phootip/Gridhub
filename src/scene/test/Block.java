@@ -4,9 +4,6 @@ import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Comparator;
 
 import geom.Vector2;
 import util.Constants.ColorSwatch;
@@ -77,6 +74,8 @@ class Block {
 			outerBorderCoordY[i] = (int) outerBorder[i].getY();
 		}
 
+		g.setColor(ColorSwatch.BACKGROUND);
+		g.fillPolygon(new Polygon(outerBorderCoordX, outerBorderCoordY, 6));
 		g.setStroke(new BasicStroke(3));
 		g.setColor(ColorSwatch.FOREGROUND);
 		g.drawPolygon(new Polygon(outerBorderCoordX, outerBorderCoordY, 6));

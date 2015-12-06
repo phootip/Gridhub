@@ -39,7 +39,8 @@ public class Helper {
 	 * @return {@link Color} object.
 	 */
 	public static Color getAlphaColorPercentage(Color baseColor, double alphaRatio) {
-		return new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), Math.round(alphaRatio * 255));
+		return new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(),
+				(int) Math.round(alphaRatio * 255));
 	}
 
 	/**
@@ -217,4 +218,5 @@ public class Helper {
 		return new Vector3(interpolate(a.getX(), b.getX(), t), interpolate(a.getY(), b.getY(), t),
 				interpolate(a.getZ(), b.getZ(), t));
 	}
+
 }

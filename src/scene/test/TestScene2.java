@@ -36,7 +36,8 @@ public class TestScene2 extends Scene {
 		g.setColor(ColorSwatch.BACKGROUND);
 		g.fillRect(0, 0, sceneWidth, sceneHeight);
 
-		g.setColor(ColorSwatch.FOREGROUND);
+		// Draw class name
+		g.setColor(ColorSwatch.SHADOW);
 		g.setFont(Resource.getInstance().getDefaultFont(50));
 		g.drawString(this.getClass().getName(), 20, 20 + g.getFontMetrics().getAscent());
 

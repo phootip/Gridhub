@@ -1,16 +1,17 @@
 package geom;
 
 /**
- * The 2-dimensional vector (or 2-tuple) for easier geometry operation. This
+ * The 3-dimensional vector (or 3-tuple) for easier geometry operation. This
  * class support method chaining.
  * 
  * @author Kasidit Iamthong
  *
  */
-public class Vector2 {
+public class Vector3 {
 
 	private float x;
 	private float y;
+	private float z;
 
 	/**
 	 * Get the value of x of this vector.
@@ -51,16 +52,39 @@ public class Vector2 {
 	}
 
 	/**
-	 * Create a 2-dimensional vector object with value ({@code x}, {@code y}).
+	 * Get the value of z of this vector.
+	 * 
+	 * @return The value of z.
+	 */
+	public float getZ() {
+		return z;
+	}
+
+	/**
+	 * Set the value of z of this vector.
+	 * 
+	 * @param z
+	 *            the value to set.
+	 */
+	public void setZ(float z) {
+		this.z = z;
+	}
+
+	/**
+	 * Create a 3-dimensional vector object with value ({@code x}, {@code y},
+	 * {@code z}).
 	 * 
 	 * @param x
 	 *            the value of x.
 	 * @param y
 	 *            the value of y.
+	 * @param z
+	 *            the value of z.
 	 */
-	public Vector2(float x, float y) {
+	public Vector3(float x, float y, float z) {
 		this.x = x;
 		this.y = y;
+		this.z = z;
 	}
 
 	/**
@@ -69,9 +93,10 @@ public class Vector2 {
 	 * @param x
 	 *            the value of x.
 	 */
-	public Vector2(Vector2 v) {
+	public Vector3(Vector3 v) {
 		this.x = v.getX();
 		this.y = v.getY();
+		this.z = v.getZ();
 	}
 
 	/**
@@ -81,11 +106,14 @@ public class Vector2 {
 	 *            the value of x
 	 * @param y
 	 *            the value of y
+	 * @param z
+	 *            the value of z
 	 * @return This object itself for method chaining.
 	 */
-	public Vector2 add(float x, float y) {
+	public Vector3 add(float x, float y, float z) {
 		this.x += x;
 		this.y += y;
+		this.z += z;
 
 		return this;
 	}
@@ -97,8 +125,8 @@ public class Vector2 {
 	 *            another vector that its value will be used for addition.
 	 * @return This object itself for method chaining.
 	 */
-	public Vector2 add(Vector2 v) {
-		return this.add(v.getX(), v.getY());
+	public Vector3 add(Vector3 v) {
+		return this.add(v.getX(), v.getY(), v.getZ());
 	}
 
 	/**
@@ -109,10 +137,12 @@ public class Vector2 {
 	 *            the value of x
 	 * @param y
 	 *            the value of y
+	 * @param z
+	 *            the value of z
 	 * @return This object itself for method chaining.
 	 */
-	public Vector2 subtract(float x, float y) {
-		return this.add(-x, -y);
+	public Vector3 subtract(float x, float y, float z) {
+		return this.add(-x, -y, -z);
 	}
 
 	/**
@@ -123,8 +153,8 @@ public class Vector2 {
 	 *            another vector that its value will be used for subtraction.
 	 * @return This object itself for method chaining.
 	 */
-	public Vector2 subtract(Vector2 v) {
-		return this.subtract(v.getX(), v.getY());
+	public Vector3 subtract(Vector3 v) {
+		return this.subtract(v.getX(), v.getY(), v.getZ());
 	}
 
 	/**
@@ -134,9 +164,10 @@ public class Vector2 {
 	 *            the factor value
 	 * @return This object itself for method chaining.
 	 */
-	public Vector2 multiply(float factor) {
+	public Vector3 multiply(float factor) {
 		this.x *= factor;
 		this.y *= factor;
+		this.z *= factor;
 		return this;
 	}
 
@@ -147,11 +178,14 @@ public class Vector2 {
 	 *            the factor value to be multiplied with x value
 	 * @param factorY
 	 *            the factor value to be multiplied with y value
+	 * @param factorZ
+	 *            the factor value to be multiplied with z value
 	 * @return This object itself for method chaining.
 	 */
-	public Vector2 multiply(float factorX, float factorY) {
+	public Vector3 multiply(float factorX, float factorY, float factorZ) {
 		this.x *= factorX;
 		this.y *= factorY;
+		this.z *= factorZ;
 		return this;
 	}
 
@@ -161,56 +195,25 @@ public class Vector2 {
 	 * 
 	 * @return This object itself for method chaining.
 	 */
-	public Vector2 negate() {
+	public Vector3 negate() {
 		this.x *= -1;
 		this.y *= -1;
+		this.z *= -1;
 
 		return this;
 	}
 
 	/**
-	 * Rotate this vector 90 degree clockwise. This method is preferred to
-	 * {@code rotate()}, which is slower.
-	 * 
-	 * @return This object itself for method chaining.
-	 * @see Vector2#rotateCCW
-	 * @see Vector2#rotate
-	 */
-	public Vector2 rotateCW() {
-		float temp = this.x;
-		this.x = -this.y;
-		this.y = temp;
-
-		return this;
-	}
-
-	/**
-	 * Rotate this vector 90 degree counterclockwise. This method is preferred
-	 * to {@code rotate()}, which is slower.
-	 * 
-	 * @return This object itself for method chaining.
-	 * @see Vector2#rotateCW
-	 * @see Vector2#rotate
-	 */
-	public Vector2 rotateCCW() {
-		float temp = this.x;
-		this.x = this.y;
-		this.y = -temp;
-
-		return this;
-	}
-
-	/**
-	 * Rotate this vector counterclockwise with the specified degree.
+	 * Rotate this vector in plane X-Y plane with the specified degree,
+	 * according to the right-hand rule.
 	 * 
 	 * @param angle
 	 *            the specified angle in radian.
 	 * @return This object itself for method chaining.
-	 * @see Vector2#rotateCCW
-	 * @see Vector2#rotateCW
-	 * @see Vector2#negate
+	 * @see Vector3#rotateYZ
+	 * @see Vector3#rotateXZ
 	 */
-	public Vector2 rotate(double angle) {
+	public Vector3 rotateXY(double angle) {
 		float temp = this.x;
 		this.x = (float) (Math.cos(angle) * temp - Math.sin(angle) * this.y);
 		this.y = (float) (Math.sin(angle) * temp + Math.cos(angle) * this.y);
@@ -218,9 +221,45 @@ public class Vector2 {
 		return this;
 	}
 
+	/**
+	 * Rotate this vector in plane Y-Z plane with the specified degree,
+	 * according to the right-hand rule.
+	 * 
+	 * @param angle
+	 *            the specified angle in radian.
+	 * @return This object itself for method chaining.
+	 * @see Vector3#rotateXY
+	 * @see Vector3#rotateXZ
+	 */
+	public Vector3 rotateYZ(double angle) {
+		float temp = this.y;
+		this.y = (float) (Math.cos(angle) * temp - Math.sin(angle) * this.z);
+		this.z = (float) (Math.sin(angle) * temp + Math.cos(angle) * this.z);
+
+		return this;
+	}
+
+	/**
+	 * Rotate this vector in plane X-Z plane with the specified degree,
+	 * according to the right-hand rule.
+	 * 
+	 * @param angle
+	 *            the specified angle in radian.
+	 * @return This object itself for method chaining.
+	 * @see Vector3#rotateXY
+	 * @see Vector3#rotateYZ
+	 */
+	public Vector3 rotateXZ(double angle) {
+		float temp = this.x;
+		this.x = (float) (Math.cos(angle) * temp - Math.sin(angle) * this.z);
+		this.z = (float) (Math.sin(angle) * temp + Math.cos(angle) * this.z);
+
+		return this;
+	}
+
 	@Override
 	public String toString() {
-		return "(" + this.x + ", " + this.y + ")";
+		return "(" + this.x + ", " + this.y + ", " + this.z + ")";
 	}
 
 }

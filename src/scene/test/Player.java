@@ -1,19 +1,26 @@
 package scene.test;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
+import java.util.ArrayList;
 
 import com.sun.glass.events.KeyEvent;
 
 import geom.Vector2;
+import geom.Vector3;
 import util.Constants.ColorSwatch;
 import util.Helper;
 import util.InputManager;
 
 class Player {
 
-	public static int BALL_SIZE = 50;
+	protected static float BALL_RADIUS = 0.5f;
+	private static float BALL_TRAIL_RADIUS = 0.5f;
+	private static int MAX_TRAIL_LENGTH = 20;
 
 	private float x;
 	private float y;
@@ -27,39 +34,90 @@ class Player {
 	private int cellY;
 	private int cellZ;
 
-	public float getX() {
+	private ArrayList<ArrayList<Vector3>> trailPosition;
+	private ArrayList<ArrayList<Vector3>> shiftedTrailPosition;
+
+	protected float getX() {
 		return x;
 	}
 
-	public float getY() {
+	protected float getY() {
 		return y;
 	}
 
-	public float getZ() {
+	protected float getZ() {
 		return z;
 	}
 
-	public int getCellX() {
+	protected int getCellX() {
 		return cellX;
 	}
 
-	public int getCellY() {
+	protected int getCellY() {
 		return cellY;
 	}
 
-	public int getCellZ() {
+	protected int getCellZ() {
 		return cellZ;
 	}
 
 	public Player() {
 		x = y = z = cellX = cellY = cellZ = oldCellX = oldCellY = oldCellZ = 0;
+
+		// Create initial trail dots
+		float rotationX = 1.234f;
+		float rotationY = 2.345f;
+		float rotationZ = 3.456f;
+
+		Vector3[] trailDots = new Vector3[6];
+
+		trailDots[0] = new Vector3(1, 0, 0).rotateXY(rotationZ).rotateXZ(rotationY).rotateYZ(rotationX);
+		trailDots[1] = new Vector3(-1, 0, 0).rotateXY(rotationZ).rotateXZ(rotationY).rotateYZ(rotationX);
+		trailDots[2] = new Vector3(0, 1, 0).rotateXY(rotationZ).rotateXZ(rotationY).rotateYZ(rotationX);
+		trailDots[3] = new Vector3(0, -1, 0).rotateXY(rotationZ).rotateXZ(rotationY).rotateYZ(rotationX);
+		trailDots[4] = new Vector3(0, 0, 1).rotateXY(rotationZ).rotateXZ(rotationY).rotateYZ(rotationX);
+		trailDots[5] = new Vector3(0, 0, -1).rotateXY(rotationZ).rotateXZ(rotationY).rotateYZ(rotationX);
+
+		trailPosition = new ArrayList<>();
+		shiftedTrailPosition = new ArrayList<>();
+		for (int i = 0; i < trailDots.length; i++) {
+			trailPosition.add(new ArrayList<>());
+			shiftedTrailPosition.add(new ArrayList<>());
+
+			trailPosition.get(i).add(trailDots[i]);
+			shiftedTrailPosition.get(i).add(new Vector3(trailDots[i]).multiply(BALL_TRAIL_RADIUS).add(x, y, z));
+		}
 	}
 
 	private boolean isMoving = false;
 	int walkStep = 0;
 	final int walkDuration = 1000;
 
+	private void updateTrail(float diffX, float diffY) {
+
+		float angleXZ = diffX / BALL_RADIUS;
+		float angleYZ = diffY / BALL_RADIUS;
+
+		for (int i = 0; i < trailPosition.size(); i++) {
+			ArrayList<Vector3> trail = trailPosition.get(i);
+
+			Vector3 newTrailDot = new Vector3(trail.get(trail.size() - 1));
+			newTrailDot.rotateXZ(angleXZ).rotateYZ(angleYZ);
+
+			trail.add(newTrailDot);
+			shiftedTrailPosition.get(i).add(new Vector3(newTrailDot).multiply(BALL_TRAIL_RADIUS).add(x, y, z));
+
+			if (trail.size() > MAX_TRAIL_LENGTH) {
+				trail.remove(0);
+				shiftedTrailPosition.get(i).remove(0);
+			}
+		}
+	}
+
 	public void update(int step) {
+		float ballDiffX = 0;
+		float ballDiffY = 0;
+
 		if (!isMoving) {
 			if (InputManager.getInstance().isKeyPressing(KeyEvent.VK_UP)) {
 				isMoving = true;
@@ -93,20 +151,88 @@ class Player {
 				z = cellZ;
 			} else {
 				float ratio = (float) walkStep / walkDuration;
+				ballDiffX = x;
+				ballDiffY = y;
+
+				// Try changing to sineInterpolate for weird effect!
 				x = Helper.interpolate(oldCellX, cellX, ratio);
 				y = Helper.interpolate(oldCellY, cellY, ratio);
 				z = Helper.interpolate(oldCellZ, cellZ, ratio);
+
+				ballDiffX = x - ballDiffX;
+				ballDiffY = y - ballDiffY;
 			}
 		}
+
+		updateTrail(ballDiffX, ballDiffY);
 	}
 
 	public void draw(Graphics2D g, Camera camera) {
-		g.setStroke(new BasicStroke(3));
-		g.setColor(ColorSwatch.FOREGROUND);
 
-		float ballRadius = camera.getDrawSizeZ(0.5f);
+		float ballRadius = camera.getDrawSizeZ(BALL_RADIUS);
 		Vector2 ballCenter = camera.getDrawPosition(x, y, z).subtract(0, ballRadius);
 
+		// Draw trail
+		Stroke mainTrailStroke = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+		Color mainTrailColor = new Color(0xFF, 0x00, 0x00, 150);
+		Stroke glowTrailStroke = new BasicStroke(8, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+		Color glowTrailColor = new Color(0xFF, 0x00, 0x00, 75);
+		for (int i = 0; i < shiftedTrailPosition.size(); i++) {
+
+			int n = shiftedTrailPosition.get(i).size();
+			int[] xPos = new int[n];
+			int[] yPos = new int[n];
+
+			boolean isStill = true;
+
+			for (int j = 0; j < shiftedTrailPosition.get(i).size(); j++) {
+
+				// if (trailPosition.get(i).get(j - 1).getY() > 0 ||
+				// trailPosition.get(i).get(j).getY() > 0) {
+				// continue;
+
+				// Vector3 startTrail = new
+				// Vector3(shiftedTrailPosition.get(i).get(j - 1)).subtract(0,
+				// 0, BALL_RADIUS);
+				// Vector3 endTrail = new
+				// Vector3(shiftedTrailPosition.get(i).get(j)).subtract(0, 0,
+				// BALL_RADIUS);
+				// Vector2 startPoint = camera.getDrawPosition(startTrail);
+				// Vector2 endPoint = camera.getDrawPosition(endTrail);
+
+				Vector3 trail = new Vector3(shiftedTrailPosition.get(i).get(j)).subtract(0, 0, BALL_RADIUS);
+				Vector2 pos = camera.getDrawPosition(trail);
+				xPos[j] = (int) pos.getX();
+				yPos[j] = (int) pos.getY();
+
+				if (j > 0 && (xPos[j] != xPos[j - 1] || yPos[j] != yPos[j - 1]))
+					isStill = false;
+
+				// g.setStroke(mainTrailStroke);
+				// g.setColor(mainTrailColor);
+				// g.draw(new Line2D.Float(startPoint.getX(), startPoint.getY(),
+				// endPoint.getX(), endPoint.getY()));
+				//
+				// g.setStroke(glowTrailStroke);
+				// g.setColor(glowTrailColor);
+				// g.draw(new Line2D.Float(startPoint.getX(), startPoint.getY(),
+				// endPoint.getX(), endPoint.getY()));
+			}
+
+			if (!isStill) {
+				g.setStroke(mainTrailStroke);
+				g.setColor(mainTrailColor);
+				g.drawPolyline(xPos, yPos, n);
+
+				g.setStroke(glowTrailStroke);
+				g.setColor(glowTrailColor);
+				g.drawPolyline(xPos, yPos, n);
+			}
+
+		}
+
+		g.setStroke(new BasicStroke(3));
+		g.setColor(ColorSwatch.FOREGROUND);
 		g.draw(new Ellipse2D.Float(ballCenter.getX() - ballRadius, ballCenter.getY() - ballRadius, ballRadius * 2,
 				ballRadius * 2));
 	}

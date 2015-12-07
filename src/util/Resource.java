@@ -67,12 +67,12 @@ public class Resource {
 		}
 	}
 
-	public Font getDefaultFont(FontWeight weight, int size) {
+	public Font getDefaultFont(int size, FontWeight weight) {
 		return new Font(weight.getFontName(), Font.PLAIN, size);
 	}
 
 	public Font getDefaultFont(int size) {
-		return getDefaultFont(FontWeight.REGULAR, size);
+		return getDefaultFont(size, FontWeight.REGULAR);
 	}
 
 	private void loadFont() throws FontFormatException, IOException, URISyntaxException {

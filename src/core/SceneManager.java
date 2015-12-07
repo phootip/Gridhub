@@ -54,11 +54,11 @@ public class SceneManager {
 			this.currentScene.update(100);
 
 			do {
+				InputManager.getInstance().update();
+				
 				Graphics2D graphic = DrawManager.getInstance().getGraphic();
 				this.currentScene.draw(graphic, DrawManager.getInstance().getCanvasWidth(),
 						DrawManager.getInstance().getCanvasHeight());
-				
-				InputManager.getInstance().resetTriggerer();
 				
 				if (util.Constants.SHOW_FPS_MONITOR) {
 					FPSCollector.drawMonitor(graphic, DrawManager.getInstance().getCanvasWidth());

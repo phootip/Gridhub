@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashSet;
+import java.util.Set;
 
 // TODO: Implement MouseListener and MouseMoveListener
 
@@ -37,14 +38,19 @@ public class InputManager implements KeyListener {
 		c.addKeyListener(InputManager.getInstance());
 	}
 
-	private HashSet<Integer> keyPressHasher = new HashSet<>();
-	private HashSet<Integer> keyTriggerHasher = new HashSet<>();
+	private Set<Integer> keyPressHasher = new HashSet<>();
+	private Set<Integer> keyTriggerHasher = new HashSet<>();
+
+	private Set<Integer> keyPressBuffer = new HashSet<>();
+	private Set<Integer> keyReleaseBuffer = new HashSet<>();
 
 	private InputManager() {
+		keyPressHasher = new HashSet<>();
+		keyTriggerHasher = new HashSet<>();
 	}
 
 	/**
-	 * Determines whether specified key is currently being pressed or not
+	 * Determines whether specified key is currently being pressed or not.
 	 * 
 	 * @param keyCode
 	 *            an integer representing key code to check.
@@ -55,13 +61,14 @@ public class InputManager implements KeyListener {
 	}
 
 	/**
-	 * This should be called from only from listener, and should not be called
-	 * explicitly by user.
+	 * Determines whether specified key is triggering or not.
+	 * 
+	 * @param keyCode
+	 *            an integer representing key code to check.
+	 * @return Whether or not the specified key is being triggered.
 	 */
-	@Override
-	public void keyPressed(KeyEvent e) {
-		keyPressHasher.add(e.getKeyCode());
-		keyTriggerHasher.add(e.getKeyCode());
+	public boolean isKeyTriggering(int keyCode) {
+		return keyTriggerHasher.contains(keyCode);
 	}
 
 	/**
@@ -69,8 +76,19 @@ public class InputManager implements KeyListener {
 	 * explicitly by user.
 	 */
 	@Override
-	public void keyReleased(KeyEvent e) {
-		keyPressHasher.remove(e.getKeyCode());
+	public synchronized void keyPressed(KeyEvent e) {
+		if (!keyPressHasher.contains(e.getKeyCode())) {
+			keyPressBuffer.add(e.getKeyCode());
+		}
+	}
+
+	/**
+	 * This should be called from only from listener, and should not be called
+	 * explicitly by user.
+	 */
+	@Override
+	public synchronized void keyReleased(KeyEvent e) {
+		keyReleaseBuffer.add(e.getKeyCode());
 	}
 
 	/**
@@ -82,10 +100,23 @@ public class InputManager implements KeyListener {
 	}
 
 	/**
-	 * Reset the trigger values of keyboard. This should be called every frame.
+	 * Update the InputManager, such as clear triggered value. This should be
+	 * called every frame before doing any operation.
 	 */
-	public void resetTriggerer() {
+	public synchronized void update() {
 		keyTriggerHasher.clear();
+
+		for (Integer i : keyPressBuffer) {
+			keyPressHasher.add(i);
+			keyTriggerHasher.add(i);
+		}
+
+		for (Integer i : keyReleaseBuffer) {
+			keyPressHasher.remove(i);
+		}
+		
+		keyPressBuffer.clear();
+		keyReleaseBuffer.clear();
 	}
 
 }

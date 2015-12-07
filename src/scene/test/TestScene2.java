@@ -4,8 +4,10 @@ import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import geom.Vector2;
+import objectInterface.IDrawable;
 import scene.core.Scene;
 import util.Resource;
 import util.Constants.ColorSwatch;
@@ -16,11 +18,18 @@ public class TestScene2 extends Scene {
 	private Player player1;
 
 	ArrayList<Block> blocks = new ArrayList<>();
+<<<<<<< .merge_file_a13628
 	ArrayList<FloorSwitch> floorSwitches = new ArrayList<>();
 
+=======
+	
+	
+>>>>>>> .merge_file_a16312
 	public TestScene2() {
-		player1 = new Player();
+		ObjectMap.drawableObjectHashMap = new HashMap<String , IDrawable>();
+		player1 = new Player("Player1");
 		camera = new Camera(player1);
+<<<<<<< .merge_file_a13628
 
 		blocks.add(new Block(0, 2, 0));
 		blocks.add(new Block(2, 0, 0));
@@ -30,6 +39,36 @@ public class TestScene2 extends Scene {
 		floorSwitches.add(new FloorSwitch(6, 5, 0, false, 20));
 		floorSwitches.add(new FloorSwitch(6, 7, 0, true, 10));
 		floorSwitches.add(new FloorSwitch(6, 9, 0, true, 20));
+=======
+		
+//		blocks.add(new Block(0, 2, 0));
+//		blocks.add(new Block(2, 0, 0));	
+//		blocks.add(new Block(-9, 2, 0, 110, true));
+//		blocks.add(new Block(-10, 3, 0, 110, true));
+//		
+		blocks.add(new Block(-2, 3, 0, 20, false));
+		blocks.add(new Block(-2, 2, 0, 20, true));
+		blocks.add(new Block(-2, 1, 0, 20, true));
+		blocks.add(new Block(-2, 0, 0, 20, true));
+		blocks.add(new Block(-2, -1, 0, 20, true));
+		blocks.add(new Block(-1, -2, 0, 20, true));
+		blocks.add(new Block(0, -3 ,0, 20, true));
+		blocks.add(new Block(1, -2, 0, 20, true));
+		blocks.add(new Block(2, -1, 0, 20, true));
+		blocks.add(new Block(2, 0, 0, 20, true));
+		blocks.add(new Block(2, 1, 0, 20, true));
+		blocks.add(new Block(2, 2, 0, 20, true));
+		blocks.add(new Block(2, 3, 0, 20, true));
+		
+		blocks.add(new Block(-1, 1, 0, 110, true));
+		blocks.add(new Block(0, 1, 0, 110, true));
+		blocks.add(new Block(1, 1, 0, 110, true));
+		
+		for(Block eachBlock : blocks) {
+			ObjectMap.drawableObjectHashMap.put(eachBlock.getX() +" "+eachBlock.getY() + " " + eachBlock.getZ(), eachBlock);
+		}
+		ObjectMap.drawableObjectHashMap.put(player1.getCellX()+ " " + player1.getCellY() + " " + player1.getCellZ() + " " + player1.getName(), player1);
+>>>>>>> .merge_file_a16312
 	}
 
 	@Override

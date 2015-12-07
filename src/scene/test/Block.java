@@ -64,9 +64,9 @@ class Block implements PushableObject, WalkThroughable {
 			return false;
 		return true;
 	}
-
+	
 	public boolean push(int previousWeight, int diffX, int diffY, int diffZ) {
-		// TO-DO
+		
 		if (this.weight + previousWeight > 100)
 			return false;
 		IDrawable nextObjectObstacles = ObjectMap.drawableObjectHashMap.get((x+diffX) + " " + (y+diffY) + " " + (z+diffZ));

@@ -40,6 +40,8 @@ class Player implements IDrawable {
 	private int nextCellY;
 	private int nextCellZ;
 
+	private String name;
+
 	private ArrayList<ArrayList<Vector3>> trailPosition;
 	private ArrayList<ArrayList<Vector3>> shiftedTrailPosition;
 
@@ -67,9 +69,13 @@ class Player implements IDrawable {
 		return cellZ;
 	}
 
-	public Player() {
-		x = y = z = cellX = cellY = cellZ = oldCellX = oldCellY = oldCellZ = nextCellX = nextCellY = nextCellZ = 0;
+	public String getName() {
+		return name;
+	}
 
+	public Player(String name) {
+		x = y = z = cellX = cellY = cellZ = oldCellX = oldCellY = oldCellZ = nextCellX = nextCellY = nextCellZ = 0;
+		this.name = name;
 		// Create initial trail dots
 		float rotationX = 1.234f;
 		float rotationY = 2.345f;
@@ -168,46 +174,117 @@ class Player implements IDrawable {
 		// check for NextStepCell
 		IDrawable nextCellObstacle = ObjectMap.drawableObjectHashMap.get(nextCellX + " " + nextCellY + " " + nextCellZ);
 		if (nextCellObstacle == null) {
-			
-			ObjectMap.drawableObjectHashMap.remove(cellX + " " + cellY + " " + cellZ);
-			ObjectMap.drawableObjectHashMap.put(nextCellX + " " + nextCellY + " " + nextCellZ, this);
-			cellX = nextCellX;
-			cellY = nextCellY;
-			cellZ = nextCellZ;
+			// Action when player move diagonal
+			if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
+				// for Z there might not cause any problem
+				IDrawable nextXObstacle = ObjectMap.drawableObjectHashMap
+						.get(nextCellX + " " + cellY + " " + nextCellZ);
+				IDrawable nextYObstacle = ObjectMap.drawableObjectHashMap
+						.get(cellX + " " + nextCellY + " " + nextCellZ);
+
+				if (nextXObstacle != null || nextYObstacle != null) {
+					// if Obstacle is Pushable Object
+					if (nextXObstacle != null && nextYObstacle != null) {
+						if (nextXObstacle instanceof PushableObject && nextYObstacle instanceof PushableObject) {
+							// if both xObstacle and yObstacle pushable object
+							// move in XDirection First
+							pushXOrPushY(nextXObstacle, nextYObstacle);
+
+						} else if (nextXObstacle instanceof PushableObject) {
+							// if only xObstacle is pushable object, then move
+							// XDirection
+							pushX(nextXObstacle);
+
+						} else if (nextYObstacle instanceof PushableObject) {
+							// if only yObstacle is pushable object, then move
+							// YDirection
+							pushY(nextYObstacle);
+						} else {
+							// if both Obstacles is not pushable object -- Do
+							// not move
+							standStill();
+						}
+
+					} else if (nextXObstacle != null) {
+						// if there is xObstacle but no yObstacle then move
+						// YDirection
+						moveOnlyYandZ();
+					} else if (nextYObstacle != null) {
+						// if there is yObstacle but no xObstacel then move
+						// XDirection
+						moveOnlyXandZ();
+					}
+
+				} else {
+					// If there is no obstacles for both y and x, then player
+					// can move freely
+					moveAllDir();
+				}
+			} else {
+				// for object moving in only y or x axis (and no obstacles at
+				// all) it can move freely
+				moveAllDir();
+			}
 
 		} else if (nextCellObstacle != null && nextCellObstacle != this) {
-			
-			if (nextCellObstacle instanceof PushableObject) {
 
-				System.out.println("There is an obstacle!!");
-				System.out.println((nextCellX - cellX) + " " + (nextCellY - cellY) + " " + (nextCellZ - cellZ));
+			if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
+				// in case of moving in both y and x if there is an
+				// obstacles and it's pushable object
+				// player must not be able to push it
+				IDrawable nextXObstacle = ObjectMap.drawableObjectHashMap
+						.get(nextCellX + " " + cellY + " " + nextCellZ);
+				IDrawable nextYObstacle = ObjectMap.drawableObjectHashMap
+						.get(cellX + " " + nextCellY + " " + nextCellZ);
+
+				if (nextXObstacle != null && nextYObstacle != null) {
+					// if both are pushable Object, consider x first. If x
+					// cannot be pushed then consider y
+					if (nextXObstacle instanceof PushableObject && nextYObstacle instanceof PushableObject) {
+						// PushX Then Push Y
+						pushXOrPushY(nextXObstacle, nextYObstacle);
+
+					} else if (nextXObstacle instanceof PushableObject) {
+						// if it can push x then push x first
+						pushX(nextXObstacle);
+
+					} else if (nextYObstacle instanceof PushableObject) {
+						// if it cannot push x then try push y
+						pushY(nextYObstacle);
+					} else {
+						// if it cannot push both then stand still
+						standStill();
+					}
+
+				} else if (nextXObstacle != null) {
+					// if there is nextXObstacle then move Y instead and push
+					// nothing
+					moveOnlyYandZ();
+				} else {
+					// if there is nextYObstacle or there is no Obstacle for
+					// both nextY and nextX then move X Direction and push
+					// nothing
+					moveOnlyXandZ();
+				}
+
+			} else {
+				// player push along y or x axis only
 				boolean isPushed = ((PushableObject) nextCellObstacle).push(0, nextCellX - cellX, nextCellY - cellY,
 						nextCellZ - cellZ);
 
 				if (isPushed) {
-					ObjectMap.drawableObjectHashMap.remove(cellX + " " + cellY + " " + cellZ);
-					ObjectMap.drawableObjectHashMap.put(nextCellX + " " + nextCellY + " " + nextCellZ, this);
-					cellX = nextCellX;
-					cellY = nextCellY;
-					cellZ = nextCellZ;
+					moveAllDir();
 
 				} else {
-					nextCellX = cellX;
-					nextCellY = cellY;
-					nextCellZ = cellZ;
+					standStill();
 				}
-
 			}
-			// if (nextCellObstacle instanceof WalkThroughable) {
-			// if (((WalkThroughable) nextCellObstacle).isWalkThroughable()) {
-			// // In case there is an walkthroughable Objects
-			//
-			// }
-			//
-			// }
 
 		}
-		if (isMoving) {
+
+		if (isMoving)
+
+		{
 			walkStep += step;
 
 			if (walkStep >= walkDuration) {
@@ -312,6 +389,95 @@ class Player implements IDrawable {
 		g.setColor(ColorSwatch.FOREGROUND);
 		g.draw(new Ellipse2D.Float(ballCenter.getX() - ballRadius, ballCenter.getY() - ballRadius, ballRadius * 2,
 				ballRadius * 2));
+	}
+
+	private void pushXOrPushY(IDrawable nextXObstacle, IDrawable nextYObstacle) {
+		// move in XDirection First
+		boolean isPushed = ((PushableObject) nextXObstacle).push(0, nextCellX - cellX, 0, 0);
+
+		if (isPushed) {
+			// Push X if player can push
+			ObjectMap.drawableObjectHashMap.remove(cellX + " " + cellY + " " + cellZ + " " + this.name);
+			ObjectMap.drawableObjectHashMap.put(nextCellX + " " + cellY + " " + cellZ + " " + this.name, this);
+			cellX = nextCellX;
+			nextCellY = cellY;
+			nextCellZ = cellZ;
+
+		} else {
+			// push y if it cannot pushX
+			isPushed = ((PushableObject) nextYObstacle).push(0, 0, nextCellY - cellY, 0);
+		}
+
+		if (isPushed) {
+			ObjectMap.drawableObjectHashMap.remove(cellX + " " + cellY + " " + cellZ + " " + this.name);
+			ObjectMap.drawableObjectHashMap.put(cellX + " " + nextCellY + " " + cellZ + " " + this.name, this);
+			nextCellX = cellX;
+			cellY = nextCellY;
+			nextCellZ = cellZ;
+		} else {
+			// if it cannot push both y and x then stand still
+			standStill();
+		}
+	}
+
+	private void pushX(IDrawable nextXObstacle) {
+		boolean isPushed = ((PushableObject) nextXObstacle).push(0, nextCellX - cellX, 0, 0);
+
+		if (isPushed) {
+			ObjectMap.drawableObjectHashMap.remove(cellX + " " + cellY + " " + cellZ + " " + this.name);
+			ObjectMap.drawableObjectHashMap.put(nextCellX + " " + cellY + " " + cellZ + " " + this.name, this);
+			cellX = nextCellX;
+			nextCellY = cellY;
+			nextCellZ = cellZ;
+
+		} else {
+			standStill();
+		}
+	}
+
+	private void pushY(IDrawable nextYObstacle) {
+		boolean isPushed = ((PushableObject) nextYObstacle).push(0, 0, nextCellY - cellY, 0);
+
+		if (isPushed) {
+			ObjectMap.drawableObjectHashMap.remove(cellX + " " + cellY + " " + cellZ + " " + this.name);
+			ObjectMap.drawableObjectHashMap.put(cellX + " " + nextCellY + " " + cellZ + " " + this.name, this);
+			nextCellX = cellX;
+			cellY = nextCellY;
+			nextCellZ = cellZ;
+
+		} else {
+			standStill();
+		}
+	}
+
+	private void standStill() {
+		nextCellX = cellX;
+		nextCellY = cellY;
+		nextCellZ = cellZ;
+	}
+
+	private void moveOnlyYandZ() {
+		ObjectMap.drawableObjectHashMap.remove(cellX + " " + cellY + " " + cellZ + " " + this.name);
+		ObjectMap.drawableObjectHashMap.put(cellX + " " + nextCellY + " " + nextCellZ + " " + this.name, this);
+		nextCellX = cellX;
+		cellY = nextCellY;
+		cellZ = nextCellZ;
+	}
+
+	private void moveOnlyXandZ() {
+		ObjectMap.drawableObjectHashMap.remove(cellX + " " + cellY + " " + cellZ + " " + this.name);
+		ObjectMap.drawableObjectHashMap.put(nextCellX + " " + cellY + " " + nextCellZ + " " + this.name, this);
+		cellX = nextCellX;
+		nextCellY = cellY;
+		cellZ = nextCellZ;
+	}
+
+	private void moveAllDir() {
+		ObjectMap.drawableObjectHashMap.remove(cellX + " " + cellY + " " + cellZ + " " + this.name);
+		ObjectMap.drawableObjectHashMap.put(nextCellX + " " + nextCellY + " " + nextCellZ + " " + this.name, this);
+		cellX = nextCellX;
+		cellY = nextCellY;
+		cellZ = nextCellZ;
 	}
 
 }

@@ -1,6 +1,7 @@
-package scene;
+package scene.mainmenu;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
@@ -8,70 +9,97 @@ import java.awt.geom.Rectangle2D;
 
 import com.sun.glass.events.KeyEvent;
 
-import scene.core.Scene;
-import util.Resource;
 import util.Constants;
-import util.Constants.ColorSwatch;
 import util.Helper;
 import util.InputManager;
+import util.Resource;
+import util.Constants.ColorSwatch;
 
-public class MainMenuScene extends Scene {
+public class TopMainMenuPage extends MainMenuPage {
 
 	Font logoTextFont;
 	Font menuTextFont;
 	Font selectedMenuTextFont;
 
-	public MainMenuScene(boolean showWelcomeScreenAnimation) {
+	private long cumulativeStep = 0;
+	private int hiddenShifterStep = 0;
+	private int hiddenShifterDuration = 100 * 30;
+
+	protected TopMainMenuPage(MainMenuScene parent) {
+		super(parent);
+
 		this.logoTextFont = Resource.getInstance().getDefaultFont(200);
 		this.menuTextFont = Resource.getInstance().getDefaultFont(60, Resource.FontWeight.BOOK);
 		this.selectedMenuTextFont = Resource.getInstance().getDefaultFont(75, Resource.FontWeight.BOLD);
-
-		if (!showWelcomeScreenAnimation) {
-			cumulativeStep = 100 * 180;
-			menuFadeInProgress = 1;
-		}
 	}
 
-	private long cumulativeStep = 0;
+	protected void skipIntroAnimation() {
+		cumulativeStep = 100 * 180;
+		menuFadeInProgress = 1;
+	}
 
 	@Override
-	public void update(int step) {
+	protected void update(int step) {
 		cumulativeStep += step;
 
 		if (cumulativeStep > 100 * 120) {
-			if (cumulativeStep > 100 * 180) {
-				cumulativeStep = 100 * 180;
+			if (cumulativeStep > 100 * 165) {
+				cumulativeStep = 100 * 165;
+				if (this.isVisible && InputManager.getInstance().isKeyTriggering(KeyEvent.VK_ENTER)) {
+					if (selectingMenu == 4) {
+						this.parent.setPage(MainMenuScene.PageName.ABOUT);
+					}
+				}
 			}
 
-			if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_UP)) {
-				selectingMenu--;
+			if (this.isVisible) {
+				if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_UP)) {
+					selectingMenu--;
+				}
+				if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_DOWN)) {
+					selectingMenu++;
+				}
 			}
-			if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_DOWN)) {
-				selectingMenu++;
-			}
-			selectingMenu = (selectingMenu + level1MenuItem.length) % level1MenuItem.length;
+			selectingMenu = (selectingMenu + menuItem.length) % menuItem.length;
 
 			currentMenuPosition += (selectingMenu - currentMenuPosition) / Math.pow(Math.pow(5, 1.0 / 100), step);
 			currentMenuHighlighterWidth += (currentMenuItemWidth - currentMenuHighlighterWidth)
 					/ Math.pow(Math.pow(3, 1.0 / 100), step);
 
-			menuFadeInProgress += step / (100f * 60);
+			menuFadeInProgress += step / (100f * 45);
 			if (menuFadeInProgress > 1) {
 				menuFadeInProgress = 1;
 			}
 		}
+
+		if (!this.isVisible) {
+			hiddenShifterStep += step;
+			if (hiddenShifterStep > hiddenShifterDuration) {
+				hiddenShifterStep = hiddenShifterDuration;
+			}
+		} else {
+			hiddenShifterStep -= step;
+			if (hiddenShifterStep < 0) {
+				hiddenShifterStep = 0;
+			}
+		}
 	}
 
-	private final String[] level1MenuItem = new String[] { "Single Player", "Co-op Mode", "Level Editor", "Option",
+	private final String[] menuItem = new String[] { "Single Player", "Co-op Mode", "Level Editor", "Option",
 			"About Us" };
 	private final float menuItemSpacing = 30f;
 	private int selectingMenu = 0;
 	private float currentMenuPosition = 0f;
-	private float currentMenuHighlighterWidth = 0;
-	private float currentMenuItemWidth = 0;
+	private int currentMenuHighlighterWidth = 0;
+	private int currentMenuItemWidth = 0;
 	private float menuFadeInProgress = 0;
 
+	private int getHiddenShifter(int sceneWidth) {
+		return (int) Helper.sineInterpolate(0, sceneWidth / 2, (float) hiddenShifterStep / hiddenShifterDuration);
+	}
+
 	private void drawMenuItem(Graphics2D g, int sceneWidth, int sceneHeight) {
+		int hiddenShifter = getHiddenShifter(sceneWidth);
 
 		FontMetrics menuItemFontMetric = g.getFontMetrics(selectedMenuTextFont);
 		float fontHeight = menuItemFontMetric.getHeight();
@@ -82,7 +110,8 @@ public class MainMenuScene extends Scene {
 
 		int paneStartX = sceneWidth * 3 / 5;
 		int paneWidth = sceneWidth - 100 - paneStartX;
-		paneStartX += Helper.sineInterpolate((sceneWidth - paneStartX), 0, menuFadeInProgress, false, true);
+		paneStartX += Helper.sineInterpolate((sceneWidth - paneStartX), 0, menuFadeInProgress, true, true);
+		paneStartX -= hiddenShifter;
 
 		g.setColor(ColorSwatch.FOREGROUND);
 		g.setStroke(new BasicStroke(5, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND));
@@ -92,30 +121,32 @@ public class MainMenuScene extends Scene {
 		g.fillRect(paneStartX + (int) (paneWidth - currentMenuHighlighterWidth - 60) / 2,
 				(int) (sceneHeight - fontHeight) / 2, (int) currentMenuHighlighterWidth + 60, (int) fontHeight);
 
-		for (int i = 0; i < level1MenuItem.length; i++) {
+		for (int i = 0; i < menuItem.length; i++) {
 			int menuItemTextWidth;
 			if (i == selectingMenu) {
 				g.setColor(ColorSwatch.FOREGROUND);
 				g.setFont(selectedMenuTextFont);
-				menuItemTextWidth = g.getFontMetrics().stringWidth(level1MenuItem[i]);
+				menuItemTextWidth = g.getFontMetrics().stringWidth(menuItem[i]);
 				currentMenuItemWidth = menuItemTextWidth;
 			} else {
 				g.setColor(ColorSwatch.BACKGROUND);
 				g.setFont(menuTextFont);
-				menuItemTextWidth = g.getFontMetrics().stringWidth(level1MenuItem[i]);
+				menuItemTextWidth = g.getFontMetrics().stringWidth(menuItem[i]);
 			}
-			g.drawString(level1MenuItem[i], paneStartX + (paneWidth - menuItemTextWidth) / 2,
+			g.drawString(menuItem[i], paneStartX + (paneWidth - menuItemTextWidth) / 2,
 					baseFontY + i * (fontHeight + menuItemSpacing));
 		}
 	}
 
 	private void drawTextLogo(Graphics2D g, int sceneWidth, int sceneHeight) {
+		int hiddenShifter = getHiddenShifter(sceneWidth);
+
 		// Draw text
 		FontMetrics centerTextFontMetric = g.getFontMetrics(this.logoTextFont);
 		Rectangle2D centerTextBound = centerTextFontMetric.getStringBounds(Constants.PROGRAM_NAME, g);
 
 		g.setFont(this.logoTextFont);
-		float centerTextX = (float) (sceneWidth - centerTextBound.getWidth()) / 2.0f;
+		float centerTextX = (float) (sceneWidth - centerTextBound.getWidth()) / 2.0f - hiddenShifter;
 		float centerTextY = (float) ((sceneHeight - centerTextBound.getHeight()) / 2.0f
 				+ centerTextFontMetric.getAscent());
 
@@ -125,7 +156,7 @@ public class MainMenuScene extends Scene {
 		}
 
 		if (cumulativeStep > 100 * 120) {
-			centerTextX -= Helper.sineInterpolate(0, sceneWidth / 5, (cumulativeStep - 100 * 120) / (float) (100 * 60));
+			centerTextX -= Helper.sineInterpolate(0, sceneWidth / 5, (cumulativeStep - 100 * 120) / (float) (100 * 45));
 		}
 
 		g.setColor(Helper.blendColor(ColorSwatch.BACKGROUND, ColorSwatch.SHADOW, blendRatio));
@@ -135,7 +166,7 @@ public class MainMenuScene extends Scene {
 		g.drawString(Constants.PROGRAM_NAME, centerTextX, centerTextY);
 
 		g.setColor(ColorSwatch.FOREGROUND);
-		g.setStroke(new BasicStroke(5));
+		g.setStroke(new BasicStroke(5, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND));
 
 		// Draw line
 		if (cumulativeStep > 100 * 30 && cumulativeStep < 100 * 75) {
@@ -176,14 +207,18 @@ public class MainMenuScene extends Scene {
 	}
 
 	@Override
-	public void draw(Graphics2D g, int sceneWidth, int sceneHeight) {
-		// Draw background
-		g.setColor(ColorSwatch.BACKGROUND);
-		g.fillRect(0, 0, sceneWidth, sceneHeight);
+	protected void draw(Graphics2D g, int sceneWidth, int sceneHeight) {
+		if (hiddenShifterStep < hiddenShifterDuration) {
+			drawTextLogo(g, sceneWidth, sceneHeight);
+			drawMenuItem(g, sceneWidth, sceneHeight);
 
-		drawTextLogo(g, sceneWidth, sceneHeight);
-
-		drawMenuItem(g, sceneWidth, sceneHeight);
+			// Draw shifter fade out
+			if (hiddenShifterStep > 0) {
+				g.setColor(
+						Helper.getAlphaColorPercentage(Color.BLACK, hiddenShifterStep * 0.8f / hiddenShifterDuration));
+				g.fillRect(0, 0, sceneWidth, sceneHeight);
+			}
+		}
 	}
 
 }

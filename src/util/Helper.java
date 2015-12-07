@@ -93,11 +93,12 @@ public class Helper {
 		if (easeIn && easeOut) {
 			return (float) Math.sin(Math.PI * t - Math.PI / 2.0f) / 2.0f + 0.5f;
 		} else if (easeIn) {
-			return (float) Math.sin(Math.PI * t - Math.PI / 2.0f) + 1;
+			return (float) Math.sin(Math.PI * t / 2f - Math.PI / 2.0f) + 1;
 		} else if (easeOut) {
 			return (float) Math.sin(Math.PI / 2 * t);
-		} else
+		} else {
 			throw new IllegalArgumentException("Invalid easing values. Cannot be both false.");
+		}
 	}
 
 	/**

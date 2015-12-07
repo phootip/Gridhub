@@ -38,7 +38,7 @@ public class Main {
 
 			// Set initial scene
 
-			SceneManager.getInstance().setNextScene(new scene.WelcomeScreen());
+			SceneManager.getInstance().setNextScene(new scene.mainmenu.MainMenuScene(true));
 
 			// Game looper
 			final long maximumWaitTime = 1000000000 / Constants.MAX_FRAME_PER_SECOND;

@@ -18,28 +18,18 @@ public class TestScene2 extends Scene {
 	private Player player1;
 
 	ArrayList<Block> blocks = new ArrayList<>();
-<<<<<<< .merge_file_a13628
 	ArrayList<FloorSwitch> floorSwitches = new ArrayList<>();
-
-=======
 	
-	
->>>>>>> .merge_file_a16312
 	public TestScene2() {
 		ObjectMap.drawableObjectHashMap = new HashMap<String , IDrawable>();
 		player1 = new Player("Player1");
 		camera = new Camera(player1);
-<<<<<<< .merge_file_a13628
-
-		blocks.add(new Block(0, 2, 0));
-		blocks.add(new Block(2, 0, 0));
 
 		floorSwitches.add(new FloorSwitch(6, 1, 0, false, 5));
 		floorSwitches.add(new FloorSwitch(6, 3, 0, false, 10));
 		floorSwitches.add(new FloorSwitch(6, 5, 0, false, 20));
 		floorSwitches.add(new FloorSwitch(6, 7, 0, true, 10));
 		floorSwitches.add(new FloorSwitch(6, 9, 0, true, 20));
-=======
 		
 //		blocks.add(new Block(0, 2, 0));
 //		blocks.add(new Block(2, 0, 0));	
@@ -68,7 +58,6 @@ public class TestScene2 extends Scene {
 			ObjectMap.drawableObjectHashMap.put(eachBlock.getX() +" "+eachBlock.getY() + " " + eachBlock.getZ(), eachBlock);
 		}
 		ObjectMap.drawableObjectHashMap.put(player1.getCellX()+ " " + player1.getCellY() + " " + player1.getCellZ() + " " + player1.getName(), player1);
->>>>>>> .merge_file_a16312
 	}
 
 	@Override

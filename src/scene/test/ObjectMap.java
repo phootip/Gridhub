@@ -10,7 +10,7 @@ public class ObjectMap {
 	public ObjectMap() {
 	}
 	
-	public ObjectMap getInstace() {
+	public ObjectMap getInstance() {
 		return this;
 	}
 }

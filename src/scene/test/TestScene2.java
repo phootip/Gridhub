@@ -1,6 +1,7 @@
 package scene.test;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
@@ -96,15 +97,17 @@ public class TestScene2 extends Scene {
 
 		// Draw grid line
 
+		int gridSize = 12;
+
 		g.setStroke(new BasicStroke(1));
 		g.setColor(ColorSwatch.SHADOW);
-		for (int i = -9; i <= 10; i++) {
-			Vector2 startPos = camera.getDrawPosition(i - 0.5f, -10 - 0.5f, 0);
-			Vector2 endPos = camera.getDrawPosition(i - 0.5f, 10 + 0.5f, 0);
+		for (int i = -gridSize + 1; i <= gridSize; i++) {
+			Vector2 startPos = camera.getDrawPosition(i - 0.5f, -gridSize - 0.5f, 0);
+			Vector2 endPos = camera.getDrawPosition(i - 0.5f, gridSize + 0.5f, 0);
 			g.draw(new Line2D.Float(startPos.getX(), startPos.getY(), endPos.getX(), endPos.getY()));
 
-			Vector2 startPos2 = camera.getDrawPosition(-10 - 0.5f, i - 0.5f, 0);
-			Vector2 endPos2 = camera.getDrawPosition(10 + 0.5f, i - 0.5f, 0);
+			Vector2 startPos2 = camera.getDrawPosition(-gridSize - 0.5f, i - 0.5f, 0);
+			Vector2 endPos2 = camera.getDrawPosition(gridSize + 0.5f, i - 0.5f, 0);
 			g.draw(new Line2D.Float(startPos2.getX(), startPos2.getY(), endPos2.getX(), endPos2.getY()));
 		}
 		g.setStroke(new BasicStroke(3));
@@ -113,10 +116,10 @@ public class TestScene2 extends Scene {
 		int[] y = new int[4];
 
 		Vector2[] v = new Vector2[4];
-		v[0] = camera.getDrawPosition(-10.5f, -10.5f, 0);
-		v[1] = camera.getDrawPosition(-10.5f, 10.5f, 0);
-		v[2] = camera.getDrawPosition(10.5f, 10.5f, 0);
-		v[3] = camera.getDrawPosition(10.5f, -10.5f, 0);
+		v[0] = camera.getDrawPosition(-gridSize - 0.5f, -gridSize - 0.5f, 0);
+		v[1] = camera.getDrawPosition(-gridSize - 0.5f, gridSize + 0.5f, 0);
+		v[2] = camera.getDrawPosition(gridSize + 0.5f, gridSize + 0.5f, 0);
+		v[3] = camera.getDrawPosition(gridSize + 0.5f, -gridSize - 0.5f, 0);
 
 		for (int k = 0; k < 4; k++) {
 			x[k] = (int) v[k].getX();
@@ -136,6 +139,33 @@ public class TestScene2 extends Scene {
 		 */
 
 		LevelRenderer.draw(ObjectMap.drawableObjectHashMap.values(), g, camera);
+
+		// Drawing slope
+
+		int slopeStartX = 10;
+		int slopeStartY = 10;
+		int slopeStartZ = 0;
+
+		Vector2 startV1 = camera.getDrawPosition(slopeStartX - 0.5f, slopeStartY + 0.5f, slopeStartZ);
+		Vector2 endV1 = camera.getDrawPosition(slopeStartX + 2.5f, slopeStartY + 0.5f, slopeStartZ + 1);
+		Vector2 startV2 = camera.getDrawPosition(slopeStartX - 0.5f, slopeStartY - 0.5f, slopeStartZ);
+		Vector2 endV2 = camera.getDrawPosition(slopeStartX + 2.5f, slopeStartY - 0.5f, slopeStartZ + 1);
+
+		Vector2 mid1 = camera.getDrawPosition(slopeStartX + 2.5f, slopeStartY + 0.5f, slopeStartZ);
+		Vector2 mid2 = camera.getDrawPosition(slopeStartX + 2.5f, slopeStartY - 0.5f, slopeStartZ);
+
+		g.setStroke(new BasicStroke(3));
+		g.setColor(ColorSwatch.FOREGROUND);
+		g.drawLine((int) startV1.getX(), (int) startV1.getY(), (int) endV1.getX(), (int) endV1.getY());
+		g.drawLine((int) startV2.getX(), (int) startV2.getY(), (int) endV2.getX(), (int) endV2.getY());
+		g.drawLine((int) startV1.getX(), (int) startV1.getY(), (int) startV2.getX(), (int) startV2.getY());
+		g.drawLine((int) endV1.getX(), (int) endV1.getY(), (int) endV2.getX(), (int) endV2.getY());
+
+		g.drawLine((int) startV1.getX(), (int) startV1.getY(), (int) mid1.getX(), (int) mid1.getY());
+		g.drawLine((int) startV2.getX(), (int) startV2.getY(), (int) mid2.getX(), (int) mid2.getY());
+		g.drawLine((int) mid1.getX(), (int) mid1.getY(), (int) endV1.getX(), (int) endV1.getY());
+		g.drawLine((int) mid2.getX(), (int) mid2.getY(), (int) endV2.getX(), (int) endV2.getY());
+		g.drawLine((int) mid1.getX(), (int) mid1.getY(), (int) mid2.getX(), (int) mid2.getY());
 	}
 
 }

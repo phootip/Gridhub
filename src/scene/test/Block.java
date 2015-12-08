@@ -3,6 +3,7 @@ package scene.test;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.RenderingHints;
 import java.awt.geom.Line2D;
 
 import com.sun.xml.internal.bind.v2.TODO;
@@ -11,6 +12,8 @@ import core.geom.Vector2;
 import objectInterface.IDrawable;
 import objectInterface.PushableObject;
 import objectInterface.WalkThroughable;
+import util.Constants;
+import util.Helper;
 import util.Constants.ColorSwatch;
 
 class Block implements PushableObject, WalkThroughable {
@@ -76,14 +79,15 @@ class Block implements PushableObject, WalkThroughable {
 			return false;
 		return true;
 	}
-	
+
 	public boolean push(int previousWeight, int diffX, int diffY, int diffZ) {
-		
+
 		if (this.weight + previousWeight > 100)
 			return false;
-		IDrawable nextObjectObstacles = ObjectMap.drawableObjectHashMap.get((x+diffX) + " " + (y+diffY) + " " + (z+diffZ));
+		IDrawable nextObjectObstacles = ObjectMap.drawableObjectHashMap
+				.get((x + diffX) + " " + (y + diffY) + " " + (z + diffZ));
 		if (nextObjectObstacles == null) {
-			ObjectMap.drawableObjectHashMap.put((x+diffX) + " " + (y+diffY) + " " + (z+diffZ), this);
+			ObjectMap.drawableObjectHashMap.put((x + diffX) + " " + (y + diffY) + " " + (z + diffZ), this);
 			ObjectMap.drawableObjectHashMap.remove(x + " " + y + " " + z);
 			this.x += diffX;
 			this.y += diffY;
@@ -92,9 +96,10 @@ class Block implements PushableObject, WalkThroughable {
 
 		} else {
 			if (nextObjectObstacles instanceof PushableObject) {
-				boolean isPushed = ((PushableObject) nextObjectObstacles).push(previousWeight + this.weight, diffX, diffY, diffZ);
-				if(isPushed) {
-					ObjectMap.drawableObjectHashMap.put((x+diffX) + " " + (y+diffY) + " " + (z+diffZ), this);
+				boolean isPushed = ((PushableObject) nextObjectObstacles).push(previousWeight + this.weight, diffX,
+						diffY, diffZ);
+				if (isPushed) {
+					ObjectMap.drawableObjectHashMap.put((x + diffX) + " " + (y + diffY) + " " + (z + diffZ), this);
 					ObjectMap.drawableObjectHashMap.remove(x + " " + y + " " + z);
 					this.x += diffX;
 					this.y += diffY;
@@ -103,6 +108,7 @@ class Block implements PushableObject, WalkThroughable {
 				}
 			}
 		}
+		
 		return false;
 	}
 
@@ -115,6 +121,15 @@ class Block implements PushableObject, WalkThroughable {
 			{ -0.5f, +0.5f } };
 
 	public void draw(Graphics2D g, Camera camera) {
+		
+		float z = 0;
+		
+		if (y == 10) {
+			if (x < 10 - 0.5) z = 0;
+			else if (x > 12.5f) z = 1;
+			else z = Helper.interpolate(0, 1, (x - 9.5f) / 3f);
+		}
+		
 		Vector2[] basis = new Vector2[4];
 		for (int i = 0; i < 4; i++) {
 			basis[i] = camera.getDrawPosition(x + cornerShifter[i][0], y + cornerShifter[i][1], z);
@@ -155,9 +170,11 @@ class Block implements PushableObject, WalkThroughable {
 
 		g.setColor(ColorSwatch.BACKGROUND);
 		g.fillPolygon(new Polygon(outerBorderCoordX, outerBorderCoordY, 6));
+
 		g.setStroke(new BasicStroke(3));
 		g.setColor(ColorSwatch.FOREGROUND);
 		g.drawPolygon(new Polygon(outerBorderCoordX, outerBorderCoordY, 6));
+
 		g.setStroke(new BasicStroke(1));
 		g.draw(new Line2D.Float(innerPoint.getX(), innerPoint.getY(), outerBorder[0].getX(), outerBorder[0].getY()));
 		g.draw(new Line2D.Float(innerPoint.getX(), innerPoint.getY(), outerBorder[2].getX(), outerBorder[2].getY()));

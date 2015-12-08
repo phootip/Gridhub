@@ -3,8 +3,7 @@ package core.geom;
 import java.util.HashMap;
 
 /**
- * The 2-dimensional vector (or 2-tuple) for easier geometry operation. This
- * class support method chaining.
+ * The 2-dimensional vector (or 2-tuple) for easier geometry operation. This class support method chaining.
  * 
  * @author Kasidit Iamthong
  *
@@ -104,8 +103,7 @@ public class Vector2 {
 	}
 
 	/**
-	 * Subtract this vector with specified value. This is equivalent to adding
-	 * by negation of these values.
+	 * Subtract this vector with specified value. This is equivalent to adding by negation of these values.
 	 * 
 	 * @param x
 	 *            the value of x
@@ -118,8 +116,7 @@ public class Vector2 {
 	}
 
 	/**
-	 * Subtract this vector with specified value. This is equivalent to adding
-	 * by negation of these values.
+	 * Subtract this vector with specified value. This is equivalent to adding by negation of these values.
 	 * 
 	 * @param v
 	 *            another vector that its value will be used for subtraction.
@@ -158,8 +155,7 @@ public class Vector2 {
 	}
 
 	/**
-	 * Negate the value of this vector. This is equivalent to multiplying vector
-	 * by -1.
+	 * Negate the value of this vector. This is equivalent to multiplying vector by -1.
 	 * 
 	 * @return This object itself for method chaining.
 	 */
@@ -171,8 +167,7 @@ public class Vector2 {
 	}
 
 	/**
-	 * Rotate this vector 90 degree clockwise. This method is preferred to
-	 * {@code rotate()}, which is slower.
+	 * Rotate this vector 90 degree clockwise. This method is preferred to {@code rotate()}, which is slower.
 	 * 
 	 * @return This object itself for method chaining.
 	 * @see Vector2#rotateCCW
@@ -187,8 +182,7 @@ public class Vector2 {
 	}
 
 	/**
-	 * Rotate this vector 90 degree counterclockwise. This method is preferred
-	 * to {@code rotate()}, which is slower.
+	 * Rotate this vector 90 degree counterclockwise. This method is preferred to {@code rotate()}, which is slower.
 	 * 
 	 * @return This object itself for method chaining.
 	 * @see Vector2#rotateCW
@@ -201,9 +195,9 @@ public class Vector2 {
 
 		return this;
 	}
-	
-	HashMap<Float, Float> sinCache = new HashMap<>();
-	HashMap<Float, Float> cosCache = new HashMap<>();
+
+	private static HashMap<Float, Float> sinCache = new HashMap<>();
+	private static HashMap<Float, Float> cosCache = new HashMap<>();
 
 	/**
 	 * Rotate this vector counterclockwise with the specified degree.
@@ -217,7 +211,7 @@ public class Vector2 {
 	 */
 	public Vector2 rotate(float angle) {
 		float temp = this.x;
-		
+
 		float sinAngle, cosAngle;
 		if (sinCache.containsKey(angle)) {
 			sinAngle = sinCache.get(angle);
@@ -228,7 +222,7 @@ public class Vector2 {
 			sinCache.put(angle, sinAngle);
 			cosCache.put(angle, cosAngle);
 		}
-		
+
 		this.x = (float) (Math.cos(angle) * temp - Math.sin(angle) * this.y);
 		this.y = (float) (Math.sin(angle) * temp + Math.cos(angle) * this.y);
 

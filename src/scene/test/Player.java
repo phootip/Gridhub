@@ -323,6 +323,12 @@ class Player implements IDrawable {
 				ballDiffY = y - ballDiffY;
 			}
 		}
+		
+		if (y == 10) {
+			if (x < 10 - 0.5) z = 0;
+			else if (x > 12.5f) z = 1;
+			else z = Helper.interpolate(0, 1, (x - 9.5f) / 3f);
+		}
 
 		updateTrail(ballDiffX, ballDiffY);
 	}

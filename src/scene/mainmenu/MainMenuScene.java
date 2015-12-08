@@ -13,6 +13,11 @@ public class MainMenuScene extends Scene {
 	private MainMenuPage currentPage;
 
 	private TopMainMenuPage topMainMenuPage;
+	
+	private OnePlayerPage onePlayerPage;
+	private TwoPlayerPage twoPlayerPage;
+	private LevelEditorPage levelEditorPage;
+	private OptionPage optionPage;
 	private AboutPage aboutPage;
 
 	public MainMenuScene(boolean showWelcomeScreenAnimation) {
@@ -24,15 +29,24 @@ public class MainMenuScene extends Scene {
 		}
 		topMainMenuPage.setVisible(true);
 
+		onePlayerPage = new OnePlayerPage(this);
+		twoPlayerPage = new TwoPlayerPage(this);
+		levelEditorPage = new LevelEditorPage(this);
+		optionPage = new OptionPage(this);
 		aboutPage = new AboutPage(this);
 
 		// -----
 		// Add pages to page list for easier updating and rendering
 		// -----
-		// Add top menu the first one, so the rendering will be behind the others
+		// Add top menu the first one, so the rendering will be behind the
+		// others
 		pageList.add(topMainMenuPage);
+		pageList.add(onePlayerPage);
+		pageList.add(twoPlayerPage);
+		pageList.add(levelEditorPage);
+		pageList.add(optionPage);
 		pageList.add(aboutPage);
-		
+
 		this.currentPage = topMainMenuPage;
 	}
 
@@ -61,16 +75,28 @@ public class MainMenuScene extends Scene {
 	}
 
 	protected enum PageName {
-		TOP_MAIN_MENU, ABOUT
+		TOP_MAIN_MENU, ONE_PLAYER, TWO_PLAYER, LEVEL_EDITOR, OPTION, ABOUT
 	}
 
 	protected void setPage(PageName pageName) {
 		switch (pageName) {
-		case ABOUT:
-			setPage(aboutPage);
-			break;
 		case TOP_MAIN_MENU:
 			setPage(topMainMenuPage);
+			break;
+		case ONE_PLAYER:
+			setPage(onePlayerPage);
+			break;
+		case TWO_PLAYER:
+			setPage(twoPlayerPage);
+			break;
+		case LEVEL_EDITOR:
+			setPage(levelEditorPage);
+			break;
+		case OPTION:
+			setPage(optionPage);
+			break;
+		case ABOUT:
+			setPage(aboutPage);
 			break;
 		default:
 			throw new IllegalArgumentException("Invalid page name.");

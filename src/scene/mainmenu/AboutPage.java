@@ -12,20 +12,11 @@ import util.Resource;
 
 class AboutPage extends MainMenuPage {
 
-	Font nameFont = Resource.getInstance().getDefaultFont(60, FontWeight.REGULAR);
-	Font idFont = Resource.getInstance().getDefaultFont(40, FontWeight.BOOK);
+	private Font nameFont = Resource.getInstance().getDefaultFont(60, FontWeight.REGULAR);
+	private Font idFont = Resource.getInstance().getDefaultFont(40, FontWeight.BOOK);
 
 	public AboutPage(MainMenuScene parent) {
 		super(parent);
-	}
-
-	@Override
-	protected void update(int step) {
-		super.update(step);
-
-		if (this.isVisible && InputManager.getInstance().isKeyTriggering(KeyEvent.VK_ESCAPE)) {
-			this.parent.setPage(PageName.TOP_MAIN_MENU);
-		}
 	}
 
 	@Override
@@ -52,6 +43,11 @@ class AboutPage extends MainMenuPage {
 		g.setFont(idFont);
 		currentY += g.getFontMetrics().getAscent() + 20;
 		g.drawString(id, textX, currentY);
+	}
+
+	@Override
+	protected String getPageName() {
+		return "About Us";
 	}
 
 }

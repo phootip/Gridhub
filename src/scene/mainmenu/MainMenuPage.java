@@ -2,8 +2,11 @@ package scene.mainmenu;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
 
+import scene.mainmenu.MainMenuScene.PageName;
 import util.Helper;
+import util.InputManager;
 import util.Resource;
 import util.Constants.ColorSwatch;
 
@@ -12,6 +15,8 @@ abstract class MainMenuPage {
 	protected boolean isVisible;
 	protected MainMenuScene parent;
 	protected Font headerFont;
+
+	protected abstract String getPageName();
 
 	protected MainMenuPage(MainMenuScene parent) {
 		this.parent = parent;
@@ -29,19 +34,29 @@ abstract class MainMenuPage {
 	protected int showStep = 0;
 	protected int showDuration = 100 * 30;
 
-	protected void update(int step) {
+	protected void progressShowAnimation(int step) {
 		if (this.isVisible) {
 			showStep += step;
 			if (showStep > showDuration) {
 				showStep = showDuration;
 			}
-
 		} else {
 			showStep -= step;
 			if (showStep < 0) {
 				showStep = 0;
 			}
 		}
+	}
+
+	protected void checkForPageExit() {
+		if (this.isVisible && InputManager.getInstance().isKeyTriggering(KeyEvent.VK_ESCAPE)) {
+			this.parent.setPage(PageName.TOP_MAIN_MENU);
+		}
+	}
+
+	protected void update(int step) {
+		progressShowAnimation(step);
+		checkForPageExit();
 	}
 
 	protected int getShiftDistance(int sceneWidth) {
@@ -57,6 +72,9 @@ abstract class MainMenuPage {
 	}
 
 	private void drawHeader(Graphics2D g, int sceneWidth, String pageName) {
+		if (pageName == null)
+			return;
+
 		g.setFont(this.headerFont);
 		int headerX = getShiftDistance(sceneWidth) + 100;
 		int headerY = 50 + g.getFontMetrics().getAscent();
@@ -69,7 +87,7 @@ abstract class MainMenuPage {
 	protected void draw(Graphics2D g, int sceneWidth, int sceneHeight) {
 		if (this.showStep > 0) {
 			drawShifterBackground(g, sceneWidth, sceneHeight);
-			drawHeader(g, sceneWidth, "About Us");
+			drawHeader(g, sceneWidth, getPageName());
 		}
 	}
 

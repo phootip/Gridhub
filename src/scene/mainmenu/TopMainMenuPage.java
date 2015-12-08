@@ -46,8 +46,22 @@ public class TopMainMenuPage extends MainMenuPage {
 			if (cumulativeStep > 100 * 165) {
 				cumulativeStep = 100 * 165;
 				if (this.isVisible && InputManager.getInstance().isKeyTriggering(KeyEvent.VK_ENTER)) {
-					if (selectingMenu == 4) {
+					switch (selectingMenu) {
+					case 0:
+						this.parent.setPage(MainMenuScene.PageName.ONE_PLAYER);
+						break;
+					case 1:
+						this.parent.setPage(MainMenuScene.PageName.TWO_PLAYER);
+						break;
+					case 2:
+						this.parent.setPage(MainMenuScene.PageName.LEVEL_EDITOR);
+						break;
+					case 3:
+						this.parent.setPage(MainMenuScene.PageName.OPTION);
+						break;
+					case 4:
 						this.parent.setPage(MainMenuScene.PageName.ABOUT);
+						break;
 					}
 				}
 			}
@@ -219,6 +233,11 @@ public class TopMainMenuPage extends MainMenuPage {
 				g.fillRect(0, 0, sceneWidth, sceneHeight);
 			}
 		}
+	}
+
+	@Override
+	protected String getPageName() {
+		return null;
 	}
 
 }

@@ -14,7 +14,9 @@ import core.geom.Vector3;
 import objectInterface.IDrawable;
 import objectInterface.PushableObject;
 import objectInterface.WalkThroughable;
+import util.Constants;
 import util.Constants.ColorSwatch;
+import util.Constants.PlayerSettings;
 import util.Helper;
 import util.InputManager;
 
@@ -73,9 +75,17 @@ class Player implements IDrawable {
 		return name;
 	}
 
-	public Player(String name) {
+	private int playerId;
+
+	protected int getPlayerId() {
+		return playerId;
+	}
+
+	public Player(int playerId) {
 		x = y = z = cellX = cellY = cellZ = oldCellX = oldCellY = oldCellZ = nextCellX = nextCellY = nextCellZ = 0;
-		this.name = name;
+		this.playerId = playerId;
+
+		this.name = "Player" + playerId;
 		// Create initial trail dots
 		float rotationX = 1.234f;
 		float rotationY = 2.345f;
@@ -137,16 +147,16 @@ class Player implements IDrawable {
 			int yDir = 0;
 			int xDir = 0;
 
-			if (InputManager.getInstance().isKeyPressing(KeyEvent.VK_UP)) {
+			if (InputManager.getInstance().isKeyPressing(PlayerSettings.getUpKey(playerId))) {
 				yDir--;
 			}
-			if (InputManager.getInstance().isKeyPressing(KeyEvent.VK_DOWN)) {
+			if (InputManager.getInstance().isKeyPressing(PlayerSettings.getDownKey(playerId))) {
 				yDir++;
 			}
-			if (InputManager.getInstance().isKeyPressing(KeyEvent.VK_LEFT)) {
+			if (InputManager.getInstance().isKeyPressing(PlayerSettings.getLeftKey(playerId))) {
 				xDir--;
 			}
-			if (InputManager.getInstance().isKeyPressing(KeyEvent.VK_RIGHT)) {
+			if (InputManager.getInstance().isKeyPressing(PlayerSettings.getRightKey(playerId))) {
 				xDir++;
 			}
 
@@ -154,22 +164,22 @@ class Player implements IDrawable {
 				isMoving = true;
 				isMoveFast = InputManager.getInstance().isKeyPressing(KeyEvent.VK_SHIFT);
 				switch (cameraDirection) {
-				case 0:
-					nextCellX += xDir;
-					nextCellY += yDir;
-					break;
-				case 1:
-					nextCellX += yDir;
-					nextCellY -= xDir;
-					break;
-				case 2:
-					nextCellX -= xDir;
-					nextCellY -= yDir;
-					break;
-				case 3:
-					nextCellX -= yDir;
-					nextCellY += xDir;
-					break;
+					case 0:
+						nextCellX += xDir;
+						nextCellY += yDir;
+						break;
+					case 1:
+						nextCellX += yDir;
+						nextCellY -= xDir;
+						break;
+					case 2:
+						nextCellX -= xDir;
+						nextCellY -= yDir;
+						break;
+					case 3:
+						nextCellX -= yDir;
+						nextCellY += xDir;
+						break;
 				}
 			}
 
@@ -329,10 +339,11 @@ class Player implements IDrawable {
 				ballRadius * 2));
 
 		// Draw trail
+		Color baseColor = PlayerSettings.getPlayerColor(playerId);
 		Stroke mainTrailStroke = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-		Color mainTrailColor = new Color(0xFF, 0x00, 0x00, 150);
+		Color mainTrailColor = Helper.getAlphaColor(baseColor, 150);
 		Stroke glowTrailStroke = new BasicStroke(8, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-		Color glowTrailColor = new Color(0xFF, 0x00, 0x00, 75);
+		Color glowTrailColor = Helper.getAlphaColor(baseColor, 75);
 		for (int i = 0; i < shiftedTrailPosition.size(); i++) {
 
 			int n = shiftedTrailPosition.get(i).size();
@@ -390,7 +401,7 @@ class Player implements IDrawable {
 		// Draw a ball
 
 		g.setStroke(new BasicStroke(9));
-		g.setColor(new Color(0xFF, 0, 0, 128));
+		g.setColor(Helper.getAlphaColor(baseColor, 128));
 		g.draw(new Ellipse2D.Float(ballCenter.getX() - ballRadius, ballCenter.getY() - ballRadius, ballRadius * 2,
 				ballRadius * 2));
 		g.setStroke(new BasicStroke(3));

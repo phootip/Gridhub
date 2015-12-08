@@ -16,13 +16,15 @@ public class TestScene2 extends Scene {
 
 	private Camera camera;
 	private Player player1;
+	private Player player2;
 
 	ArrayList<Block> blocks = new ArrayList<>();
 	ArrayList<FloorSwitch> floorSwitches = new ArrayList<>();
-	
+
 	public TestScene2() {
-		ObjectMap.drawableObjectHashMap = new HashMap<String , IDrawable>();
-		player1 = new Player("Player1");
+		ObjectMap.drawableObjectHashMap = new HashMap<String, IDrawable>();
+		player1 = new Player(1);
+		player2 = new Player(2);
 		camera = new Camera(player1);
 
 		floorSwitches.add(new FloorSwitch(6, 1, 0, false, 5));
@@ -30,35 +32,38 @@ public class TestScene2 extends Scene {
 		floorSwitches.add(new FloorSwitch(6, 5, 0, false, 20));
 		floorSwitches.add(new FloorSwitch(6, 7, 0, true, 10));
 		floorSwitches.add(new FloorSwitch(6, 9, 0, true, 20));
-		
-//		blocks.add(new Block(0, 2, 0));
-//		blocks.add(new Block(2, 0, 0));	
-//		blocks.add(new Block(-9, 2, 0, 110, true));
-//		blocks.add(new Block(-10, 3, 0, 110, true));
-//		
-//		blocks.add(new Block(-2, 3, 0, 20, false));
-//		blocks.add(new Block(-2, 2, 1, 20, true));
-//		blocks.add(new Block(-2, 1, 0, 20, true));
-//		blocks.add(new Block(-2, 0, 2, 20, true));
-//		blocks.add(new Block(-2, -1, 0, 20, true));
-//		blocks.add(new Block(-1, -2, 1, 20, true));
-//		blocks.add(new Block(0, -3 ,0, 20, true));
-//		blocks.add(new Block(1, -2, 2, 20, true));
-//		blocks.add(new Block(2, -1, 0, 20, true));
-//		blocks.add(new Block(2, 0, 1, 20, true));
-//		blocks.add(new Block(2, 1, 0, 20, true));
-//		blocks.add(new Block(2, 2, 3, 20, true));
+
+		// blocks.add(new Block(0, 2, 0));
+		// blocks.add(new Block(2, 0, 0));
+		// blocks.add(new Block(-9, 2, 0, 110, true));
+		// blocks.add(new Block(-10, 3, 0, 110, true));
+		//
+		// blocks.add(new Block(-2, 3, 0, 20, false));
+		// blocks.add(new Block(-2, 2, 1, 20, true));
+		// blocks.add(new Block(-2, 1, 0, 20, true));
+		// blocks.add(new Block(-2, 0, 2, 20, true));
+		// blocks.add(new Block(-2, -1, 0, 20, true));
+		// blocks.add(new Block(-1, -2, 1, 20, true));
+		// blocks.add(new Block(0, -3 ,0, 20, true));
+		// blocks.add(new Block(1, -2, 2, 20, true));
+		// blocks.add(new Block(2, -1, 0, 20, true));
+		// blocks.add(new Block(2, 0, 1, 20, true));
+		// blocks.add(new Block(2, 1, 0, 20, true));
+		// blocks.add(new Block(2, 2, 3, 20, true));
 		blocks.add(new Block(2, 3, 0, 20, true));
 		blocks.add(new Block(2, 3, 1, 20, true));
-		
-//		blocks.add(new Block(-1, 1, 0, 110, true));
-//		blocks.add(new Block(0, 1, 0, 110, true));
-//		blocks.add(new Block(1, 1, 0, 110, true));
-		
-		for(Block eachBlock : blocks) {
-			ObjectMap.drawableObjectHashMap.put(eachBlock.getX() +" "+eachBlock.getY() + " " + eachBlock.getZ(), eachBlock);
+
+		// blocks.add(new Block(-1, 1, 0, 110, true));
+		// blocks.add(new Block(0, 1, 0, 110, true));
+		// blocks.add(new Block(1, 1, 0, 110, true));
+
+		for (Block eachBlock : blocks) {
+			ObjectMap.drawableObjectHashMap.put(eachBlock.getX() + " " + eachBlock.getY() + " " + eachBlock.getZ(),
+					eachBlock);
 		}
-		ObjectMap.drawableObjectHashMap.put(player1.getCellX()+ " " + player1.getCellY() + " " + player1.getCellZ() + " " + player1.getName(), player1);
+		ObjectMap.drawableObjectHashMap.put(
+				player1.getCellX() + " " + player1.getCellY() + " " + player1.getCellZ() + " " + player1.getName(),
+				player1);
 	}
 
 	@Override
@@ -66,7 +71,8 @@ public class TestScene2 extends Scene {
 
 		camera.update(step);
 		player1.update(step, camera.getRotation());
-		
+		player2.update(step, camera.getRotation());
+
 		for (FloorSwitch fs : floorSwitches) {
 			fs.update(step, player1);
 		}
@@ -121,11 +127,12 @@ public class TestScene2 extends Scene {
 		// Draw things
 
 		player1.draw(g, camera);
+		player2.draw(g, camera);
 
 		for (Block b : blocks) {
 			b.draw(g, camera);
 		}
-		
+
 		for (FloorSwitch fs : floorSwitches) {
 			fs.draw(g, camera);
 		}

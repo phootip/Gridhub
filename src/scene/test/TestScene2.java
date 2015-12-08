@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import core.geom.Vector2;
+import core.renderer.LevelRenderer;
 import objectInterface.IDrawable;
 import scene.core.Scene;
 import util.Resource;
@@ -126,16 +127,15 @@ public class TestScene2 extends Scene {
 
 		// Draw things
 
-		player1.draw(g, camera);
-		player2.draw(g, camera);
+		/*
+		 * player1.draw(g, camera); player2.draw(g, camera);
+		 * 
+		 * for (Block b : blocks) { b.draw(g, camera); }
+		 * 
+		 * for (FloorSwitch fs : floorSwitches) { fs.draw(g, camera); }
+		 */
 
-		for (Block b : blocks) {
-			b.draw(g, camera);
-		}
-
-		for (FloorSwitch fs : floorSwitches) {
-			fs.draw(g, camera);
-		}
+		LevelRenderer.draw(ObjectMap.drawableObjectHashMap.values(), g, camera);
 	}
 
 }

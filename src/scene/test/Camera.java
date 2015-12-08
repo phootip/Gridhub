@@ -7,7 +7,7 @@ import core.geom.Vector3;
 import util.Helper;
 import util.InputManager;
 
-class Camera {
+public class Camera {
 	private float zoomFactor = 50;
 
 	private float centerX;
@@ -34,12 +34,17 @@ class Camera {
 	private int oldRotation = 0;
 	private float shiftedAngle = 0.1f;
 	private float rotationAngle = shiftedAngle;
+
 	private boolean isRotating = false;
 	private int rotationFrame = 0;
 	private final int rotationDuration = 100 * 30;
 
 	protected int getRotation() {
 		return rotation;
+	}
+	
+	public float getRotationAngle() {
+		return rotationAngle;
 	}
 
 	public void update(int step) {

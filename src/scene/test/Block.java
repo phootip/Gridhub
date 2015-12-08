@@ -20,15 +20,30 @@ class Block implements PushableObject, WalkThroughable {
 	private int x, y, z, nextX, nextY, nextZ, weight;
 	private boolean isWalkThroughable;
 
-	protected int getX() {
+	public int getX() {
 		return x;
 	}
 
-	protected int getY() {
+	public int getY() {
 		return y;
 	}
 
-	protected int getZ() {
+	public int getZ() {
+		return z;
+	}
+
+	@Override
+	public int getCellX() {
+		return x;
+	}
+
+	@Override
+	public int getCellY() {
+		return y;
+	}
+
+	@Override
+	public int getCellZ() {
 		return z;
 	}
 
@@ -99,7 +114,7 @@ class Block implements PushableObject, WalkThroughable {
 	private final float[][] cornerShifter = new float[][] { { -0.5f, -0.5f }, { +0.5f, -0.5f }, { +0.5f, +0.5f },
 			{ -0.5f, +0.5f } };
 
-	protected void draw(Graphics2D g, Camera camera) {
+	public void draw(Graphics2D g, Camera camera) {
 		Vector2[] basis = new Vector2[4];
 		for (int i = 0; i < 4; i++) {
 			basis[i] = camera.getDrawPosition(x + cornerShifter[i][0], y + cornerShifter[i][1], z);

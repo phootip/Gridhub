@@ -13,8 +13,6 @@ import core.geom.Vector2;
 import core.geom.Vector3;
 import objectInterface.IDrawable;
 import objectInterface.PushableObject;
-import objectInterface.WalkThroughable;
-import util.Constants;
 import util.Constants.ColorSwatch;
 import util.Constants.PlayerSettings;
 import util.Helper;
@@ -59,15 +57,15 @@ class Player implements IDrawable {
 		return z;
 	}
 
-	protected int getCellX() {
+	public int getCellX() {
 		return cellX;
 	}
 
-	protected int getCellY() {
+	public int getCellY() {
 		return cellY;
 	}
 
-	protected int getCellZ() {
+	public int getCellZ() {
 		return cellZ;
 	}
 

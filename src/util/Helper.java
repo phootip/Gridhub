@@ -2,8 +2,8 @@ package util;
 
 import java.awt.Color;
 
-import geom.Vector2;
-import geom.Vector3;
+import core.geom.Vector2;
+import core.geom.Vector3;
 
 /**
  * Helper class contains helper method, such as interpolation and color
@@ -34,8 +34,8 @@ public class Helper {
 	 * 
 	 * @param baseColor
 	 *            the base color
-	 * @param alpha
-	 *            the alpha value ranged from 0.0 to 1.0
+	 * @param alphaRatio
+	 *            the alpha ratio value ranged from 0.0 to 1.0
 	 * @return {@link Color} object.
 	 */
 	public static Color getAlphaColorPercentage(Color baseColor, double alphaRatio) {
@@ -53,7 +53,7 @@ public class Helper {
 	 *            the second {@link Color}
 	 * @param blendRatio
 	 *            the ratio of mixing ranged from 0.0 to 1.0, inclusive. Value
-	 *            towards 0.0 gives more weight to first {@Color}, and vice
+	 *            towards 0.0 gives more weight to first color, and vice
 	 *            versa.
 	 * @return A blended {@code Color} object.
 	 * @throws IllegalArgumentException

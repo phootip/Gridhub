@@ -1,13 +1,18 @@
 package core;
 
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import util.Constants;
+import util.Constants.ColorSwatch;
 import util.InputManager;
 import util.Resource;
 
 public class Main {
+
 	public static void main(String[] args) {
 
 		if (Resource.getInstance().initialize()) {
@@ -15,8 +20,29 @@ public class Main {
 			// Create JFrame
 			JFrame frame = new JFrame(Constants.PROGRAM_NAME);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			// TODO: Let the window resizable, and update the canvas size instead
-			frame.setResizable(false);
+
+			//frame.setResizable(false);
+			frame.setMinimumSize(Constants.MINIMUM_WINDOW_SIZE);
+			frame.getContentPane().addComponentListener(new ComponentListener() {
+
+				@Override
+				public void componentShown(ComponentEvent arg0) {
+				}
+
+				@Override
+				public void componentResized(ComponentEvent arg0) {
+					DrawManager.getInstance().setCanvasSize(frame.getContentPane().getWidth(),
+							frame.getContentPane().getHeight());
+				}
+
+				@Override
+				public void componentMoved(ComponentEvent arg0) {
+				}
+
+				@Override
+				public void componentHidden(ComponentEvent arg0) {
+				}
+			});
 
 			if (Constants.IS_FULLSCREEN) {
 				frame.setUndecorated(true);
@@ -25,16 +51,16 @@ public class Main {
 				frame.getContentPane().setPreferredSize(Constants.DEFAULT_SCREEN_SIZE);
 				frame.pack();
 			}
-			
+
 			InputManager.setListenerTo(frame);
+
+			frame.getContentPane().setBackground(ColorSwatch.BACKGROUND);
+			frame.setVisible(true);
 
 			// Add canvas to the frame
 			DrawManager.getInstance().addCanvasInto(frame);
 			DrawManager.getInstance().setCanvasSize(frame.getContentPane().getWidth(),
 					frame.getContentPane().getHeight());
-
-			frame.setBackground(java.awt.Color.BLACK);
-			frame.setVisible(true);
 
 			// Set initial scene
 

@@ -6,7 +6,7 @@ import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import geom.Vector2;
+import core.geom.Vector2;
 import objectInterface.IDrawable;
 import scene.core.Scene;
 import util.Resource;

@@ -6,7 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 
-import geom.Vector2;
+import core.geom.Vector2;
 import util.Helper;
 
 public class FloorSwitch {

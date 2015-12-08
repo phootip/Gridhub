@@ -13,10 +13,10 @@ public final class Constants {
 
 	/**
 	 * The size of the game screen, excluding the window border. This is used
-	 * when {@code IS_FULLSCREEN} is false.
+	 * when {@link #IS_FULLSCREEN} is false.
 	 */
 	public static final Dimension DEFAULT_SCREEN_SIZE = new Dimension(1600, 900);
-	
+
 	/**
 	 * Determines whether the FPS monitor should be shown.
 	 */
@@ -26,6 +26,12 @@ public final class Constants {
 	 * The maximum frame per second of game looping.
 	 */
 	public static int MAX_FRAME_PER_SECOND = 60;
+
+	/**
+	 * The minimum size of the game screen, including the window border. This is
+	 * used when {@link #IS_FULLSCREEN} is false.
+	 */
+	public static final Dimension MINIMUM_WINDOW_SIZE = new Dimension(1366, 768);
 
 	public final static class ColorSwatch {
 		public static final Color BACKGROUND = new Color(25, 38, 69);

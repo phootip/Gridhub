@@ -2,8 +2,8 @@ package scene.test;
 
 import com.sun.glass.events.KeyEvent;
 
-import geom.Vector2;
-import geom.Vector3;
+import core.geom.Vector2;
+import core.geom.Vector3;
 import util.Helper;
 import util.InputManager;
 

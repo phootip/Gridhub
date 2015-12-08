@@ -59,7 +59,7 @@ abstract class MainMenuPage {
 	private void drawHeader(Graphics2D g, int sceneWidth, String pageName) {
 		g.setFont(this.headerFont);
 		int headerX = getShiftDistance(sceneWidth) + 100;
-		int headerY = 30 + g.getFontMetrics().getAscent();
+		int headerY = 50 + g.getFontMetrics().getAscent();
 		g.setColor(ColorSwatch.SHADOW);
 		g.drawString(pageName, headerX + 5, headerY + 5);
 		g.setColor(ColorSwatch.FOREGROUND);

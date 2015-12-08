@@ -7,7 +7,7 @@ import java.awt.geom.Line2D;
 
 import com.sun.xml.internal.bind.v2.TODO;
 
-import geom.Vector2;
+import core.geom.Vector2;
 import objectInterface.IDrawable;
 import objectInterface.PushableObject;
 import objectInterface.WalkThroughable;

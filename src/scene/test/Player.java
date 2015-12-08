@@ -9,8 +9,8 @@ import java.util.ArrayList;
 
 import com.sun.glass.events.KeyEvent;
 
-import geom.Vector2;
-import geom.Vector3;
+import core.geom.Vector2;
+import core.geom.Vector3;
 import objectInterface.IDrawable;
 import objectInterface.PushableObject;
 import objectInterface.WalkThroughable;

@@ -36,23 +36,24 @@ public class TestScene2 extends Scene {
 //		blocks.add(new Block(-9, 2, 0, 110, true));
 //		blocks.add(new Block(-10, 3, 0, 110, true));
 //		
-		blocks.add(new Block(-2, 3, 0, 20, false));
-		blocks.add(new Block(-2, 2, 0, 20, true));
-		blocks.add(new Block(-2, 1, 0, 20, true));
-		blocks.add(new Block(-2, 0, 0, 20, true));
-		blocks.add(new Block(-2, -1, 0, 20, true));
-		blocks.add(new Block(-1, -2, 0, 20, true));
-		blocks.add(new Block(0, -3 ,0, 20, true));
-		blocks.add(new Block(1, -2, 0, 20, true));
-		blocks.add(new Block(2, -1, 0, 20, true));
-		blocks.add(new Block(2, 0, 0, 20, true));
-		blocks.add(new Block(2, 1, 0, 20, true));
-		blocks.add(new Block(2, 2, 0, 20, true));
+//		blocks.add(new Block(-2, 3, 0, 20, false));
+//		blocks.add(new Block(-2, 2, 1, 20, true));
+//		blocks.add(new Block(-2, 1, 0, 20, true));
+//		blocks.add(new Block(-2, 0, 2, 20, true));
+//		blocks.add(new Block(-2, -1, 0, 20, true));
+//		blocks.add(new Block(-1, -2, 1, 20, true));
+//		blocks.add(new Block(0, -3 ,0, 20, true));
+//		blocks.add(new Block(1, -2, 2, 20, true));
+//		blocks.add(new Block(2, -1, 0, 20, true));
+//		blocks.add(new Block(2, 0, 1, 20, true));
+//		blocks.add(new Block(2, 1, 0, 20, true));
+//		blocks.add(new Block(2, 2, 3, 20, true));
 		blocks.add(new Block(2, 3, 0, 20, true));
+		blocks.add(new Block(2, 3, 1, 20, true));
 		
-		blocks.add(new Block(-1, 1, 0, 110, true));
-		blocks.add(new Block(0, 1, 0, 110, true));
-		blocks.add(new Block(1, 1, 0, 110, true));
+//		blocks.add(new Block(-1, 1, 0, 110, true));
+//		blocks.add(new Block(0, 1, 0, 110, true));
+//		blocks.add(new Block(1, 1, 0, 110, true));
 		
 		for(Block eachBlock : blocks) {
 			ObjectMap.drawableObjectHashMap.put(eachBlock.getX() +" "+eachBlock.getY() + " " + eachBlock.getZ(), eachBlock);

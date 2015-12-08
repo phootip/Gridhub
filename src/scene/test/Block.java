@@ -15,7 +15,7 @@ import util.Constants.ColorSwatch;
 
 class Block implements PushableObject, WalkThroughable {
 
-	protected static final float BLOCK_HEIGHT = 0.75f;
+	protected static final float BLOCK_HEIGHT = 1.0f;
 
 	private int x, y, z, nextX, nextY, nextZ, weight;
 	private boolean isWalkThroughable;

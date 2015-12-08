@@ -81,10 +81,11 @@ class Camera {
 		}
 	}
 
-	private final float yFactor = 2f;
+	private final float yFactor = 0.5f;
+	private final float zFactor = 1.0f;
 
 	public Vector2 getDrawPosition(float x, float y, float z) {
-		return new Vector2(x - centerX, y - centerY).rotate(rotationAngle).multiply(zoomFactor, zoomFactor / yFactor)
+		return new Vector2(x - centerX, y - centerY).rotate(rotationAngle).multiply(zoomFactor, zoomFactor * yFactor)
 				.add(sceneWidth / 2f, sceneHeight / 2f - getDrawSizeZ(z));
 	}
 
@@ -105,11 +106,11 @@ class Camera {
 	}
 
 	public float getDrawSizeY(float size) {
-		return size * zoomFactor / yFactor;
+		return size * zoomFactor * yFactor;
 	}
 
 	public float getDrawSizeZ(float size) {
-		return size * zoomFactor;
+		return size * zoomFactor * zFactor;
 	}
 
 	public void setSceneSize(int width, int height) {

@@ -102,8 +102,10 @@ class Player implements IDrawable {
 	}
 
 	private boolean isMoving = false;
-	int walkStep = 0;
-	final int walkDuration = 1000;
+	private int walkStep = 0;
+	private boolean isMoveFast = false;
+	final int walkDurationSlow = 100 * 10;
+	final int walkDurationFast = 100 * 5;
 
 	private void updateTrail(float diffX, float diffY) {
 
@@ -150,6 +152,7 @@ class Player implements IDrawable {
 
 			if (xDir != 0 || yDir != 0) {
 				isMoving = true;
+				isMoveFast = InputManager.getInstance().isKeyPressing(KeyEvent.VK_SHIFT);
 				switch (cameraDirection) {
 				case 0:
 					nextCellX += xDir;
@@ -210,7 +213,7 @@ class Player implements IDrawable {
 						// YDirection
 						moveOnlyYandZ();
 					} else if (nextYObstacle != null) {
-						// if there is yObstacle but no xObstacel then move
+						// if there is yObstacle but no xObstacle then move
 						// XDirection
 						moveOnlyXandZ();
 					}
@@ -286,6 +289,7 @@ class Player implements IDrawable {
 
 		{
 			walkStep += step;
+			int walkDuration = isMoveFast ? walkDurationFast : walkDurationSlow;
 
 			if (walkStep >= walkDuration) {
 				walkStep = 0;

@@ -1,21 +1,11 @@
 package scene.mainmenu;
 
-import java.awt.BasicStroke;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.glass.events.KeyEvent;
-
 import scene.core.Scene;
-import util.Resource;
-import util.Constants;
 import util.Constants.ColorSwatch;
-import util.Helper;
-import util.InputManager;
 
 public class MainMenuScene extends Scene {
 

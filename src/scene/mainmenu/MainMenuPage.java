@@ -44,17 +44,21 @@ abstract class MainMenuPage {
 		}
 	}
 
+	protected int getShiftDistance(int sceneWidth) {
+		return (int) Helper.sineInterpolate(sceneWidth, 0, (float) showStep / showDuration);
+	}
+
 	private void drawShifterBackground(Graphics2D g, int sceneWidth, int sceneHeight) {
 		if (this.showStep < this.showDuration) {
 			g.setColor(ColorSwatch.BACKGROUND);
-			int backgroundWidth = (int) Helper.sineInterpolate(0, sceneWidth, (float) showStep / showDuration);
-			g.fillRect(sceneWidth - backgroundWidth, 0, backgroundWidth, sceneHeight);
+			int shiftDistance = getShiftDistance(sceneWidth);
+			g.fillRect(shiftDistance, 0, sceneWidth - shiftDistance, sceneHeight);
 		}
 	}
 
 	private void drawHeader(Graphics2D g, int sceneWidth, String pageName) {
 		g.setFont(this.headerFont);
-		int headerX = (int) Helper.sineInterpolate(sceneWidth, 100, (float) showStep / showDuration);
+		int headerX = getShiftDistance(sceneWidth) + 100;
 		int headerY = 30 + g.getFontMetrics().getAscent();
 		g.setColor(ColorSwatch.SHADOW);
 		g.drawString(pageName, headerX + 5, headerY + 5);

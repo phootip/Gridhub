@@ -42,7 +42,7 @@ public class Camera {
 	protected int getRotation() {
 		return rotation;
 	}
-	
+
 	public float getRotationAngle() {
 		return rotationAngle;
 	}
@@ -88,6 +88,15 @@ public class Camera {
 
 	private final float yFactor = 0.5f;
 	private final float zFactor = 1.0f;
+
+	public Vector2 getRawDrawPosition(float x, float y, float z) {
+		return new Vector2(x, y).rotate(rotationAngle).multiply(zoomFactor, zoomFactor * yFactor).subtract(0,
+				getDrawSizeZ(z));
+	}
+
+	public Vector2 getDrawPosition(float x, float y, float z, boolean isRawDrawPosition) {
+		return isRawDrawPosition ? getRawDrawPosition(x, y, z) : getDrawPosition(x, y, z);
+	}
 
 	public Vector2 getDrawPosition(float x, float y, float z) {
 		return new Vector2(x - centerX, y - centerY).rotate(rotationAngle).multiply(zoomFactor, zoomFactor * yFactor)

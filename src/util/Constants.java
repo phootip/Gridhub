@@ -21,6 +21,11 @@ public final class Constants {
 	 * Determines whether the FPS monitor should be shown.
 	 */
 	public static final boolean SHOW_FPS_MONITOR = true;
+	
+	/**
+	 * Whether or not to cache the drawable things to improve performance.
+	 */
+	public static final boolean CACHE_DRAWABLE = true;
 
 	/**
 	 * The maximum frame per second of game looping.

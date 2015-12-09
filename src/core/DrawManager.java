@@ -10,15 +10,15 @@ import java.awt.Toolkit;
 import java.awt.Transparency;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.awt.image.VolatileImage;
 
 /**
- * This class manage all the core drawing logic. Most code is adapted from
- * http://stackoverflow.com/a/1963684.
+ * This class manage all the core drawing logic. Most code is adapted from http://stackoverflow.com/a/1963684.
  * 
  * @author Kasidit Iamthong
  *
  */
-final class DrawManager {
+final public class DrawManager {
 
 	private static DrawManager instance = new DrawManager();
 
@@ -48,7 +48,7 @@ final class DrawManager {
 	 * @param height
 	 *            the height of the canvas.
 	 */
-	public void setCanvasSize(final int width, final int height) {
+	protected void setCanvasSize(final int width, final int height) {
 		isCanvasSizeSet = true;
 
 		this.canvasWidth = width;
@@ -60,32 +60,39 @@ final class DrawManager {
 	 * 
 	 * @return Whether or not the canvas size has been set.
 	 */
-	public boolean isCanvasSizeSet() {
+	protected boolean isCanvasSizeSet() {
 		return isCanvasSizeSet;
 	}
 
 	/**
 	 * Get the width of the canvas.
 	 * 
-	 * @return An integer representing the width of the canvas, or null if the
-	 *         size has not been set.
+	 * @return An integer representing the width of the canvas, or null if the size has not been set.
 	 */
-	public int getCanvasWidth() {
+	protected int getCanvasWidth() {
 		return canvasWidth;
 	}
 
 	/**
 	 * Get the height of the canvas.
 	 * 
-	 * @return An integer representing the width of the canvas, or null if the
-	 *         size has not been set.
+	 * @return An integer representing the width of the canvas, or null if the size has not been set.
 	 */
-	public int getCanvasHeight() {
+	protected int getCanvasHeight() {
 		return canvasHeight;
 	}
 
 	public BufferedImage createBlankBufferedImage(final int width, final int height, final boolean alpha) {
 		return gConfig.createCompatibleImage(width, height, alpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE);
+	}
+
+	public VolatileImage createVolatileImage(final int width, final int height, final boolean alpha) {
+		VolatileImage vImg = gConfig.createCompatibleVolatileImage(width, height,
+				alpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE);
+		if (vImg.validate(gConfig) == VolatileImage.IMAGE_INCOMPATIBLE) {
+			vImg = this.createVolatileImage(width, height, alpha);
+		}
+		return vImg;
 	}
 
 	/**
@@ -94,7 +101,7 @@ final class DrawManager {
 	 * @param container
 	 *            the container which the canvas will be added into.
 	 */
-	public void addCanvasInto(Container container) {
+	protected void addCanvasInto(Container container) {
 		container.add(canvas);
 
 		// Set a graphic to null, because the graphic must get from strategy.
@@ -134,13 +141,12 @@ final class DrawManager {
 	}
 
 	/**
-	 * Update the canvas to show all the paint operation performed on
-	 * {@code Graphics2D}. Note that updating might be failed, and, in that
-	 * case, user must perform drawing operation then call this function again.
+	 * Update the canvas to show all the paint operation performed on {@code Graphics2D}. Note that updating might be
+	 * failed, and, in that case, user must perform drawing operation then call this function again.
 	 * 
 	 * @return Whether or not canvas updating is successful.
 	 */
-	public boolean updateCanvas() {
+	protected boolean updateCanvas() {
 		graphic.dispose();
 		graphic = null;
 

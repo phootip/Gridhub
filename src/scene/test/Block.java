@@ -1,13 +1,22 @@
 package scene.test;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
+import java.awt.image.VolatileImage;
 
 import com.sun.xml.internal.bind.v2.TODO;
 
+import core.DrawManager;
 import core.geom.Vector2;
 import objectInterface.IDrawable;
 import objectInterface.PushableObject;
@@ -108,7 +117,7 @@ class Block implements PushableObject, WalkThroughable {
 				}
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -117,22 +126,16 @@ class Block implements PushableObject, WalkThroughable {
 		return isWalkThroughable;
 	}
 
-	private final float[][] cornerShifter = new float[][] { { -0.5f, -0.5f }, { +0.5f, -0.5f }, { +0.5f, +0.5f },
+	private static VolatileImage cachedBoxImg;
+	private static int cachedBoxImgSize = 150;
+	private static final float[][] cornerShifter = new float[][] { { -0.5f, -0.5f }, { +0.5f, -0.5f }, { +0.5f, +0.5f },
 			{ -0.5f, +0.5f } };
 
-	public void draw(Graphics2D g, Camera camera) {
-		
-		float z = 0;
-		
-		if (y == 10) {
-			if (x < 10 - 0.5) z = 0;
-			else if (x > 12.5f) z = 1;
-			else z = Helper.interpolate(0, 1, (x - 9.5f) / 3f);
-		}
-		
+	private static void drawBlock(Graphics2D g, Camera camera, float x, float y, float z, boolean isRawDrawPosition) {
+
 		Vector2[] basis = new Vector2[4];
 		for (int i = 0; i < 4; i++) {
-			basis[i] = camera.getDrawPosition(x + cornerShifter[i][0], y + cornerShifter[i][1], z);
+			basis[i] = camera.getDrawPosition(x + cornerShifter[i][0], y + cornerShifter[i][1], z, isRawDrawPosition);
 		}
 
 		int furthestBaseId = 0;
@@ -151,15 +154,15 @@ class Block implements PushableObject, WalkThroughable {
 		outerBorder[0] = basis[(furthestBaseId + 2) % 4];
 		outerBorder[1] = basis[(furthestBaseId + 3) % 4];
 		outerBorder[2] = camera.getDrawPosition(x + cornerShifter[(furthestBaseId + 3) % 4][0],
-				y + cornerShifter[(furthestBaseId + 3) % 4][1], z + BLOCK_HEIGHT);
+				y + cornerShifter[(furthestBaseId + 3) % 4][1], z + BLOCK_HEIGHT, isRawDrawPosition);
 		outerBorder[3] = camera.getDrawPosition(x + cornerShifter[furthestBaseId][0],
-				y + cornerShifter[furthestBaseId][1], z + BLOCK_HEIGHT);
+				y + cornerShifter[furthestBaseId][1], z + BLOCK_HEIGHT, isRawDrawPosition);
 		outerBorder[4] = camera.getDrawPosition(x + cornerShifter[(furthestBaseId + 1) % 4][0],
-				y + cornerShifter[(furthestBaseId + 1) % 4][1], z + BLOCK_HEIGHT);
+				y + cornerShifter[(furthestBaseId + 1) % 4][1], z + BLOCK_HEIGHT, isRawDrawPosition);
 		outerBorder[5] = basis[(furthestBaseId + 1) % 4];
 
 		innerPoint = camera.getDrawPosition(x + cornerShifter[(furthestBaseId + 2) % 4][0],
-				y + cornerShifter[(furthestBaseId + 2) % 4][1], z + BLOCK_HEIGHT);
+				y + cornerShifter[(furthestBaseId + 2) % 4][1], z + BLOCK_HEIGHT, isRawDrawPosition);
 
 		int[] outerBorderCoordX = new int[6];
 		int[] outerBorderCoordY = new int[6];
@@ -176,9 +179,41 @@ class Block implements PushableObject, WalkThroughable {
 		g.drawPolygon(new Polygon(outerBorderCoordX, outerBorderCoordY, 6));
 
 		g.setStroke(new BasicStroke(1));
-		g.draw(new Line2D.Float(innerPoint.getX(), innerPoint.getY(), outerBorder[0].getX(), outerBorder[0].getY()));
-		g.draw(new Line2D.Float(innerPoint.getX(), innerPoint.getY(), outerBorder[2].getX(), outerBorder[2].getY()));
-		g.draw(new Line2D.Float(innerPoint.getX(), innerPoint.getY(), outerBorder[4].getX(), outerBorder[4].getY()));
+		g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[0].getIntX(), outerBorder[0].getIntY());
+		g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[2].getIntX(), outerBorder[2].getIntY());
+		g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[4].getIntX(), outerBorder[4].getIntY());
+	}
+
+	public static void refreshDrawCache(Camera camera) {
+		if (Constants.CACHE_DRAWABLE) {
+			cachedBoxImg = DrawManager.getInstance().createVolatileImage(cachedBoxImgSize, cachedBoxImgSize, true);
+			Graphics2D g = cachedBoxImg.createGraphics();
+
+			g.setComposite(AlphaComposite.Src);
+			g.setColor(new Color(0, 0, 0, 0));
+			g.fillRect(0, 0, cachedBoxImgSize, cachedBoxImgSize); // Clears the image.
+			g.setComposite(AlphaComposite.SrcOver);
+
+			g.setTransform(AffineTransform.getTranslateInstance(cachedBoxImgSize / 2, cachedBoxImgSize / 2));
+			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+			drawBlock(g, camera, 0, 0, 0, true);
+
+			g.dispose();
+		}
+	}
+
+	public void draw(Graphics2D g, Camera camera) {
+
+		if (Constants.CACHE_DRAWABLE) {
+			Vector2 drawPosition = camera.getDrawPosition(x, y, z);
+
+			g.drawImage(cachedBoxImg, drawPosition.getIntX() - cachedBoxImgSize / 2,
+					drawPosition.getIntY() - cachedBoxImgSize / 2, null);
+		} else {
+			drawBlock(g, camera, x, y, z, false);
+		}
+
 	}
 
 }

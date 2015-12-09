@@ -23,8 +23,8 @@ public class Camera {
 	}
 
 	public Camera(Player player) {
-		centerX = player.getX();
-		centerY = player.getY();
+		centerX = (int) player.getX();
+		centerY = (int) player.getY();
 		this.player = player;
 	}
 

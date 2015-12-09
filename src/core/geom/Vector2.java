@@ -23,6 +23,15 @@ public class Vector2 {
 	}
 
 	/**
+	 * Get the value of x of this vector, casted as integer.
+	 * 
+	 * @return The value of x, casted into integer.
+	 */
+	public int getIntX() {
+		return (int) x;
+	}
+
+	/**
 	 * Set the value of x of this vector.
 	 * 
 	 * @param x
@@ -39,6 +48,15 @@ public class Vector2 {
 	 */
 	public float getY() {
 		return y;
+	}
+
+	/**
+	 * Get the value of y of this vector, casted as integer.
+	 * 
+	 * @return The value of y, casted into integer.
+	 */
+	public int getIntY() {
+		return (int) y;
 	}
 
 	/**

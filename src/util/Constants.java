@@ -26,6 +26,15 @@ public final class Constants {
 	 * The maximum frame per second of game looping.
 	 */
 	public static int MAX_FRAME_PER_SECOND = 60;
+	
+	/**
+	 * A unique ID for Player1 
+	 */
+	public static final int PLAYER1_ID =1;
+	/**
+	 * A unique ID for Player2
+	 */
+	public static final int PLAYER2_ID =2;
 
 	/**
 	 * The minimum size of the game screen, including the window border. This is used when {@link #IS_FULLSCREEN} is

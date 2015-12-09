@@ -19,9 +19,10 @@ import util.Constants.ColorSwatch;
 class Block implements PushableObject, WalkThroughable {
 
 	protected static final float BLOCK_HEIGHT = 1.0f;
-
 	private int x, y, z, nextX, nextY, nextZ, weight;
 	private boolean isWalkThroughable;
+	private int[][] floorLevelMap = FloorLevel.getFloorMap();
+	// private boolean isObjectAbove;
 
 	public int getX() {
 		return x;
@@ -75,15 +76,26 @@ class Block implements PushableObject, WalkThroughable {
 	}
 
 	public boolean isPushable() {
-		if (weight >= 100)
+
+		if (weight >= 100 || ObjectMap.drawableObjectHashMap.get(x + " " + y + " " + (z + 1)) != null)
+			return false;
+		if (ObjectMap.drawableObjectHashMap.get(x + " " + y + " " + (z + 1) + " Player" + util.Constants.PLAYER1_ID) != null
+				|| ObjectMap.drawableObjectHashMap
+						.get(x + " " + y + " " + (z + 1) + " Player" + util.Constants.PLAYER2_ID) != null)
 			return false;
 		return true;
 	}
 
 	public boolean push(int previousWeight, int diffX, int diffY, int diffZ) {
 
-		if (this.weight + previousWeight > 100)
+		if (this.weight + previousWeight > 100 || !isPushable())
 			return false;
+		if (ObjectMap.drawableObjectHashMap
+				.get((x + diffX) + " " + (y + diffY) + " " + (z + diffZ) + " Player" + util.Constants.PLAYER1_ID) != null
+				|| ObjectMap.drawableObjectHashMap.get(
+						(x + diffX) + " " + (y + diffY) + " " + (z + diffZ) + " Player" + util.Constants.PLAYER2_ID) != null)
+			return false;
+		
 		IDrawable nextObjectObstacles = ObjectMap.drawableObjectHashMap
 				.get((x + diffX) + " " + (y + diffY) + " " + (z + diffZ));
 		if (nextObjectObstacles == null) {
@@ -108,7 +120,7 @@ class Block implements PushableObject, WalkThroughable {
 				}
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -121,15 +133,18 @@ class Block implements PushableObject, WalkThroughable {
 			{ -0.5f, +0.5f } };
 
 	public void draw(Graphics2D g, Camera camera) {
-		
+
 		float z = 0;
-		
+		// draw when on slope
 		if (y == 10) {
-			if (x < 10 - 0.5) z = 0;
-			else if (x > 12.5f) z = 1;
-			else z = Helper.interpolate(0, 1, (x - 9.5f) / 3f);
+			if (x < 10 - 0.5)
+				z = 0;
+			else if (x > 12.5f)
+				z = 1;
+			else
+				z = Helper.interpolate(0, 1, (x - 9.5f) / 3f);
 		}
-		
+
 		Vector2[] basis = new Vector2[4];
 		for (int i = 0; i < 4; i++) {
 			basis[i] = camera.getDrawPosition(x + cornerShifter[i][0], y + cornerShifter[i][1], z);

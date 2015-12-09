@@ -44,6 +44,8 @@ class Player implements IDrawable {
 
 	private ArrayList<ArrayList<Vector3>> trailPosition;
 	private ArrayList<ArrayList<Vector3>> shiftedTrailPosition;
+	
+	private int[][] floorLevelMap = FloorLevel.getFloorMap();
 
 	protected float getX() {
 		return x;
@@ -79,8 +81,38 @@ class Player implements IDrawable {
 		return playerId;
 	}
 
+	public void setPlayerPosition(int cellX, int cellY, int cellZ) {
+		this.cellX = cellX;
+		this.cellY = cellY;
+		this.cellZ = cellZ;
+		nextCellX = cellX;
+		nextCellY = cellY;
+		nextCellY = cellZ;
+
+	}
+
+	public void setCellX(int x) {
+		cellX = x;
+		nextCellX = x;
+	}
+
+	public void setCellY(int y) {
+		cellY = y;
+		nextCellY = y;
+	}
+
+	public void setCellZ(int z) {
+		cellZ = z;
+		nextCellZ = z;
+	}
+
 	public Player(int playerId) {
 		x = y = z = cellX = cellY = cellZ = oldCellX = oldCellY = oldCellZ = nextCellX = nextCellY = nextCellZ = 0;
+//		if(playerId == 1) {
+//			x = oldCellX = nextCellX = cellX = 2;
+//			y = oldCellY = nextCellY = cellY = 4;
+//			z = oldCellZ = nextCellZ = cellZ = 1;
+//		}
 		this.playerId = playerId;
 
 		this.name = "Player" + playerId;
@@ -183,6 +215,18 @@ class Player implements IDrawable {
 
 		}
 		// check for NextStepCell
+		//first check floor level
+		int floorLevelCellX = cellX+12;
+		int floorLevelCellY = cellY+12;
+		int floorLevelNextCellX = nextCellX +12;
+		int floorLevelNextCellY = nextCellY +12;
+		if(floorLevelMap[floorLevelCellX][floorLevelCellY] != floorLevelMap[floorLevelNextCellX][floorLevelNextCellY]) {
+			//if floor is not equal
+			if(ObjectMap.drawableObjectHashMap.get(nextCellX + " " + nextCellY + " " + nextCellZ) instanceof Slope) {
+				
+			}
+		}
+		
 		IDrawable nextCellObstacle = ObjectMap.drawableObjectHashMap.get(nextCellX + " " + nextCellY + " " + nextCellZ);
 		if (nextCellObstacle == null) {
 			// Action when player move diagonal
@@ -192,7 +236,7 @@ class Player implements IDrawable {
 						.get(nextCellX + " " + cellY + " " + nextCellZ);
 				IDrawable nextYObstacle = ObjectMap.drawableObjectHashMap
 						.get(cellX + " " + nextCellY + " " + nextCellZ);
-
+				
 				if (nextXObstacle != null || nextYObstacle != null) {
 					// if Obstacle is Pushable Object
 					if (nextXObstacle != null && nextYObstacle != null) {
@@ -323,11 +367,14 @@ class Player implements IDrawable {
 				ballDiffY = y - ballDiffY;
 			}
 		}
-		
+
 		if (y == 10) {
-			if (x < 10 - 0.5) z = 0;
-			else if (x > 12.5f) z = 1;
-			else z = Helper.interpolate(0, 1, (x - 9.5f) / 3f);
+			if (x < 10 - 0.5)
+				z = 0;
+			else if (x > 12.5f)
+				z = 1;
+			else
+				z = Helper.interpolate(0, 1, (x - 9.5f) / 3f);
 		}
 
 		updateTrail(ballDiffX, ballDiffY);

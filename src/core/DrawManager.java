@@ -86,6 +86,18 @@ final public class DrawManager {
 		return gConfig.createCompatibleImage(width, height, alpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE);
 	}
 
+	public BufferedImage createBlankBufferedImage(final int width, final int height, final int transparency) {
+		return gConfig.createCompatibleImage(width, height, transparency);
+	}
+
+	public VolatileImage createVolatileImage(final int width, final int height, final int transparency) {
+		VolatileImage vImg = gConfig.createCompatibleVolatileImage(width, height, transparency);
+		if (vImg.validate(gConfig) == VolatileImage.IMAGE_INCOMPATIBLE) {
+			vImg = this.createVolatileImage(width, height, transparency);
+		}
+		return vImg;
+	}
+
 	public VolatileImage createVolatileImage(final int width, final int height, final boolean alpha) {
 		VolatileImage vImg = gConfig.createCompatibleVolatileImage(width, height,
 				alpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE);

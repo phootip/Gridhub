@@ -20,7 +20,7 @@ import util.InputManager;
 
 class Player implements IDrawable {
 
-	protected static float BALL_RADIUS = 0.5f;
+	protected static float BALL_RADIUS = 0.4f;
 	private static float BALL_TRAIL_RADIUS = 0.5f;
 	private static int MAX_TRAIL_LENGTH = 50;
 
@@ -358,19 +358,6 @@ class Player implements IDrawable {
 
 			for (int j = 0; j < shiftedTrailPosition.get(i).size(); j++) {
 
-				// if (trailPosition.get(i).get(j - 1).getY() > 0 ||
-				// trailPosition.get(i).get(j).getY() > 0) {
-				// continue;
-
-				// Vector3 startTrail = new
-				// Vector3(shiftedTrailPosition.get(i).get(j - 1)).subtract(0,
-				// 0, BALL_RADIUS);
-				// Vector3 endTrail = new
-				// Vector3(shiftedTrailPosition.get(i).get(j)).subtract(0, 0,
-				// BALL_RADIUS);
-				// Vector2 startPoint = camera.getDrawPosition(startTrail);
-				// Vector2 endPoint = camera.getDrawPosition(endTrail);
-
 				Vector3 trail = new Vector3(shiftedTrailPosition.get(i).get(j)).add(0, 0, BALL_RADIUS);
 				Vector2 pos = camera.getDrawPosition(trail);
 				xPos[j] = (int) pos.getX();
@@ -378,16 +365,6 @@ class Player implements IDrawable {
 
 				if (j > 0 && (xPos[j] != xPos[j - 1] || yPos[j] != yPos[j - 1]))
 					isStill = false;
-
-				// g.setStroke(mainTrailStroke);
-				// g.setColor(mainTrailColor);
-				// g.draw(new Line2D.Float(startPoint.getX(), startPoint.getY(),
-				// endPoint.getX(), endPoint.getY()));
-				//
-				// g.setStroke(glowTrailStroke);
-				// g.setColor(glowTrailColor);
-				// g.draw(new Line2D.Float(startPoint.getX(), startPoint.getY(),
-				// endPoint.getX(), endPoint.getY()));
 			}
 
 			if (!isStill) {

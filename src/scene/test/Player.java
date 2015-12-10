@@ -224,7 +224,7 @@ class Player implements IDrawable {
 		int floorLevelCellY = cellY + 12;
 		int floorLevelNextCellX = nextCellX + 12;
 		int floorLevelNextCellY = nextCellY + 12;
-
+		System.out.println(isOnSlope);
 		if (FloorLevel.getInstance().isOutOfMap(nextCellX, nextCellY)) {
 			if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
 				// if move diagonal then it can move either y or x
@@ -248,6 +248,7 @@ class Player implements IDrawable {
 				standStill();
 			}
 		} else {
+			// not out of Map
 			// In case floor is not equals
 			if (cellZ != floorLevelMap[floorLevelNextCellX][floorLevelNextCellY]) {
 				// if floor is not equal to current Z
@@ -271,6 +272,7 @@ class Player implements IDrawable {
 							}
 						} else if ((nextCellX - cellX) != 0) {
 							if (slopeNextCell.isAlignX()) {
+								// will change to try push and move
 								moveOnlyXandZ();
 								isOnSlope = true;
 
@@ -380,6 +382,11 @@ class Player implements IDrawable {
 					}
 				}
 			} else {
+				// if the Floorlevel is equal to Z
+				if (isOnSlope)
+					// if player is on slope the only case player move at the same cellZ and floor is when player jump
+					// back from slope entrance to the higher side
+					isOnSlope = false;
 				IDrawable nextCellObstacle = ObjectMap.drawableObjectHashMap
 						.get(nextCellX + " " + nextCellY + " " + nextCellZ);
 
@@ -479,16 +486,34 @@ class Player implements IDrawable {
 						}
 
 					} else {
-						// player push along y or x axis only
-						boolean isPushed = ((PushableObject) nextCellObstacle).push(0, nextCellX - cellX,
-								nextCellY - cellY, nextCellZ - cellZ);
+						if (nextCellObstacle instanceof PushableObject) {
+							// player push along y or x axis only
+							boolean isPushed = ((PushableObject) nextCellObstacle).push(0, nextCellX - cellX,
+									nextCellY - cellY, nextCellZ - cellZ);
 
-						if (isPushed) {
-							moveAllDir();
+							if (isPushed) {
+								moveAllDir();
 
-						} else {
-							standStill();
+							} else {
+								standStill();
+							}
+						} else if (nextCellObstacle instanceof Slope) {
+							// check if isSlopeEntrace
+							Slope nextCellSlope = (Slope) nextCellObstacle;
+							boolean isNextCellEntranceOfSlope = nextCellSlope.isSlopeEntrance(nextCellX, nextCellY);
+							if (isNextCellEntranceOfSlope && nextCellSlope.isAlignX() && nextCellX - cellX != 0) {
+								setCellZ(cellZ+1);
+								moveOnlyXandZ();
+								isOnSlope = true;
+							} else
+								if (isNextCellEntranceOfSlope && nextCellSlope.isAlignY() && nextCellY - cellY != 0) {
+								moveOnlyYandZ();
+								isOnSlope = true;
+							} else {
+								standStill();
+							}
 						}
+
 					}
 
 				}

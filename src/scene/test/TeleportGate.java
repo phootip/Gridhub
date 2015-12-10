@@ -8,7 +8,6 @@ import objectInterface.IWalkOnAble;
 public abstract class TeleportGate implements IDrawable, IWalkOnAble {
 	protected int x, y, z;
 	protected boolean isActive, isAsserted;
-	
 
 	public TeleportGate(int x, int y, int z) {
 		this.x = x;
@@ -23,7 +22,10 @@ public abstract class TeleportGate implements IDrawable, IWalkOnAble {
 	protected int teleportProgress = 0;
 
 	public void update(int step) {
-		
+
+		if (!isObjectAbove()) {
+			isActive = true;
+		}
 		if (isObjectAbove() && isActive) {
 			teleportProgress += step;
 		} else {
@@ -77,7 +79,7 @@ public abstract class TeleportGate implements IDrawable, IWalkOnAble {
 	public void setAsserted(boolean isAsserted) {
 		this.isAsserted = isAsserted;
 	}
-	
+
 	@Override
 	public int getCellX() {
 		// TODO Auto-generated method stub

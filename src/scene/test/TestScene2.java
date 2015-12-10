@@ -112,7 +112,13 @@ public class TestScene2 extends Scene {
 		blocks.add(new Block(8, 3, 0, 20, true));
 		
 		teleportGates.add(new TeleportToArea(-12, 12, 0, 6, 10, 1));
-		
+		GateToGateTeleport gateTele1 = new GateToGateTeleport(-12, -12, 0);
+		GateToGateTeleport gateTele2 = new GateToGateTeleport(0, 1, 0, gateTele1);
+		GateToGateTeleport gateTele3 = new GateToGateTeleport(0, 12,  0 , gateTele1);
+		gateTele1.setDestinationTelelportGate(gateTele2);
+		teleportGates.add(gateTele1);
+		teleportGates.add(gateTele2);
+		teleportGates.add(gateTele3);
 		
 
 		// blocks.add(new Block(-1, 1, 0, 110, true));

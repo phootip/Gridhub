@@ -1,4 +1,4 @@
-package objectInterface;
+package stage.gameobj;
 
 /**
  * This Interface is used for the object in the game which can be push by the player.

@@ -1,4 +1,4 @@
-package scene.test;
+package stage.gameobj;
 
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
@@ -20,14 +20,14 @@ import com.sun.xml.internal.bind.v2.TODO;
 
 import core.DrawManager;
 import core.geom.Vector2;
-import objectInterface.IDrawable;
-import objectInterface.PushableObject;
-import objectInterface.WalkThroughable;
+import stage.Camera;
+import stage.FloorLevel;
+import stage.ObjectMap;
 import util.Constants;
 import util.Helper;
 import util.Constants.ColorSwatch;
 
-class Block implements PushableObject, WalkThroughable {
+public class Block implements PushableObject, WalkThroughable {
 
 	private static final Stroke INNER_STROKE = new BasicStroke(1);
 
@@ -36,9 +36,7 @@ class Block implements PushableObject, WalkThroughable {
 	protected static final float BLOCK_HEIGHT = 1.0f;
 	private int x, y, z, nextX, nextY, nextZ, weight;
 	private boolean isWalkThroughable;
-	private int[][] floorLevelMap = FloorLevel.getInstance().getFloorMap();
-	private int mapXRangeShift = floorLevelMap.length / 2;
-	private int mapYRangeShift = floorLevelMap[0].length / 2;
+	private FloorLevel floorLevelMap;
 	// private boolean isObjectAbove;
 
 	public int getX() {
@@ -53,35 +51,16 @@ class Block implements PushableObject, WalkThroughable {
 		return z;
 	}
 
-	@Override
-	public int getCellX() {
-		return x;
-	}
-
-	@Override
-	public int getCellY() {
-		return y;
-	}
-
-	@Override
-	public int getCellZ() {
-		return z;
-	}
-
 	protected int getWeight() {
 		return weight;
 	}
 
-	public Block(int x, int y, int z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.nextX = x;
-		this.nextY = y;
-		this.nextZ = z;
+	public Block(int x, int y, int z, FloorLevel floorLevelMap) {
+		this(x, y, z, 100, false, floorLevelMap);
 	}
 
-	public Block(int x, int y, int z, int weight, boolean isWalkThroughable) {
+	public Block(int x, int y, int z, int weight, boolean isWalkThroughable, FloorLevel floorLevelMap) {
+		this.floorLevelMap = floorLevelMap;
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -106,7 +85,7 @@ class Block implements PushableObject, WalkThroughable {
 
 	public boolean push(int previousWeight, int diffX, int diffY, int diffZ) {
 
-		if (FloorLevel.getInstance().isOutOfMap(x + diffX, y + diffY))
+		if (floorLevelMap.isOutOfMap(x + diffX, y + diffY))
 			return false;
 		if (this.weight + previousWeight > 100 || !isPushable())
 			return false;
@@ -118,7 +97,7 @@ class Block implements PushableObject, WalkThroughable {
 
 		IDrawable nextObjectObstacles = ObjectMap.drawableObjectHashMap
 				.get((x + diffX) + " " + (y + diffY) + " " + (z + diffZ));
-		if (z != floorLevelMap[x + diffX + mapXRangeShift][y + diffY + mapYRangeShift]) {
+		if (z != floorLevelMap.getZValueFromXY(x + diffX, y + diffY)) {
 			IDrawable nextObjectBelow = ObjectMap.drawableObjectHashMap
 					.get((x + diffX) + " " + (y + diffY) + " " + (z + diffZ - 1));
 
@@ -246,6 +225,21 @@ class Block implements PushableObject, WalkThroughable {
 			drawBlock(g, camera, x, y, z, false);
 		}
 
+	}
+
+	@Override
+	public float getDrawX() {
+		return x;
+	}
+
+	@Override
+	public float getDrawY() {
+		return y;
+	}
+
+	@Override
+	public float getDrawZ() {
+		return z;
 	}
 
 }

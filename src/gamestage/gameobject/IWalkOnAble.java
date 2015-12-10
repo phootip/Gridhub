@@ -1,4 +1,4 @@
-package objectInterface;
+package gamestage.gameobject;
 
 public interface IWalkOnAble {
 	public boolean isObjectAbove();

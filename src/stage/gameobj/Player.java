@@ -1,4 +1,4 @@
-package scene.test;
+package stage.gameobj;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -11,15 +11,15 @@ import com.sun.glass.events.KeyEvent;
 
 import core.geom.Vector2;
 import core.geom.Vector3;
-import objectInterface.IDrawable;
-import objectInterface.IWalkOnAble;
-import objectInterface.PushableObject;
+import stage.Camera;
+import stage.FloorLevel;
+import stage.ObjectMap;
 import util.Constants.ColorSwatch;
 import util.Constants.PlayerSettings;
 import util.Helper;
 import util.InputManager;
 
-class Player implements IDrawable {
+public class Player implements IDrawable {
 
 	protected static float BALL_RADIUS = 0.4f;
 	private static float BALL_TRAIL_RADIUS = 0.5f;
@@ -47,19 +47,17 @@ class Player implements IDrawable {
 	private ArrayList<ArrayList<Vector3>> trailPosition;
 	private ArrayList<ArrayList<Vector3>> shiftedTrailPosition;
 
-	private int[][] floorLevelMap = FloorLevel.getInstance().getFloorMap();
-	private int mapXRangeShift = floorLevelMap.length / 2;
-	private int mapYRangeShift = floorLevelMap[0].length / 2;
+	private FloorLevel floorLevelMap;
 
-	protected float getX() {
+	public float getDrawX() {
 		return x;
 	}
 
-	protected float getY() {
+	public float getDrawY() {
 		return y;
 	}
 
-	protected float getZ() {
+	public float getDrawZ() {
 		return z;
 	}
 
@@ -117,13 +115,19 @@ class Player implements IDrawable {
 
 	}
 
-	public Player(int playerId) {
-		x = y = z = cellX = cellY = cellZ = oldCellX = oldCellY = oldCellZ = nextCellX = nextCellY = nextCellZ = 0;
-		if (playerId == 1) {
-			x = oldCellX = nextCellX = cellX = 9;
-			y = oldCellY = nextCellY = cellY = 4;
-			z = oldCellZ = nextCellZ = cellZ = 1;
-		}
+	/**
+	 * @deprecated Use {@link #Player(int,FloorLevel,int,int,int)} instead
+	 */
+	public Player(int playerId, FloorLevel floorLevelMap) {
+		this(playerId, floorLevelMap, 0, 0, 0);
+	}
+
+	public Player(int playerId, FloorLevel floorLevelMap, int initialX, int initialY, int initialZ) {
+		this.floorLevelMap = floorLevelMap;
+
+		x = cellX = oldCellX = nextCellX = initialX;
+		y = cellY = oldCellY = nextCellY = initialY;
+		z = cellZ = oldCellZ = nextCellZ = initialZ;
 		this.playerId = playerId;
 
 		this.name = "Player" + playerId;
@@ -228,16 +232,16 @@ class Player implements IDrawable {
 		// if(playerId == 1) System.out.println(cellX);
 		// check for NextStepCell
 		// first check floor level
-		int floorLevelCellX = cellX + mapXRangeShift;
-		int floorLevelCellY = cellY + mapYRangeShift;
-		int floorLevelNextCellX = nextCellX + mapXRangeShift;
-		int floorLevelNextCellY = nextCellY + mapYRangeShift;
+		int floorLevelCellX = cellX;
+		int floorLevelCellY = cellY;
+		int floorLevelNextCellX = nextCellX;
+		int floorLevelNextCellY = nextCellY;
 		// System.out.println(isOnSlope);
-		if (FloorLevel.getInstance().isOutOfMap(nextCellX, nextCellY)) {
+		if (floorLevelMap.isOutOfMap(nextCellX, nextCellY)) {
 			if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
 				// if move diagonal then it can move either y or x
-				boolean isNextX_OutOfMap = FloorLevel.getInstance().isOutOfMap(nextCellX, cellY);
-				boolean isNextY_OutOfMap = FloorLevel.getInstance().isOutOfMap(cellX, nextCellY);
+				boolean isNextX_OutOfMap = floorLevelMap.isOutOfMap(nextCellX, cellY);
+				boolean isNextY_OutOfMap = floorLevelMap.isOutOfMap(cellX, nextCellY);
 				if (isNextX_OutOfMap && isNextY_OutOfMap) {
 					standStill();
 				} else if (isNextY_OutOfMap) {
@@ -258,17 +262,19 @@ class Player implements IDrawable {
 		} else {
 			// not out of Map
 			// In case floor is not equals
-			if (cellZ != floorLevelMap[floorLevelNextCellX][floorLevelNextCellY]) {
+			if (cellZ != floorLevelMap.getZValueFromXY(floorLevelNextCellX, floorLevelNextCellY)) {
 				// if floor is not equal to current Z
-				if (cellZ > floorLevelMap[floorLevelNextCellX][floorLevelNextCellY]) {
+				if (cellZ > floorLevelMap.getZValueFromXY(floorLevelNextCellX, floorLevelNextCellY)) {
 					// if player is on a higher floor then check for nextCell below
 					IDrawable nextCellBelow = ObjectMap.drawableObjectHashMap
 							.get(nextCellX + " " + nextCellY + " " + (nextCellZ - 1));
 					if (nextCellBelow instanceof Slope) {
 
 						Slope slopeNextCell = (Slope) nextCellBelow;
-						boolean isNextX_ZValueEqual = cellZ == floorLevelMap[floorLevelNextCellX][floorLevelCellY];
-						boolean isNextY_ZValueEqual = cellZ == floorLevelMap[floorLevelCellX][floorLevelNextCellY];
+						boolean isNextX_ZValueEqual = cellZ == floorLevelMap.getZValueFromXY(floorLevelNextCellX,
+								floorLevelCellY);
+						boolean isNextY_ZValueEqual = cellZ == floorLevelMap.getZValueFromXY(floorLevelCellX,
+								floorLevelNextCellY);
 						if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
 							// if it moves diag it cannot get in to the slope
 							if (isNextX_ZValueEqual) {
@@ -296,9 +302,8 @@ class Player implements IDrawable {
 								standStill();
 							}
 						}
-					} else
-						if ((nextCellBelow == null || nextCellBelow instanceof Block || nextCellBelow instanceof Slope)
-								&& isOnSlope) {
+					} else if ((nextCellBelow == null || nextCellBelow instanceof Block
+							|| nextCellBelow instanceof Slope) && isOnSlope) {
 						// exit the slope from both direction when there is the box waiting
 						Slope slopeBelow = (Slope) ObjectMap.drawableObjectHashMap
 								.get(cellX + " " + cellY + " " + (cellZ - 1));
@@ -307,10 +312,10 @@ class Player implements IDrawable {
 							if (slopeBelow.isSlopeExit(cellX, cellY)) {
 								if (nextCellBelow == null) {
 									standStill();
-//for falling down the slope if there is nothing at the exit
-//									setCellZ(cellZ-1);
-//									moveOnlyXandZ();
-//									isOnSlope = false;
+									// for falling down the slope if there is nothing at the exit
+									// setCellZ(cellZ-1);
+									// moveOnlyXandZ();
+									// isOnSlope = false;
 								} else {
 									tryMoveAndPushXDirection();
 									isOnSlope = false;
@@ -330,13 +335,13 @@ class Player implements IDrawable {
 
 						} else if (nextCellX - cellX == 0 && slopeBelow.isAlignY() && nextCellY - cellY != 0) {
 							if (slopeBelow.isSlopeExit(cellX, cellY)) {
-								if(nextCellBelow == null) {
+								if (nextCellBelow == null) {
 									standStill();
 								} else {
 									tryMoveAndPushYDirection();
-								isOnSlope = false;
+									isOnSlope = false;
 								}
-								
+
 							} else {
 								setCellZ(cellZ - 1);
 								boolean isLeavingSlope = tryMoveAndPushYDirection();
@@ -351,8 +356,10 @@ class Player implements IDrawable {
 
 						}
 					} else if (nextCellBelow instanceof Block) {
-						boolean isNextX_ZValueEqual = cellZ == floorLevelMap[floorLevelNextCellX][floorLevelCellY];
-						boolean isNextY_ZValueEqual = cellZ == floorLevelMap[floorLevelCellX][floorLevelNextCellY];
+						boolean isNextX_ZValueEqual = cellZ == floorLevelMap.getZValueFromXY(floorLevelNextCellX,
+								floorLevelCellY);
+						boolean isNextY_ZValueEqual = cellZ == floorLevelMap.getZValueFromXY(floorLevelCellX,
+								floorLevelNextCellY);
 						if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
 							// if it moves diag it cannot get in to the slope
 							if (isNextX_ZValueEqual) {
@@ -390,8 +397,10 @@ class Player implements IDrawable {
 				if (!(ObjectMap.drawableObjectHashMap
 						.get(nextCellX + " " + nextCellY + " " + nextCellZ) instanceof Slope)) {
 					// if the floor is not equal then it can't move
-					boolean isNextX_ZValueEqual = cellZ == floorLevelMap[floorLevelNextCellX][floorLevelCellY];
-					boolean isNextY_ZValueEqual = cellZ == floorLevelMap[floorLevelCellX][floorLevelNextCellY];
+					boolean isNextX_ZValueEqual = cellZ == floorLevelMap.getZValueFromXY(floorLevelNextCellX,
+							floorLevelCellY);
+					boolean isNextY_ZValueEqual = cellZ == floorLevelMap.getZValueFromXY(floorLevelCellX,
+							floorLevelNextCellY);
 					if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
 						// if move diagonal then it can move either y or x
 						if (isNextX_ZValueEqual) {
@@ -415,8 +424,10 @@ class Player implements IDrawable {
 
 					Slope slopeNextCell = (Slope) ObjectMap.drawableObjectHashMap
 							.get(nextCellX + " " + nextCellY + " " + nextCellZ);
-					boolean isNextX_ZValueEqual = cellZ == floorLevelMap[floorLevelNextCellX][floorLevelCellY];
-					boolean isNextY_ZValueEqual = cellZ == floorLevelMap[floorLevelCellX][floorLevelNextCellY];
+					boolean isNextX_ZValueEqual = cellZ == floorLevelMap.getZValueFromXY(floorLevelNextCellX,
+							floorLevelCellY);
+					boolean isNextY_ZValueEqual = cellZ == floorLevelMap.getZValueFromXY(floorLevelCellX,
+							floorLevelNextCellY);
 					if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
 						// if it moves diag it cannot get in to the slope
 						if (isNextX_ZValueEqual) {
@@ -566,8 +577,8 @@ class Player implements IDrawable {
 								setCellZ(cellZ + 1);
 								moveOnlyXandZ();
 								isOnSlope = true;
-							} else
-								if (isNextCellEntranceOfSlope && nextCellSlope.isAlignY() && nextCellY - cellY != 0) {
+							} else if (isNextCellEntranceOfSlope && nextCellSlope.isAlignY()
+									&& nextCellY - cellY != 0) {
 								moveOnlyYandZ();
 								isOnSlope = true;
 							} else {
@@ -779,7 +790,7 @@ class Player implements IDrawable {
 	private boolean tryMoveAndPushXDirection() {
 		IDrawable nextObjectBelow = ObjectMap.drawableObjectHashMap
 				.get(nextCellX + " " + cellY + " " + (nextCellZ - 1));
-		if (cellZ != floorLevelMap[nextCellX + mapXRangeShift][cellY + mapYRangeShift] && !isOnSlope
+		if (cellZ != floorLevelMap.getZValueFromXY(nextCellX, cellY) && !isOnSlope
 				&& !(nextObjectBelow instanceof Block)) {
 			standStill();
 			return false;
@@ -807,8 +818,7 @@ class Player implements IDrawable {
 	private boolean tryMoveAndPushYDirection() {
 		IDrawable nextObjectBelow = ObjectMap.drawableObjectHashMap
 				.get(cellX + " " + nextCellY + " " + (nextCellZ - 1));
-		if (cellZ != floorLevelMap[cellX + mapXRangeShift][nextCellY + mapYRangeShift] && !isOnSlope
-				&& !(nextObjectBelow instanceof Block)) {
+		if (cellZ != floorLevelMap.getZValueFromXY(cellX, nextCellY) && !isOnSlope && !(nextObjectBelow instanceof Block)) {
 			standStill();
 			return false;
 		}

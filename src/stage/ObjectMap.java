@@ -1,8 +1,8 @@
-package scene.test;
+package stage;
 
 import java.util.HashMap;
 
-import objectInterface.IDrawable;
+import stage.gameobj.IDrawable;
 
 public class ObjectMap {
 	public static HashMap<String, IDrawable> drawableObjectHashMap;

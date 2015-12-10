@@ -1,10 +1,10 @@
-package scene.test;
+package stage.gameobj;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 
 import core.geom.Vector2;
-import objectInterface.IDrawable;
+import stage.Camera;
 import util.Constants.ColorSwatch;
 
 /**
@@ -25,42 +25,59 @@ public class Slope implements IDrawable {
 	private boolean isAlignY;
 
 	/**
-	 * initiate slope
+	 * Constant representing the slope going toward right direction (+x).
+	 */
+	public static final int ALIGNMENT_RIGHT = 1;
+	/**
+	 * Constant representing the slope going toward down direction (+y).
+	 */
+	public static final int ALIGNMENT_DOWN = 2;
+	/**
+	 * Constant representing the slope going toward left direction (-x).
+	 */
+	public static final int ALIGNMENT_LEFT = -1;
+	/**
+	 * Constant representing the slope going toward up direction (-y).
+	 */
+	public static final int ALIGNMENT_UP = -2;
+
+	/**
+	 * Create Slope with specified position and alignment.
 	 * 
 	 * @param startX
 	 *            the starting x position of Slope
 	 * @param startY
 	 *            the starting y position of Slope
 	 * @param alignment
-	 *            1 for x alignment (Right Direction), 2 for y alignment (Down Direction), -1 for -x alignment
-	 *            (LeftDirection), -2 for -y alignment (Up direction)
+	 *            Possible value are {@link #ALIGNMENT_RIGHT}, {@link #ALIGNMENT_DOWN}, {@link #ALIGNMENT_LEFT}, and
+	 *            {@link #ALIGNMENT_UP}.
 	 */
 	public Slope(int startX, int startY, int startZ, int alignment) {
 		super();
 		this.startX = startX;
 		this.startY = startY;
 		switch (alignment) {
-			case 1:
+			case ALIGNMENT_RIGHT:
 				endX = startX + 2;
 				endY = startY;
 				break;
-			case 2:
+			case ALIGNMENT_DOWN:
 				endX = startX;
 				endY = startY + 2;
-			case -1:
+			case ALIGNMENT_LEFT:
 				endX = startX - 2;
 				endY = startY;
-			case -2:
+			case ALIGNMENT_UP:
 				endX = startX;
 				endY = startY - 2;
 
 			default:
-				break;
+				throw new IllegalArgumentException("Invalid Slope alignment : " + alignment);
 		}
 		this.startZ = startZ;
 		endZ = startZ;
-		isAlignX = alignment == 1 || alignment == -1;
-		isAlignY = alignment == 2 || alignment == -2;
+		isAlignX = alignment == ALIGNMENT_RIGHT || alignment == ALIGNMENT_LEFT;
+		isAlignY = alignment == ALIGNMENT_DOWN || alignment == ALIGNMENT_UP;
 	}
 
 	/**
@@ -174,24 +191,6 @@ public class Slope implements IDrawable {
 		return endY;
 	}
 
-	@Override
-	public int getCellX() {
-		// TODO Auto-generated method stub
-		return startX;
-	}
-
-	@Override
-	public int getCellY() {
-		// TODO Auto-generated method stub
-		return startY;
-	}
-
-	@Override
-	public int getCellZ() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 	/**
 	 * draw the object slope in the scene
 	 */
@@ -222,6 +221,21 @@ public class Slope implements IDrawable {
 		g.drawLine((int) mid1.getX(), (int) mid1.getY(), (int) endV1.getX(), (int) endV1.getY());
 		g.drawLine((int) mid2.getX(), (int) mid2.getY(), (int) endV2.getX(), (int) endV2.getY());
 		g.drawLine((int) mid1.getX(), (int) mid1.getY(), (int) mid2.getX(), (int) mid2.getY());
+	}
+
+	@Override
+	public float getDrawX() {
+		return startX;
+	}
+
+	@Override
+	public float getDrawY() {
+		return startY;
+	}
+
+	@Override
+	public float getDrawZ() {
+		return startZ;
 	}
 
 }

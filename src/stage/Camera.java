@@ -1,17 +1,17 @@
-package scene.test;
+package stage;
 
-import com.sun.glass.events.KeyEvent;
+import java.awt.event.KeyEvent;
 
 import core.geom.Vector2;
 import core.geom.Vector3;
+import stage.gameobj.Player;
 import util.Helper;
 import util.InputManager;
 
 public class Camera {
 	private float zoomFactor = 50;
 
-	private float centerX;
-	private float centerY;
+	private Vector2 centerPos;
 
 	private int sceneWidth;
 	private int sceneHeight;
@@ -23,8 +23,7 @@ public class Camera {
 	}
 
 	public Camera(Player player) {
-		centerX = (int) player.getX();
-		centerY = (int) player.getY();
+		centerPos = new Vector2(player.getDrawX(), player.getDrawY());
 		this.player = player;
 	}
 
@@ -48,8 +47,8 @@ public class Camera {
 	}
 
 	public void update(int step) {
-		centerX += (player.getX() - centerX) / Math.pow(FOLLOW_SPEED, step);
-		centerY += (player.getY() - centerY) / Math.pow(FOLLOW_SPEED, step);
+		centerPos.add(new Vector2(player.getDrawX(), player.getDrawY()).subtract(centerPos)
+				.multiply(1 / (float) Math.pow(FOLLOW_SPEED, step)));
 
 		if (!isRotating) {
 			int direction = 0;
@@ -99,7 +98,7 @@ public class Camera {
 	}
 
 	public Vector2 getDrawPosition(float x, float y, float z) {
-		return new Vector2(x - centerX, y - centerY).rotate(rotationAngle).multiply(zoomFactor, zoomFactor * yFactor)
+		return new Vector2(x, y).subtract(centerPos).rotate(rotationAngle).multiply(zoomFactor, zoomFactor * yFactor)
 				.add(sceneWidth / 2f, sceneHeight / 2f - getDrawSizeZ(z));
 	}
 

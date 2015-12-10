@@ -1,4 +1,4 @@
-package scene.test;
+package stage;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -12,51 +12,53 @@ import com.sun.org.apache.bcel.internal.Constants;
 
 import core.geom.Vector2;
 import core.renderer.LevelRenderer;
-import objectInterface.IDrawable;
 import scene.core.Scene;
+import stage.gameobj.Block;
+import stage.gameobj.IDrawable;
+import stage.gameobj.Player;
+import stage.gameobj.Slope;
 import util.Resource;
 import util.Constants.ColorSwatch;
 
-public class TestScene2 extends Scene {
+public class GameStage extends Scene {
 
 	private Camera camera;
 	private Player player1;
 	private Player player2;
-	private int gridSize;
 	private FloorLevel floorLevelMap;
 	ArrayList<Block> blocks = new ArrayList<>();
 	ArrayList<FloorSwitch> floorSwitches = new ArrayList<>();
 	ArrayList<Slope> slopes = new ArrayList<>();
 
-	public TestScene2(int gridSize) {
+	public GameStage() {
 		ObjectMap.drawableObjectHashMap = new HashMap<String, IDrawable>();
-		this.gridSize = gridSize;
 
-		FloorLevel.getInstance().newFloorLevelMap(gridSize);
-		int floorMapXSize = FloorLevel.getInstance().getFloorMap().length;
-		int floorMapYSize = FloorLevel.getInstance().getFloorMap()[0].length;
+		floorLevelMap = new FloorLevel(25, 25);
+		int floorMapXSize = floorLevelMap.getSizeX();
+		int floorMapYSize = floorLevelMap.getSizeY();
 
 		for (int i = 0; i < floorMapXSize; i++) {
 			for (int j = 0; j < floorMapYSize; j++) {
-				if (i > 23) {
-					FloorLevel.getInstance().setZValue(i, j, 2);
-				} else if (i > 20) {
-					FloorLevel.getInstance().setZValue(i, j, 1);
+				if (i > 11) {
+					floorLevelMap.setZValue(i, j, 2);
+				} else if (i > 8) {
+					floorLevelMap.setZValue(i, j, 1);
 				} else {
-					FloorLevel.getInstance().setZValue(i, j, 0);
+					floorLevelMap.setZValue(i, j, 0);
 				}
 			}
 		}
-//		map floor checking
-//		for (int j = 0; j < floorMapYSize; j++) {
-//			for (int i = 0; i < floorMapXSize; i++) {
-//				System.out.print(FloorLevel.getInstance().getZValueFromXY(i, j));
-//				if(i == floorMapXSize - 1) System.out.println();
-//				
-//			}
-//		}
-		player1 = new Player(util.Constants.PLAYER1_ID);
-		player2 = new Player(util.Constants.PLAYER2_ID);
+		// map floor checking
+		// for (int j = 0; j < floorMapYSize; j++) {
+		// for (int i = 0; i < floorMapXSize; i++) {
+		// System.out.print(FloorLevel.getInstance().getZValueFromXY(i, j));
+		// if(i == floorMapXSize - 1) System.out.println();
+		//
+		// }
+		// }
+		player1 = new Player(util.Constants.PLAYER1_ID, floorLevelMap, 9, 4, 1);
+		player2 = new Player(util.Constants.PLAYER2_ID, floorLevelMap, 0, 0, 0);
+
 		camera = new Camera(player1);
 
 		floorSwitches.add(new FloorSwitch(6, 1, 0, false, 5));
@@ -65,14 +67,12 @@ public class TestScene2 extends Scene {
 		floorSwitches.add(new FloorSwitch(6, 7, 0, true, 10));
 		floorSwitches.add(new FloorSwitch(6, 9, 0, true, 20));
 
-		slopes.add(new Slope(6, 10, 0, 1));
-		
-		
-		slopes.add(new Slope(6, 5, 0, 1));
-		slopes.add(new Slope(9,10,1,1));
-		slopes.add(new Slope(-2, 3, 0, 1));
-		
-		
+		slopes.add(new Slope(6, 10, 0, Slope.ALIGNMENT_RIGHT));
+
+		slopes.add(new Slope(6, 5, 0, Slope.ALIGNMENT_RIGHT));
+		slopes.add(new Slope(9, 10, 1, Slope.ALIGNMENT_RIGHT));
+		slopes.add(new Slope(-2, 3, 0, Slope.ALIGNMENT_RIGHT));
+
 		for (Slope eachSlope : slopes) {
 
 			int slopeStartX = eachSlope.getStartX();
@@ -110,35 +110,35 @@ public class TestScene2 extends Scene {
 		// blocks.add(new Block(2, 0, 1, 20, true));
 		// blocks.add(new Block(2, 1, 0, 20, true));
 		// blocks.add(new Block(2, 2, 3, 20, true));
-		
-		blocks.add(new Block(2, 3, 0, 20, true));
-		blocks.add(new Block(2, 4, 0, 20, true));
-		blocks.add(new Block(2, 5, 0, 20, true));
-		blocks.add(new Block(2, 7, 0, 20, true));
-		blocks.add(new Block(2, 8, 0, 20, true));
-		blocks.add(new Block(2, 9, 0, 20, true));
-		blocks.add(new Block(2, 10, 0, 20, true));
-		
-		blocks.add(new Block(1, 3, 0, 20, true));
-		blocks.add(new Block(2, 3, 1, 20, true));
-		blocks.add(new Block(3, 3, 0, 20, true));
-		blocks.add(new Block(4, 3, 0, 20, true));
-		blocks.add(new Block(5, 3, 0, 20, true));
-		blocks.add(new Block(6, 3, 0, 20, true));
-		blocks.add(new Block(7, 3, 0, 20, true));
-		blocks.add(new Block(8, 3, 0, 20, true));
+
+		blocks.add(new Block(2, 3, 0, 20, true, floorLevelMap));
+		blocks.add(new Block(2, 4, 0, 20, true, floorLevelMap));
+		blocks.add(new Block(2, 5, 0, 20, true, floorLevelMap));
+		blocks.add(new Block(2, 7, 0, 20, true, floorLevelMap));
+		blocks.add(new Block(2, 8, 0, 20, true, floorLevelMap));
+		blocks.add(new Block(2, 9, 0, 20, true, floorLevelMap));
+		blocks.add(new Block(2, 10, 0, 20, true, floorLevelMap));
+
+		blocks.add(new Block(1, 3, 0, 20, true, floorLevelMap));
+		blocks.add(new Block(2, 3, 1, 20, true, floorLevelMap));
+		blocks.add(new Block(3, 3, 0, 20, true, floorLevelMap));
+		blocks.add(new Block(4, 3, 0, 20, true, floorLevelMap));
+		blocks.add(new Block(5, 3, 0, 20, true, floorLevelMap));
+		blocks.add(new Block(6, 3, 0, 20, true, floorLevelMap));
+		blocks.add(new Block(7, 3, 0, 20, true, floorLevelMap));
+		blocks.add(new Block(8, 3, 0, 20, true, floorLevelMap));
 
 		// blocks.add(new Block(-1, 1, 0, 110, true));
 		// blocks.add(new Block(0, 1, 0, 110, true));
 		// blocks.add(new Block(1, 1, 0, 110, true));
 
-//		for (int i = -15; i <= 15; i++) {
-//			for (int j = -15; j <= 15; j++) {
-//				if (i >= -2 && j >= -2 && i <= 2 && j <= 2)
-//					continue;
-//				blocks.add(new Block(i, j + 1, 0, 1, true));
-//			}
-//		}
+		// for (int i = -15; i <= 15; i++) {
+		// for (int j = -15; j <= 15; j++) {
+		// if (i >= -2 && j >= -2 && i <= 2 && j <= 2)
+		// continue;
+		// blocks.add(new Block(i, j + 1, 0, 1, true));
+		// }
+		// }
 
 		for (Block eachBlock : blocks) {
 			ObjectMap.drawableObjectHashMap.put(eachBlock.getX() + " " + eachBlock.getY() + " " + eachBlock.getZ(),
@@ -175,34 +175,38 @@ public class TestScene2 extends Scene {
 
 		// Draw grid line
 
-		g.setStroke(new BasicStroke(1));
-		g.setColor(ColorSwatch.SHADOW);
-		for (int i = -gridSize + 1; i <= gridSize; i++) {
-			Vector2 startPos = camera.getDrawPosition(i - 0.5f, -gridSize - 0.5f, 0);
-			Vector2 endPos = camera.getDrawPosition(i - 0.5f, gridSize + 0.5f, 0);
-			g.drawLine(startPos.getIntX(), startPos.getIntY(), endPos.getIntX(), endPos.getIntY());
-
-			Vector2 startPos2 = camera.getDrawPosition(-gridSize - 0.5f, i - 0.5f, 0);
-			Vector2 endPos2 = camera.getDrawPosition(gridSize + 0.5f, i - 0.5f, 0);
-			g.drawLine(startPos2.getIntX(), startPos2.getIntY(), endPos2.getIntX(), endPos2.getIntY());
-		}
-		g.setStroke(new BasicStroke(3));
-		// Draw floor border
-		int[] x = new int[4];
-		int[] y = new int[4];
-
-		Vector2[] v = new Vector2[4];
-		v[0] = camera.getDrawPosition(-gridSize - 0.5f, -gridSize - 0.5f, 0);
-		v[1] = camera.getDrawPosition(-gridSize - 0.5f, gridSize + 0.5f, 0);
-		v[2] = camera.getDrawPosition(gridSize + 0.5f, gridSize + 0.5f, 0);
-		v[3] = camera.getDrawPosition(gridSize + 0.5f, -gridSize - 0.5f, 0);
-
-		for (int k = 0; k < 4; k++) {
-			x[k] = (int) v[k].getX();
-			y[k] = (int) v[k].getY();
-		}
-
-		g.drawPolygon(x, y, 4);
+//		int gridSizeX = floorLevelMap.getSizeX();
+//		int gridSizeY = floorLevelMap.getSizeY();
+//		
+//		g.setStroke(new BasicStroke(1));
+//		g.setColor(ColorSwatch.SHADOW);
+//		for (int i = 0; i < gridSizeX; i++) {
+//			Vector2 startPos = camera.getDrawPosition(i + 0.5f, -gridSizeY - 0.5f, 0);
+//			Vector2 endPos = camera.getDrawPosition(i + 0.5f, gridSizeY + 0.5f, 0);
+//			g.drawLine(startPos.getIntX(), startPos.getIntY(), endPos.getIntX(), endPos.getIntY());
+//		}
+//		for (int i = 0; i < gridSizeY; i++) {
+//			Vector2 startPos2 = camera.getDrawPosition(-gridSizeX - 0.5f, i + 0.5f, 0);
+//			Vector2 endPos2 = camera.getDrawPosition(gridSizeX + 0.5f, i + 0.5f, 0);
+//			g.drawLine(startPos2.getIntX(), startPos2.getIntY(), endPos2.getIntX(), endPos2.getIntY());
+//		}
+//		g.setStroke(new BasicStroke(3));
+//		// Draw floor border
+//		int[] x = new int[4];
+//		int[] y = new int[4];
+//
+//		Vector2[] v = new Vector2[4];
+//		v[0] = camera.getDrawPosition(-0.5f, -0.5f, 0);
+//		v[1] = camera.getDrawPosition(-0.5f, gridSizeY + 0.5f, 0);
+//		v[2] = camera.getDrawPosition(gridSizeX + 0.5f, gridSizeY + 0.5f, 0);
+//		v[3] = camera.getDrawPosition(gridSizeX + 0.5f, -0.5f, 0);
+//
+//		for (int k = 0; k < 4; k++) {
+//			x[k] = (int) v[k].getX();
+//			y[k] = (int) v[k].getY();
+//		}
+//
+//		g.drawPolygon(x, y, 4);
 
 		// Draw things
 
@@ -217,9 +221,9 @@ public class TestScene2 extends Scene {
 		LevelRenderer.draw(ObjectMap.drawableObjectHashMap.values(), g, camera);
 
 		// Drawing slope
-		for (int i = 0; i < slopes.size(); i++) {
-			slopes.get(i).draw(g, camera);
-		}
+		// for (int i = 0; i < slopes.size(); i++) {
+		// slopes.get(i).draw(g, camera);
+		// }
 
 	}
 

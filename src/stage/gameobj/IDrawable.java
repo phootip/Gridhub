@@ -1,16 +1,16 @@
-package objectInterface;
+package stage.gameobj;
 
 import java.awt.Graphics2D;
 
-import scene.test.Camera;
+import stage.Camera;
 
 public interface IDrawable {
 
-	int getCellX();
+	float getDrawX();
 
-	int getCellY();
+	float getDrawY();
 
-	int getCellZ();
+	float getDrawZ();
 
 	void draw(Graphics2D g, Camera camera);
 

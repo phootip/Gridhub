@@ -21,7 +21,7 @@ public final class Constants {
 	 * Determines whether the FPS monitor should be shown.
 	 */
 	public static final boolean SHOW_FPS_MONITOR = true;
-	
+
 	/**
 	 * Whether or not to cache the drawable things to improve performance.
 	 */
@@ -31,15 +31,15 @@ public final class Constants {
 	 * The maximum frame per second of game looping.
 	 */
 	public static int MAX_FRAME_PER_SECOND = 60;
-	
+
 	/**
-	 * A unique ID for Player1 
+	 * A unique ID for Player1
 	 */
-	public static final int PLAYER1_ID =1;
+	public static final int PLAYER1_ID = 1;
 	/**
 	 * A unique ID for Player2
 	 */
-	public static final int PLAYER2_ID =2;
+	public static final int PLAYER2_ID = 2;
 
 	/**
 	 * The minimum size of the game screen, including the window border. This is used when {@link #IS_FULLSCREEN} is
@@ -57,9 +57,9 @@ public final class Constants {
 
 		public static Color getPlayerColor(int playerId) {
 			switch (playerId) {
-				case 1:
+				case PLAYER1_ID:
 					return new Color(255, 0, 0);
-				case 2:
+				case PLAYER2_ID:
 					return new Color(120, 83, 255);
 				default:
 					throw new IllegalArgumentException("Invalid player id : " + playerId);
@@ -68,9 +68,9 @@ public final class Constants {
 
 		public static int getLeftKey(int playerId) {
 			switch (playerId) {
-				case 1:
+				case PLAYER1_ID:
 					return KeyEvent.VK_A;
-				case 2:
+				case PLAYER2_ID:
 					return KeyEvent.VK_L;
 				default:
 					throw new IllegalArgumentException("Invalid player id : " + playerId);
@@ -80,9 +80,9 @@ public final class Constants {
 
 		public static int getRightKey(int playerId) {
 			switch (playerId) {
-				case 1:
+				case PLAYER1_ID:
 					return KeyEvent.VK_D;
-				case 2:
+				case PLAYER2_ID:
 					return KeyEvent.VK_QUOTE;
 				default:
 					throw new IllegalArgumentException("Invalid player id : " + playerId);
@@ -92,9 +92,9 @@ public final class Constants {
 
 		public static int getDownKey(int playerId) {
 			switch (playerId) {
-				case 1:
+				case PLAYER1_ID:
 					return KeyEvent.VK_S;
-				case 2:
+				case PLAYER2_ID:
 					return KeyEvent.VK_SEMICOLON;
 				default:
 					throw new IllegalArgumentException("Invalid player id : " + playerId);
@@ -104,9 +104,9 @@ public final class Constants {
 
 		public static int getUpKey(int playerId) {
 			switch (playerId) {
-				case 1:
+				case PLAYER1_ID:
 					return KeyEvent.VK_W;
-				case 2:
+				case PLAYER2_ID:
 					return KeyEvent.VK_P;
 				default:
 					throw new IllegalArgumentException("Invalid player id : " + playerId);

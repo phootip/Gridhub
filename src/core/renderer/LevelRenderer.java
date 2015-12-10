@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.Comparator;
 
 import core.geom.Vector2;
-import objectInterface.IDrawable;
-import scene.test.Camera;
+import stage.Camera;
+import stage.gameobj.IDrawable;
 
 public class LevelRenderer {
 
@@ -24,11 +24,11 @@ public class LevelRenderer {
 
 			@Override
 			public int compare(IDrawable o1, IDrawable o2) {
-				if (o1.getCellZ() != o2.getCellZ()) {
-					return (o1.getCellZ() < o2.getCellZ()) ? -1 : 1;
+				if (o1.getDrawZ() != o2.getDrawZ()) {
+					return (o1.getDrawZ() < o2.getDrawZ()) ? -1 : 1;
 				} else {
-					float depthA = depthChecker.getX() * o1.getCellX() + depthChecker.getY() * o1.getCellY();
-					float depthB = depthChecker.getX() * o2.getCellX() + depthChecker.getY() * o2.getCellY();
+					float depthA = depthChecker.getX() * o1.getDrawX() + depthChecker.getY() * o1.getDrawY();
+					float depthB = depthChecker.getX() * o2.getDrawX() + depthChecker.getY() * o2.getDrawY();
 					
 					if (depthA < depthB) return -1;
 					return 1;

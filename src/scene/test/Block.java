@@ -21,7 +21,7 @@ class Block implements PushableObject, WalkThroughable {
 	protected static final float BLOCK_HEIGHT = 1.0f;
 	private int x, y, z, nextX, nextY, nextZ, weight;
 	private boolean isWalkThroughable;
-	private int[][] floorLevelMap = FloorLevel.getFloorMap();
+	private int[][] floorLevelMap = FloorLevel.getInstance().getFloorMap();
 	// private boolean isObjectAbove;
 
 	public int getX() {

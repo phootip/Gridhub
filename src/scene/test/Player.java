@@ -86,13 +86,15 @@ class Player implements IDrawable {
 	}
 
 	public void setPlayerPosition(int cellX, int cellY, int cellZ) {
+		ObjectMap.drawableObjectHashMap.remove(this.cellX + " " + this.cellY + " " + this.cellZ + " " + this.name);
 		this.cellX = cellX;
 		this.cellY = cellY;
 		this.cellZ = cellZ;
 		nextCellX = cellX;
 		nextCellY = cellY;
-		nextCellY = cellZ;
-
+		nextCellZ = cellZ;
+		ObjectMap.drawableObjectHashMap.put(nextCellX + " " + nextCellY + " " + nextCellZ + " " + this.name, this);
+		isMoving = true;
 	}
 
 	public void setCellX(int x) {
@@ -225,7 +227,7 @@ class Player implements IDrawable {
 			}
 
 		}
-		// if(playerId == 1) System.out.println(cellX);
+//		if(playerId == 1) System.out.println(cellY);
 		// check for NextStepCell
 		// first check floor level
 		int floorLevelCellX = cellX + mapXRangeShift;
@@ -255,7 +257,7 @@ class Player implements IDrawable {
 			} else if (nextCellY - cellY != 0) {
 				standStill();
 			}
-		} else {
+		} else if(!(FloorLevel.getInstance().isOutOfMap(nextCellX, nextCellY))) {
 			// not out of Map
 			// In case floor is not equals
 			if (cellZ != floorLevelMap[floorLevelNextCellX][floorLevelNextCellY]) {
@@ -307,10 +309,10 @@ class Player implements IDrawable {
 							if (slopeBelow.isSlopeExit(cellX, cellY)) {
 								if (nextCellBelow == null) {
 									standStill();
-//for falling down the slope if there is nothing at the exit
-//									setCellZ(cellZ-1);
-//									moveOnlyXandZ();
-//									isOnSlope = false;
+									// for falling down the slope if there is nothing at the exit
+									// setCellZ(cellZ-1);
+									// moveOnlyXandZ();
+									// isOnSlope = false;
 								} else {
 									tryMoveAndPushXDirection();
 									isOnSlope = false;
@@ -330,13 +332,13 @@ class Player implements IDrawable {
 
 						} else if (nextCellX - cellX == 0 && slopeBelow.isAlignY() && nextCellY - cellY != 0) {
 							if (slopeBelow.isSlopeExit(cellX, cellY)) {
-								if(nextCellBelow == null) {
+								if (nextCellBelow == null) {
 									standStill();
 								} else {
 									tryMoveAndPushYDirection();
-								isOnSlope = false;
+									isOnSlope = false;
 								}
-								
+
 							} else {
 								setCellZ(cellZ - 1);
 								boolean isLeavingSlope = tryMoveAndPushYDirection();
@@ -442,7 +444,7 @@ class Player implements IDrawable {
 						}
 					}
 				}
-			} else {
+			} else if(cellZ == floorLevelMap[floorLevelNextCellX][floorLevelNextCellY]) {
 				// if the Floorlevel is equal to Z
 				if (isOnSlope)
 					// if player is on slope the only case player move at the same cellZ and floor is when player jump
@@ -451,7 +453,7 @@ class Player implements IDrawable {
 				IDrawable nextCellObstacle = ObjectMap.drawableObjectHashMap
 						.get(nextCellX + " " + nextCellY + " " + nextCellZ);
 
-				if (nextCellObstacle == null) {
+				if (nextCellObstacle == null || nextCellObstacle instanceof IWalkOnAble) {
 					// Action when player move diagonal
 					if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
 						// for Z there might not cause any problem
@@ -505,7 +507,7 @@ class Player implements IDrawable {
 						moveAllDir();
 					}
 
-				} else if (nextCellObstacle != null && nextCellObstacle != this) {
+				} else if (nextCellObstacle != null && !(nextCellObstacle instanceof IWalkOnAble)) {
 
 					if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
 						// in case of moving in both y and x if there is an
@@ -577,7 +579,7 @@ class Player implements IDrawable {
 
 					}
 
-				}
+				} 
 			}
 
 		}

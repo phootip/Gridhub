@@ -27,6 +27,7 @@ public class TestScene2 extends Scene {
 	ArrayList<Block> blocks = new ArrayList<>();
 	ArrayList<FloorSwitch> floorSwitches = new ArrayList<>();
 	ArrayList<Slope> slopes = new ArrayList<>();
+	ArrayList<TeleportGate> teleportGates = new ArrayList<>();
 
 	public TestScene2(int gridSize) {
 		ObjectMap.drawableObjectHashMap = new HashMap<String, IDrawable>();
@@ -72,23 +73,6 @@ public class TestScene2 extends Scene {
 		slopes.add(new Slope(9,10,1,1));
 		slopes.add(new Slope(-2, 3, 0, 1));
 		
-		
-		for (Slope eachSlope : slopes) {
-
-			int slopeStartX = eachSlope.getStartX();
-			int slopeStartY = eachSlope.getStartY();
-			int slopeStartZ = eachSlope.getStartZ();
-			int slopeEndZ = eachSlope.getEndZ();
-			int slopeEndX = eachSlope.getEndX();
-			int slopeEndY = eachSlope.getEndY();
-			int xBar = (slopeStartX + slopeEndX) / 2;
-			int yBar = (slopeStartY + slopeEndY) / 2;
-
-			ObjectMap.drawableObjectHashMap.put(slopeStartX + " " + slopeStartY + " " + slopeStartZ, eachSlope);
-			ObjectMap.drawableObjectHashMap.put(xBar + " " + yBar + " " + slopeStartZ, eachSlope);
-			ObjectMap.drawableObjectHashMap.put(slopeEndX + " " + slopeEndY + " " + slopeEndZ, eachSlope);
-
-		}
 		// slopes.add(new Slope(5, 5, 2));
 		// slopes.add(new Slope(-10, -10, -1));
 		// slopes.add(new Slope(-5 , -5, -2));
@@ -127,6 +111,8 @@ public class TestScene2 extends Scene {
 		blocks.add(new Block(7, 3, 0, 20, true));
 		blocks.add(new Block(8, 3, 0, 20, true));
 		
+		teleportGates.add(new TeleportToArea(-12, 12, 0, 6, 10, 1));
+		
 		
 
 		// blocks.add(new Block(-1, 1, 0, 110, true));
@@ -137,9 +123,28 @@ public class TestScene2 extends Scene {
 			ObjectMap.drawableObjectHashMap.put(eachBlock.getX() + " " + eachBlock.getY() + " " + eachBlock.getZ(),
 					eachBlock);
 		}
+		
+		for (Slope eachSlope : slopes) {
+
+			int xBar = (eachSlope.getStartX() + eachSlope.getEndX()) / 2;
+			int yBar = (eachSlope.getStartY() + eachSlope.getEndY()) / 2;
+
+			ObjectMap.drawableObjectHashMap.put(eachSlope.getStartX() + " " + eachSlope.getStartY() + " " + eachSlope.getStartZ(), eachSlope);
+			ObjectMap.drawableObjectHashMap.put(xBar + " " + yBar + " " + eachSlope.getStartZ(), eachSlope);
+			ObjectMap.drawableObjectHashMap.put(eachSlope.getEndX() + " " + eachSlope.getEndY() + " " + eachSlope.getEndZ(), eachSlope);
+
+		}
+		for (TeleportGate eachTeleport : teleportGates) {
+			ObjectMap.drawableObjectHashMap.put(eachTeleport.getCellX() + " " + eachTeleport.getCellY() + " " + eachTeleport.getCellZ(),
+					eachTeleport);
+		}
+		
 		ObjectMap.drawableObjectHashMap.put(
 				player1.getCellX() + " " + player1.getCellY() + " " + player1.getCellZ() + " " + player1.getName(),
 				player1);
+		ObjectMap.drawableObjectHashMap.put(
+				player2.getCellX() + " " + player2.getCellY() + " " + player2.getCellZ() + " " + player2.getName(),
+				player2);
 	}
 
 	@Override
@@ -151,6 +156,9 @@ public class TestScene2 extends Scene {
 
 		for (FloorSwitch fs : floorSwitches) {
 			fs.update(step, player1);
+		}
+		for(TeleportGate tg : teleportGates) {
+			tg.update(step);
 		}
 
 	}

@@ -98,6 +98,11 @@ public class TestScene2 extends Scene {
 		blocks.add(new Block(2, 3, 0, 20, true));
 		blocks.add(new Block(2, 3, 1, 20, true));
 		blocks.add(new Block(2, 4, 0, 20, true));
+		blocks.add(new Block(2, 5, 0, 20, true));
+		blocks.add(new Block(2, 7, 0, 20, true));
+		blocks.add(new Block(2, 8, 0, 20, true));
+		blocks.add(new Block(2, 9, 0, 20, true));
+		blocks.add(new Block(2, 10, 0, 20, true));
 
 		// blocks.add(new Block(-1, 1, 0, 110, true));
 		// blocks.add(new Block(0, 1, 0, 110, true));

@@ -42,6 +42,7 @@ class Player implements IDrawable {
 	private int nextCellZ;
 
 	private String name;
+	private boolean isOnSlope;
 
 	private ArrayList<ArrayList<Vector3>> trailPosition;
 	private ArrayList<ArrayList<Vector3>> shiftedTrailPosition;
@@ -111,11 +112,11 @@ class Player implements IDrawable {
 
 	public Player(int playerId) {
 		x = y = z = cellX = cellY = cellZ = oldCellX = oldCellY = oldCellZ = nextCellX = nextCellY = nextCellZ = 0;
-		 if(playerId == 1) {
-		 x = oldCellX = nextCellX = cellX = 9;
-		 y = oldCellY = nextCellY = cellY = 4;
-		 z = oldCellZ = nextCellZ = cellZ = 1;
-		 }
+		if (playerId == 1) {
+			x = oldCellX = nextCellX = cellX = 9;
+			y = oldCellY = nextCellY = cellY = 4;
+			z = oldCellZ = nextCellZ = cellZ = 1;
+		}
 		this.playerId = playerId;
 
 		this.name = "Player" + playerId;
@@ -250,6 +251,60 @@ class Player implements IDrawable {
 			// In case floor is not equals
 			if (cellZ != floorLevelMap[floorLevelNextCellX][floorLevelNextCellY]) {
 				// if floor is not equal to current Z
+				if(cellZ > floorLevelMap[floorLevelNextCellX][floorLevelNextCellY]) {
+					//if player is on a higher floor then check for nextCell below
+					IDrawable nextCellBelow = ObjectMap.drawableObjectHashMap.get(nextCellX + " " + nextCellY + " " + (nextCellZ-1));
+					if(nextCellBelow instanceof Slope) {
+						Slope slopeNextCell = (Slope) nextCellBelow;
+						boolean isNextX_ZValueEqual = cellZ == floorLevelMap[floorLevelNextCellX][floorLevelCellY];
+						boolean isNextY_ZValueEqual = cellZ == floorLevelMap[floorLevelCellX][floorLevelNextCellY];
+						if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
+							// if it moves diag it cannot get in to the slope
+							if (isNextX_ZValueEqual) {
+								// moveXAndTryPushX
+								tryMoveAndPushXDirection();
+							} else if (isNextY_ZValueEqual) {
+								tryMoveAndPushYDirection();
+							} else {
+								standStill();
+							}
+						} else if ((nextCellX - cellX) != 0) {
+							if(slopeNextCell.isAlignX()) {
+								moveOnlyXandZ();
+								isOnSlope = true;
+								
+							} else {
+								standStill();
+							}
+						} else if ((nextCellY - cellY) != 0) {
+							if(slopeNextCell.isAlignY()) {
+								moveOnlyYandZ();
+								isOnSlope = true;
+							} else {
+								standStill();
+							}
+						}
+					} else if(nextCellBelow instanceof Block) {
+						boolean isNextX_ZValueEqual = cellZ == floorLevelMap[floorLevelNextCellX][floorLevelCellY];
+						boolean isNextY_ZValueEqual = cellZ == floorLevelMap[floorLevelCellX][floorLevelNextCellY];
+						if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
+							// if it moves diag it cannot get in to the slope
+							if (isNextX_ZValueEqual) {
+								// moveXAndTryPushX
+								tryMoveAndPushXDirection();
+							} else if (isNextY_ZValueEqual) {
+								tryMoveAndPushYDirection();
+							} else {
+								standStill();
+							} 
+						} else if ((nextCellX - cellX) != 0) {
+							moveOnlyXandZ();
+						} else if ((nextCellY - cellY) != 0) {
+							moveOnlyYandZ();
+						}
+						
+					}
+				}
 				if (!(ObjectMap.drawableObjectHashMap
 						.get(nextCellX + " " + nextCellY + " " + nextCellZ) instanceof Slope)) {
 					// if the floor is not equal then it can't move
@@ -275,11 +330,13 @@ class Player implements IDrawable {
 						.get(nextCellX + " " + nextCellY + " " + nextCellZ) instanceof Slope)) {
 					// when the floor is not equal but next move is slope this means player is on the
 					// the higher side of the slope and prepare to move down (cellZ and nextZ of slope will match)
-					System.out.println("next instance is slope");
-					if((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
-						//if it moves diag it cannot get in to the slope
-						boolean isNextX_ZValueEqual = cellZ == floorLevelMap[floorLevelNextCellX][floorLevelCellY];
-						boolean isNextY_ZValueEqual = cellZ == floorLevelMap[floorLevelCellX][floorLevelNextCellY];
+					
+					Slope slopeNextCell = (Slope)ObjectMap.drawableObjectHashMap
+							.get(nextCellX + " " + nextCellY + " " + nextCellZ);
+					boolean isNextX_ZValueEqual = cellZ == floorLevelMap[floorLevelNextCellX][floorLevelCellY];
+					boolean isNextY_ZValueEqual = cellZ == floorLevelMap[floorLevelCellX][floorLevelNextCellY];
+					if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
+						// if it moves diag it cannot get in to the slope
 						if (isNextX_ZValueEqual) {
 							// moveXAndTryPushX
 							tryMoveAndPushXDirection();
@@ -288,120 +345,137 @@ class Player implements IDrawable {
 						} else {
 							standStill();
 						}
+					} else if ((nextCellX - cellX) != 0) {
+						if(slopeNextCell.isAlignX()) {
+							moveOnlyXandZ();
+							
+						} else {
+							standStill();
+						}
+					} else if ((nextCellY - cellY) != 0) {
+						if(slopeNextCell.isAlignY()) {
+							moveOnlyYandZ();
+						} else {
+							standStill();
+						}
 					}
 				}
-			}
+			} else {
+				IDrawable nextCellObstacle = ObjectMap.drawableObjectHashMap
+						.get(nextCellX + " " + nextCellY + " " + nextCellZ);
+				
+				if (nextCellObstacle == null) {
+					// Action when player move diagonal
+					if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
+						// for Z there might not cause any problem
+						IDrawable nextXObstacle = ObjectMap.drawableObjectHashMap
+								.get(nextCellX + " " + cellY + " " + nextCellZ);
+						IDrawable nextYObstacle = ObjectMap.drawableObjectHashMap
+								.get(cellX + " " + nextCellY + " " + nextCellZ);
 
-			IDrawable nextCellObstacle = ObjectMap.drawableObjectHashMap
-					.get(nextCellX + " " + nextCellY + " " + nextCellZ);
-			if (nextCellObstacle == null) {
-				// Action when player move diagonal
-				if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
-					// for Z there might not cause any problem
-					IDrawable nextXObstacle = ObjectMap.drawableObjectHashMap
-							.get(nextCellX + " " + cellY + " " + nextCellZ);
-					IDrawable nextYObstacle = ObjectMap.drawableObjectHashMap
-							.get(cellX + " " + nextCellY + " " + nextCellZ);
+						if (nextXObstacle != null || nextYObstacle != null) {
+							// if Obstacle is Pushable Object
+							if (nextXObstacle != null && nextYObstacle != null) {
+								if (nextXObstacle instanceof PushableObject
+										&& nextYObstacle instanceof PushableObject) {
+									// if both xObstacle and yObstacle pushable object
+									// move in XDirection First
+									pushXOrPushY(nextXObstacle, nextYObstacle);
 
-					if (nextXObstacle != null || nextYObstacle != null) {
-						// if Obstacle is Pushable Object
+								} else if (nextXObstacle instanceof PushableObject) {
+									// if only xObstacle is pushable object, then move
+									// XDirection
+									pushX(nextXObstacle);
+
+								} else if (nextYObstacle instanceof PushableObject) {
+									// if only yObstacle is pushable object, then move
+									// YDirection
+									pushY(nextYObstacle);
+								} else {
+									// if both Obstacles is not pushable object -- Do
+									// not move
+									standStill();
+								}
+
+							} else if (nextXObstacle != null) {
+								// if there is xObstacle but no yObstacle then move
+								// YDirection
+								moveOnlyYandZ();
+							} else if (nextYObstacle != null) {
+								// if there is yObstacle but no xObstacle then move
+								// XDirection
+								moveOnlyXandZ();
+							}
+
+						} else {
+							// If there is no obstacles for both y and x, then player
+							// can move freely
+							moveAllDir();
+						}
+					} else {
+						// for object moving in only y or x axis (and no obstacles at
+						// all) it can move freely
+						moveAllDir();
+					}
+
+				} else if (nextCellObstacle != null && nextCellObstacle != this) {
+					
+					if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
+						// in case of moving in both y and x if there is an
+						// obstacles and it's pushable object
+						// player must not be able to push it
+						IDrawable nextXObstacle = ObjectMap.drawableObjectHashMap
+								.get(nextCellX + " " + cellY + " " + nextCellZ);
+						IDrawable nextYObstacle = ObjectMap.drawableObjectHashMap
+								.get(cellX + " " + nextCellY + " " + nextCellZ);
+
 						if (nextXObstacle != null && nextYObstacle != null) {
+							// if both are pushable Object, consider x first. If x
+							// cannot be pushed then consider y
 							if (nextXObstacle instanceof PushableObject && nextYObstacle instanceof PushableObject) {
-								// if both xObstacle and yObstacle pushable object
-								// move in XDirection First
+								// PushX Then Push Y
 								pushXOrPushY(nextXObstacle, nextYObstacle);
 
 							} else if (nextXObstacle instanceof PushableObject) {
-								// if only xObstacle is pushable object, then move
-								// XDirection
+								// if it can push x then push x first
 								pushX(nextXObstacle);
 
 							} else if (nextYObstacle instanceof PushableObject) {
-								// if only yObstacle is pushable object, then move
-								// YDirection
+								// if it cannot push x then try push y
 								pushY(nextYObstacle);
 							} else {
-								// if both Obstacles is not pushable object -- Do
-								// not move
+								// if it cannot push both then stand still
 								standStill();
 							}
 
 						} else if (nextXObstacle != null) {
-							// if there is xObstacle but no yObstacle then move
-							// YDirection
+							// if there is nextXObstacle then move Y instead and push
+							// nothing
 							moveOnlyYandZ();
-						} else if (nextYObstacle != null) {
-							// if there is yObstacle but no xObstacle then move
-							// XDirection
+						} else {
+							// if there is nextYObstacle or there is no Obstacle for
+							// both nextY and nextX then move X Direction and push
+							// nothing
 							moveOnlyXandZ();
 						}
 
 					} else {
-						// If there is no obstacles for both y and x, then player
-						// can move freely
-						moveAllDir();
-					}
-				} else {
-					// for object moving in only y or x axis (and no obstacles at
-					// all) it can move freely
-					moveAllDir();
-				}
+						// player push along y or x axis only
+						boolean isPushed = ((PushableObject) nextCellObstacle).push(0, nextCellX - cellX,
+								nextCellY - cellY, nextCellZ - cellZ);
 
-			} else if (nextCellObstacle != null && nextCellObstacle != this) {
+						if (isPushed) {
+							moveAllDir();
 
-				if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
-					// in case of moving in both y and x if there is an
-					// obstacles and it's pushable object
-					// player must not be able to push it
-					IDrawable nextXObstacle = ObjectMap.drawableObjectHashMap
-							.get(nextCellX + " " + cellY + " " + nextCellZ);
-					IDrawable nextYObstacle = ObjectMap.drawableObjectHashMap
-							.get(cellX + " " + nextCellY + " " + nextCellZ);
-
-					if (nextXObstacle != null && nextYObstacle != null) {
-						// if both are pushable Object, consider x first. If x
-						// cannot be pushed then consider y
-						if (nextXObstacle instanceof PushableObject && nextYObstacle instanceof PushableObject) {
-							// PushX Then Push Y
-							pushXOrPushY(nextXObstacle, nextYObstacle);
-
-						} else if (nextXObstacle instanceof PushableObject) {
-							// if it can push x then push x first
-							pushX(nextXObstacle);
-
-						} else if (nextYObstacle instanceof PushableObject) {
-							// if it cannot push x then try push y
-							pushY(nextYObstacle);
 						} else {
-							// if it cannot push both then stand still
 							standStill();
 						}
-
-					} else if (nextXObstacle != null) {
-						// if there is nextXObstacle then move Y instead and push
-						// nothing
-						moveOnlyYandZ();
-					} else {
-						// if there is nextYObstacle or there is no Obstacle for
-						// both nextY and nextX then move X Direction and push
-						// nothing
-						moveOnlyXandZ();
 					}
 
-				} else {
-					// player push along y or x axis only
-					boolean isPushed = ((PushableObject) nextCellObstacle).push(0, nextCellX - cellX, nextCellY - cellY,
-							nextCellZ - cellZ);
-
-					if (isPushed) {
-						moveAllDir();
-
-					} else {
-						standStill();
-					}
 				}
-
 			}
+
+			
 		}
 
 		if (isMoving)
@@ -434,15 +508,15 @@ class Player implements IDrawable {
 				ballDiffY = y - ballDiffY;
 			}
 		}
-//		move on slope cheating
-//		if (y == 10) {
-//			if (x < 10 - 0.5)
-//				z = 0;
-//			else if (x > 12.5f)
-//				z = 1;
-//			else
-//				z = Helper.interpolate(0, 1, (x - 9.5f) / 3f);
-//		}
+		// move on slope cheating
+		// if (y == 10) {
+		// if (x < 10 - 0.5)
+		// z = 0;
+		// else if (x > 12.5f)
+		// z = 1;
+		// else
+		// z = Helper.interpolate(0, 1, (x - 9.5f) / 3f);
+		// }
 
 		updateTrail(ballDiffX, ballDiffY);
 	}

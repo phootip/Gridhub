@@ -58,7 +58,7 @@ public class Slope implements IDrawable {
 				break;
 		}
 		this.startZ = startZ;
-		endZ = startZ+1;
+		endZ = startZ;
 		isAlignX = alignment == 1 || alignment == -1;
 		isAlignY = alignment == 2 || alignment == -2;
 	}

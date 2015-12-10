@@ -16,7 +16,7 @@ import sun.security.jca.GetInstance.Instance;
 
 public class FloorLevel implements IDrawable {
 
-	private static int[][] floorLevelMap;
+	private static int[][] floorLevelMap; 
 	private static FloorLevel instance = new FloorLevel();
 	private int maxX;
 	private int maxY;

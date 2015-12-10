@@ -19,8 +19,15 @@ public class GateToGateTeleport extends TeleportGate {
 	@Override
 	protected void teleport(Player p) {
 		// TODO Auto-generated method stub
-		p.setPlayerPosition(destinationGate.getCellX(), destinationGate.getCellY(),	 destinationGate.getCellZ());
-		destinationGate.setActive(false);
+		try {
+			p.setPlayerPosition(destinationGate.getCellX(), destinationGate.getCellY(),	 destinationGate.getCellZ());
+			destinationGate.setActive(false);
+		} catch (NullPointerException e) {
+			// TODO: handle exception
+			System.out.println("No Destination TeleportGate");
+			p.setPlayerPosition(0, 0, 0);
+		}
+		
 	}
 	
 	public void setDestinationTelelportGate(TeleportGate destination) {

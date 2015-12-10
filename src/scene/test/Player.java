@@ -48,8 +48,8 @@ class Player implements IDrawable {
 	private ArrayList<ArrayList<Vector3>> shiftedTrailPosition;
 
 	private int[][] floorLevelMap = FloorLevel.getInstance().getFloorMap();
-	private int mapXRange = floorLevelMap.length / 2;
-	private int mapYRange = floorLevelMap[0].length / 2;
+	private int mapXRangeShift = floorLevelMap.length / 2;
+	private int mapYRangeShift = floorLevelMap[0].length / 2;
 
 	protected float getX() {
 		return x;
@@ -96,18 +96,25 @@ class Player implements IDrawable {
 	}
 
 	public void setCellX(int x) {
+		ObjectMap.drawableObjectHashMap.remove(cellX + " " + cellY + " " + cellZ + " " + this.name);
 		cellX = x;
 		nextCellX = x;
+		ObjectMap.drawableObjectHashMap.put(nextCellX + " " + nextCellY + " " + nextCellZ + " " + this.name, this);
 	}
 
 	public void setCellY(int y) {
+		ObjectMap.drawableObjectHashMap.remove(cellX + " " + cellY + " " + cellZ + " " + this.name);
 		cellY = y;
 		nextCellY = y;
+		ObjectMap.drawableObjectHashMap.put(nextCellX + " " + nextCellY + " " + nextCellZ + " " + this.name, this);
 	}
 
 	public void setCellZ(int z) {
+		ObjectMap.drawableObjectHashMap.remove(cellX + " " + cellY + " " + cellZ + " " + this.name);
 		cellZ = z;
 		nextCellZ = z;
+		ObjectMap.drawableObjectHashMap.remove(cellX + " " + cellY + " " + cellZ + " " + this.name);
+		
 	}
 
 	public Player(int playerId) {
@@ -220,10 +227,10 @@ class Player implements IDrawable {
 		}
 		// check for NextStepCell
 		// first check floor level
-		int floorLevelCellX = cellX + 12;
-		int floorLevelCellY = cellY + 12;
-		int floorLevelNextCellX = nextCellX + 12;
-		int floorLevelNextCellY = nextCellY + 12;
+		int floorLevelCellX = cellX + mapXRangeShift;
+		int floorLevelCellY = cellY + mapYRangeShift;
+		int floorLevelNextCellX = nextCellX + mapXRangeShift;
+		int floorLevelNextCellY = nextCellY + mapYRangeShift;
 		//System.out.println(isOnSlope);
 		if (FloorLevel.getInstance().isOutOfMap(nextCellX, nextCellY)) {
 			if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
@@ -304,8 +311,13 @@ class Player implements IDrawable {
 
 						} else if (nextCellX - cellX == 0 && slopeBelow.isAlignY() && nextCellY - cellY != 0) {
 							setCellZ(cellZ - 1);
-							tryMoveAndPushYDirection();
-							isOnSlope = false;
+							boolean isLeavingSlope = tryMoveAndPushYDirection();
+							if(isLeavingSlope) {
+								isOnSlope = false;
+							} else {
+								setCellZ(cellZ + 1);
+							}
+							
 						}
 					} else if (nextCellBelow instanceof Block) {
 						boolean isNextX_ZValueEqual = cellZ == floorLevelMap[floorLevelNextCellX][floorLevelCellY];
@@ -741,7 +753,7 @@ class Player implements IDrawable {
 	}
 
 	private boolean tryMoveAndPushXDirection() {
-		if (cellZ != floorLevelMap[nextCellX + 12][cellY + 12] && !isOnSlope) {
+		if (cellZ != floorLevelMap[nextCellX + mapXRangeShift][cellY + mapYRangeShift] && !isOnSlope) {
 			standStill();
 			return false;
 		}
@@ -766,7 +778,7 @@ class Player implements IDrawable {
 	}
 
 	private boolean tryMoveAndPushYDirection() {
-		if (cellZ != floorLevelMap[cellX + 12][nextCellY + 12] && !isOnSlope) {
+		if (cellZ != floorLevelMap[cellX + mapXRangeShift][nextCellY + mapYRangeShift] && !isOnSlope) {
 			standStill();
 			return false;
 		}

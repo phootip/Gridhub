@@ -251,10 +251,11 @@ class Player implements IDrawable {
 			// In case floor is not equals
 			if (cellZ != floorLevelMap[floorLevelNextCellX][floorLevelNextCellY]) {
 				// if floor is not equal to current Z
-				if(cellZ > floorLevelMap[floorLevelNextCellX][floorLevelNextCellY]) {
-					//if player is on a higher floor then check for nextCell below
-					IDrawable nextCellBelow = ObjectMap.drawableObjectHashMap.get(nextCellX + " " + nextCellY + " " + (nextCellZ-1));
-					if(nextCellBelow instanceof Slope) {
+				if (cellZ > floorLevelMap[floorLevelNextCellX][floorLevelNextCellY]) {
+					// if player is on a higher floor then check for nextCell below
+					IDrawable nextCellBelow = ObjectMap.drawableObjectHashMap
+							.get(nextCellX + " " + nextCellY + " " + (nextCellZ - 1));
+					if (nextCellBelow instanceof Slope) {
 						Slope slopeNextCell = (Slope) nextCellBelow;
 						boolean isNextX_ZValueEqual = cellZ == floorLevelMap[floorLevelNextCellX][floorLevelCellY];
 						boolean isNextY_ZValueEqual = cellZ == floorLevelMap[floorLevelCellX][floorLevelNextCellY];
@@ -269,22 +270,40 @@ class Player implements IDrawable {
 								standStill();
 							}
 						} else if ((nextCellX - cellX) != 0) {
-							if(slopeNextCell.isAlignX()) {
+							if (slopeNextCell.isAlignX()) {
 								moveOnlyXandZ();
 								isOnSlope = true;
-								
+
 							} else {
 								standStill();
 							}
 						} else if ((nextCellY - cellY) != 0) {
-							if(slopeNextCell.isAlignY()) {
+							if (slopeNextCell.isAlignY()) {
 								moveOnlyYandZ();
 								isOnSlope = true;
 							} else {
 								standStill();
 							}
 						}
-					} else if(nextCellBelow instanceof Block) {
+					} else if ((nextCellBelow == null || nextCellBelow instanceof Block) && isOnSlope) {
+						// exit slope from higer floor
+						Slope slopeBelow = (Slope) ObjectMap.drawableObjectHashMap
+								.get(cellX + " " + cellY + " " + (cellZ - 1));
+						if (nextCellX - cellX != 0 && slopeBelow.isAlignX() && nextCellY - cellY == 0) {
+							setCellZ(cellZ - 1);
+							boolean isLeavingSlope = tryMoveAndPushXDirection();
+							if (isLeavingSlope) {
+								isOnSlope = false;
+							} else {
+								setCellZ(cellZ + 1);
+							}
+
+						} else if (nextCellX - cellX == 0 && slopeBelow.isAlignY() && nextCellY - cellY != 0) {
+							setCellZ(cellZ - 1);
+							tryMoveAndPushYDirection();
+							isOnSlope = false;
+						}
+					} else if (nextCellBelow instanceof Block) {
 						boolean isNextX_ZValueEqual = cellZ == floorLevelMap[floorLevelNextCellX][floorLevelCellY];
 						boolean isNextY_ZValueEqual = cellZ == floorLevelMap[floorLevelCellX][floorLevelNextCellY];
 						if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
@@ -296,13 +315,13 @@ class Player implements IDrawable {
 								tryMoveAndPushYDirection();
 							} else {
 								standStill();
-							} 
+							}
 						} else if ((nextCellX - cellX) != 0) {
 							moveOnlyXandZ();
 						} else if ((nextCellY - cellY) != 0) {
 							moveOnlyYandZ();
 						}
-						
+
 					}
 				}
 				if (!(ObjectMap.drawableObjectHashMap
@@ -330,8 +349,8 @@ class Player implements IDrawable {
 						.get(nextCellX + " " + nextCellY + " " + nextCellZ) instanceof Slope)) {
 					// when the floor is not equal but next move is slope this means player is on the
 					// the higher side of the slope and prepare to move down (cellZ and nextZ of slope will match)
-					
-					Slope slopeNextCell = (Slope)ObjectMap.drawableObjectHashMap
+
+					Slope slopeNextCell = (Slope) ObjectMap.drawableObjectHashMap
 							.get(nextCellX + " " + nextCellY + " " + nextCellZ);
 					boolean isNextX_ZValueEqual = cellZ == floorLevelMap[floorLevelNextCellX][floorLevelCellY];
 					boolean isNextY_ZValueEqual = cellZ == floorLevelMap[floorLevelCellX][floorLevelNextCellY];
@@ -346,14 +365,14 @@ class Player implements IDrawable {
 							standStill();
 						}
 					} else if ((nextCellX - cellX) != 0) {
-						if(slopeNextCell.isAlignX()) {
+						if (slopeNextCell.isAlignX()) {
 							moveOnlyXandZ();
-							
+
 						} else {
 							standStill();
 						}
 					} else if ((nextCellY - cellY) != 0) {
-						if(slopeNextCell.isAlignY()) {
+						if (slopeNextCell.isAlignY()) {
 							moveOnlyYandZ();
 						} else {
 							standStill();
@@ -363,7 +382,7 @@ class Player implements IDrawable {
 			} else {
 				IDrawable nextCellObstacle = ObjectMap.drawableObjectHashMap
 						.get(nextCellX + " " + nextCellY + " " + nextCellZ);
-				
+
 				if (nextCellObstacle == null) {
 					// Action when player move diagonal
 					if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
@@ -419,7 +438,7 @@ class Player implements IDrawable {
 					}
 
 				} else if (nextCellObstacle != null && nextCellObstacle != this) {
-					
+
 					if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
 						// in case of moving in both y and x if there is an
 						// obstacles and it's pushable object
@@ -475,7 +494,6 @@ class Player implements IDrawable {
 				}
 			}
 
-			
 		}
 
 		if (isMoving)
@@ -631,7 +649,7 @@ class Player implements IDrawable {
 		}
 	}
 
-	private void pushX(IDrawable nextXObstacle) {
+	private boolean pushX(IDrawable nextXObstacle) {
 		boolean isPushed = ((PushableObject) nextXObstacle).push(0, nextCellX - cellX, 0, 0);
 
 		if (isPushed) {
@@ -640,13 +658,15 @@ class Player implements IDrawable {
 			cellX = nextCellX;
 			nextCellY = cellY;
 			nextCellZ = cellZ;
+			return true;
 
 		} else {
 			standStill();
+			return false;
 		}
 	}
 
-	private void pushY(IDrawable nextYObstacle) {
+	private boolean pushY(IDrawable nextYObstacle) {
 		boolean isPushed = ((PushableObject) nextYObstacle).push(0, 0, nextCellY - cellY, 0);
 
 		if (isPushed) {
@@ -655,9 +675,11 @@ class Player implements IDrawable {
 			nextCellX = cellX;
 			cellY = nextCellY;
 			nextCellZ = cellZ;
+			return true;
 
 		} else {
 			standStill();
+			return false;
 		}
 	}
 
@@ -691,43 +713,50 @@ class Player implements IDrawable {
 		cellZ = nextCellZ;
 	}
 
-	private void tryMoveAndPushXDirection() {
+	private boolean tryMoveAndPushXDirection() {
 		if (cellZ != floorLevelMap[nextCellX + 12][cellY + 12]) {
 			standStill();
-			return;
+			return false;
 		}
 
 		IDrawable nextXObstacle = ObjectMap.drawableObjectHashMap.get(nextCellX + " " + cellY + " " + nextCellZ);
 
 		if (nextXObstacle != null) {
 			if (nextXObstacle instanceof PushableObject) {
-				pushX(nextXObstacle);
+				return pushX(nextXObstacle);
+
 			} else if (nextXObstacle instanceof IWalkOnAble) {
 				moveOnlyXandZ();
+				return true;
 			} else {
 				standStill();
+				return false;
 			}
-		} else if (nextXObstacle == null) {
+		} else {
 			moveOnlyXandZ();
+			return true;
 		}
 	}
 
-	private void tryMoveAndPushYDirection() {
+	private boolean tryMoveAndPushYDirection() {
 		if (cellZ != floorLevelMap[cellX + 12][nextCellY + 12]) {
 			standStill();
-			return;
+			return false;
 		}
 		IDrawable nextYObstacle = ObjectMap.drawableObjectHashMap.get(cellX + " " + nextCellY + " " + nextCellZ);
 		if (nextYObstacle != null) {
 			if (nextYObstacle instanceof PushableObject) {
-				pushY(nextYObstacle);
+				return pushY(nextYObstacle);
 			} else if (nextYObstacle instanceof IWalkOnAble) {
 				moveOnlyYandZ();
+				return true;
 			} else {
 				standStill();
+				return false;
 			}
-		} else if (nextYObstacle == null) {
+		} else {
 			moveOnlyYandZ();
+			return true;
 		}
 	}
 

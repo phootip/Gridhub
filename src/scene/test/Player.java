@@ -224,7 +224,7 @@ class Player implements IDrawable {
 		int floorLevelCellY = cellY + 12;
 		int floorLevelNextCellX = nextCellX + 12;
 		int floorLevelNextCellY = nextCellY + 12;
-		System.out.println(isOnSlope);
+		//System.out.println(isOnSlope);
 		if (FloorLevel.getInstance().isOutOfMap(nextCellX, nextCellY)) {
 			if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
 				// if move diagonal then it can move either y or x
@@ -257,6 +257,7 @@ class Player implements IDrawable {
 					IDrawable nextCellBelow = ObjectMap.drawableObjectHashMap
 							.get(nextCellX + " " + nextCellY + " " + (nextCellZ - 1));
 					if (nextCellBelow instanceof Slope) {
+						
 						Slope slopeNextCell = (Slope) nextCellBelow;
 						boolean isNextX_ZValueEqual = cellZ == floorLevelMap[floorLevelNextCellX][floorLevelCellY];
 						boolean isNextY_ZValueEqual = cellZ == floorLevelMap[floorLevelCellX][floorLevelNextCellY];
@@ -287,8 +288,9 @@ class Player implements IDrawable {
 								standStill();
 							}
 						}
-					} else if ((nextCellBelow == null || nextCellBelow instanceof Block) && isOnSlope) {
-						// exit slope from higer floor
+					} else if ((nextCellBelow == null || nextCellBelow instanceof Block || nextCellBelow instanceof Slope) && isOnSlope) {
+						// exit slope from higher floor
+						
 						Slope slopeBelow = (Slope) ObjectMap.drawableObjectHashMap
 								.get(cellX + " " + cellY + " " + (cellZ - 1));
 						if (nextCellX - cellX != 0 && slopeBelow.isAlignX() && nextCellY - cellY == 0) {
@@ -739,7 +741,7 @@ class Player implements IDrawable {
 	}
 
 	private boolean tryMoveAndPushXDirection() {
-		if (cellZ != floorLevelMap[nextCellX + 12][cellY + 12]) {
+		if (cellZ != floorLevelMap[nextCellX + 12][cellY + 12] && !isOnSlope) {
 			standStill();
 			return false;
 		}
@@ -764,7 +766,7 @@ class Player implements IDrawable {
 	}
 
 	private boolean tryMoveAndPushYDirection() {
-		if (cellZ != floorLevelMap[cellX + 12][nextCellY + 12]) {
+		if (cellZ != floorLevelMap[cellX + 12][nextCellY + 12] && !isOnSlope) {
 			standStill();
 			return false;
 		}

@@ -35,21 +35,30 @@ public class TestScene2 extends Scene {
 		FloorLevel.getInstance().newFloorLevelMap(gridSize);
 		int floorMapXSize = FloorLevel.getInstance().getFloorMap().length;
 		int floorMapYSize = FloorLevel.getInstance().getFloorMap()[0].length;
-	
-			
+
 		for (int i = 0; i < floorMapXSize; i++) {
 			for (int j = 0; j < floorMapYSize; j++) {
-				if (i > 20) {
+				if (i > 23) {
+					FloorLevel.getInstance().setZValue(i, j, 2);
+				} else if (i > 20) {
 					FloorLevel.getInstance().setZValue(i, j, 1);
 				} else {
 					FloorLevel.getInstance().setZValue(i, j, 0);
 				}
 			}
 		}
+//		map floor checking
+//		for (int j = 0; j < floorMapYSize; j++) {
+//			for (int i = 0; i < floorMapXSize; i++) {
+//				System.out.print(FloorLevel.getInstance().getZValueFromXY(i, j));
+//				if(i == floorMapXSize - 1) System.out.println();
+//				
+//			}
+//		}
 		player1 = new Player(util.Constants.PLAYER1_ID);
 		player2 = new Player(util.Constants.PLAYER2_ID);
 		camera = new Camera(player1);
-		
+
 		floorSwitches.add(new FloorSwitch(6, 1, 0, false, 5));
 		floorSwitches.add(new FloorSwitch(6, 3, 0, false, 10));
 		floorSwitches.add(new FloorSwitch(6, 5, 0, false, 20));
@@ -57,9 +66,13 @@ public class TestScene2 extends Scene {
 		floorSwitches.add(new FloorSwitch(6, 9, 0, true, 20));
 
 		slopes.add(new Slope(6, 10, 0, 1));
-
+		
+		
+		slopes.add(new Slope(6, 5, 0, 1));
+		slopes.add(new Slope(9,10,1,1));
+		
 		for (Slope eachSlope : slopes) {
-			
+
 			int slopeStartX = eachSlope.getStartX();
 			int slopeStartY = eachSlope.getStartY();
 			int slopeStartZ = eachSlope.getStartZ();
@@ -69,7 +82,7 @@ public class TestScene2 extends Scene {
 			int xBar = (slopeStartX + slopeEndX) / 2;
 			int yBar = (slopeStartY + slopeEndY) / 2;
 
-			ObjectMap.drawableObjectHashMap.put(slopeStartX + " " + slopeStartY + " " + slopeStartZ,eachSlope);
+			ObjectMap.drawableObjectHashMap.put(slopeStartX + " " + slopeStartY + " " + slopeStartZ, eachSlope);
 			ObjectMap.drawableObjectHashMap.put(xBar + " " + yBar + " " + slopeStartZ, eachSlope);
 			ObjectMap.drawableObjectHashMap.put(slopeEndX + " " + slopeEndY + " " + slopeEndZ, eachSlope);
 

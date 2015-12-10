@@ -70,6 +70,8 @@ public class TestScene2 extends Scene {
 		
 		slopes.add(new Slope(6, 5, 0, 1));
 		slopes.add(new Slope(9,10,1,1));
+		slopes.add(new Slope(-2, 3, 0, 1));
+		
 		
 		for (Slope eachSlope : slopes) {
 
@@ -109,13 +111,23 @@ public class TestScene2 extends Scene {
 		// blocks.add(new Block(2, 1, 0, 20, true));
 		// blocks.add(new Block(2, 2, 3, 20, true));
 		blocks.add(new Block(2, 3, 0, 20, true));
-		blocks.add(new Block(2, 3, 1, 20, true));
 		blocks.add(new Block(2, 4, 0, 20, true));
 		blocks.add(new Block(2, 5, 0, 20, true));
 		blocks.add(new Block(2, 7, 0, 20, true));
 		blocks.add(new Block(2, 8, 0, 20, true));
 		blocks.add(new Block(2, 9, 0, 20, true));
 		blocks.add(new Block(2, 10, 0, 20, true));
+		
+		blocks.add(new Block(1, 3, 0, 20, true));
+		blocks.add(new Block(2, 3, 1, 20, true));
+		blocks.add(new Block(3, 3, 0, 20, true));
+		blocks.add(new Block(4, 3, 0, 20, true));
+		blocks.add(new Block(5, 3, 0, 20, true));
+		blocks.add(new Block(6, 3, 0, 20, true));
+		blocks.add(new Block(7, 3, 0, 20, true));
+		blocks.add(new Block(8, 3, 0, 20, true));
+		
+		
 
 		// blocks.add(new Block(-1, 1, 0, 110, true));
 		// blocks.add(new Block(0, 1, 0, 110, true));

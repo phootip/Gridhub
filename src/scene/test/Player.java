@@ -114,7 +114,7 @@ class Player implements IDrawable {
 		cellZ = z;
 		nextCellZ = z;
 		ObjectMap.drawableObjectHashMap.remove(cellX + " " + cellY + " " + cellZ + " " + this.name);
-		
+
 	}
 
 	public Player(int playerId) {
@@ -225,13 +225,14 @@ class Player implements IDrawable {
 			}
 
 		}
+		// if(playerId == 1) System.out.println(cellX);
 		// check for NextStepCell
 		// first check floor level
 		int floorLevelCellX = cellX + mapXRangeShift;
 		int floorLevelCellY = cellY + mapYRangeShift;
 		int floorLevelNextCellX = nextCellX + mapXRangeShift;
 		int floorLevelNextCellY = nextCellY + mapYRangeShift;
-		//System.out.println(isOnSlope);
+		// System.out.println(isOnSlope);
 		if (FloorLevel.getInstance().isOutOfMap(nextCellX, nextCellY)) {
 			if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
 				// if move diagonal then it can move either y or x
@@ -264,7 +265,7 @@ class Player implements IDrawable {
 					IDrawable nextCellBelow = ObjectMap.drawableObjectHashMap
 							.get(nextCellX + " " + nextCellY + " " + (nextCellZ - 1));
 					if (nextCellBelow instanceof Slope) {
-						
+
 						Slope slopeNextCell = (Slope) nextCellBelow;
 						boolean isNextX_ZValueEqual = cellZ == floorLevelMap[floorLevelNextCellX][floorLevelCellY];
 						boolean isNextY_ZValueEqual = cellZ == floorLevelMap[floorLevelCellX][floorLevelNextCellY];
@@ -295,29 +296,59 @@ class Player implements IDrawable {
 								standStill();
 							}
 						}
-					} else if ((nextCellBelow == null || nextCellBelow instanceof Block || nextCellBelow instanceof Slope) && isOnSlope) {
-						// exit slope from higher floor
-						
+					} else
+						if ((nextCellBelow == null || nextCellBelow instanceof Block || nextCellBelow instanceof Slope)
+								&& isOnSlope) {
+						// exit the slope from both direction when there is the box waiting
 						Slope slopeBelow = (Slope) ObjectMap.drawableObjectHashMap
 								.get(cellX + " " + cellY + " " + (cellZ - 1));
+
 						if (nextCellX - cellX != 0 && slopeBelow.isAlignX() && nextCellY - cellY == 0) {
-							setCellZ(cellZ - 1);
-							boolean isLeavingSlope = tryMoveAndPushXDirection();
-							if (isLeavingSlope) {
-								isOnSlope = false;
+							if (slopeBelow.isSlopeExit(cellX, cellY)) {
+								if (nextCellBelow == null) {
+									standStill();
+//for falling down the slope if there is nothing at the exit
+//									setCellZ(cellZ-1);
+//									moveOnlyXandZ();
+//									isOnSlope = false;
+								} else {
+									tryMoveAndPushXDirection();
+									isOnSlope = false;
+								}
+
 							} else {
-								setCellZ(cellZ + 1);
+								setCellZ(cellZ - 1);
+								boolean isLeavingSlope = tryMoveAndPushXDirection();
+								if (isLeavingSlope) {
+									isOnSlope = false;
+								} else {
+									setCellZ(cellZ + 1);
+									setCellX(cellX);
+									setCellY(cellY);
+								}
 							}
 
 						} else if (nextCellX - cellX == 0 && slopeBelow.isAlignY() && nextCellY - cellY != 0) {
-							setCellZ(cellZ - 1);
-							boolean isLeavingSlope = tryMoveAndPushYDirection();
-							if(isLeavingSlope) {
+							if (slopeBelow.isSlopeExit(cellX, cellY)) {
+								if(nextCellBelow == null) {
+									standStill();
+								} else {
+									tryMoveAndPushYDirection();
 								isOnSlope = false;
+								}
+								
 							} else {
-								setCellZ(cellZ + 1);
+								setCellZ(cellZ - 1);
+								boolean isLeavingSlope = tryMoveAndPushYDirection();
+								if (isLeavingSlope) {
+									isOnSlope = false;
+								} else {
+									setCellZ(cellZ + 1);
+									setCellX(cellX);
+									setCellY(cellY);
+								}
 							}
-							
+
 						}
 					} else if (nextCellBelow instanceof Block) {
 						boolean isNextX_ZValueEqual = cellZ == floorLevelMap[floorLevelNextCellX][floorLevelCellY];
@@ -333,9 +364,25 @@ class Player implements IDrawable {
 								standStill();
 							}
 						} else if ((nextCellX - cellX) != 0) {
-							moveOnlyXandZ();
+							IDrawable nextXObstacle = ObjectMap.drawableObjectHashMap
+									.get(nextCellX + " " + cellY + " " + nextCellZ);
+							if (nextXObstacle != null) {
+								if (nextXObstacle instanceof Block)
+									tryMoveAndPushXDirection();
+							} else {
+								moveOnlyXandZ();
+							}
+
 						} else if ((nextCellY - cellY) != 0) {
-							moveOnlyYandZ();
+							IDrawable nextYObstacle = ObjectMap.drawableObjectHashMap
+									.get(cellY + " " + nextCellY + " " + nextCellZ);
+							if (nextYObstacle != null) {
+								if (nextYObstacle instanceof Block)
+									tryMoveAndPushYDirection();
+							} else {
+								moveOnlyYandZ();
+							}
+
 						}
 
 					}
@@ -516,7 +563,7 @@ class Player implements IDrawable {
 							Slope nextCellSlope = (Slope) nextCellObstacle;
 							boolean isNextCellEntranceOfSlope = nextCellSlope.isSlopeEntrance(nextCellX, nextCellY);
 							if (isNextCellEntranceOfSlope && nextCellSlope.isAlignX() && nextCellX - cellX != 0) {
-								setCellZ(cellZ+1);
+								setCellZ(cellZ + 1);
 								moveOnlyXandZ();
 								isOnSlope = true;
 							} else
@@ -753,7 +800,10 @@ class Player implements IDrawable {
 	}
 
 	private boolean tryMoveAndPushXDirection() {
-		if (cellZ != floorLevelMap[nextCellX + mapXRangeShift][cellY + mapYRangeShift] && !isOnSlope) {
+		IDrawable nextObjectBelow = ObjectMap.drawableObjectHashMap
+				.get(nextCellX + " " + cellY + " " + (nextCellZ - 1));
+		if (cellZ != floorLevelMap[nextCellX + mapXRangeShift][cellY + mapYRangeShift] && !isOnSlope
+				&& !(nextObjectBelow instanceof Block)) {
 			standStill();
 			return false;
 		}
@@ -778,7 +828,10 @@ class Player implements IDrawable {
 	}
 
 	private boolean tryMoveAndPushYDirection() {
-		if (cellZ != floorLevelMap[cellX + mapXRangeShift][nextCellY + mapYRangeShift] && !isOnSlope) {
+		IDrawable nextObjectBelow = ObjectMap.drawableObjectHashMap
+				.get(cellX + " " + nextCellY + " " + (nextCellZ - 1));
+		if (cellZ != floorLevelMap[cellX + mapXRangeShift][nextCellY + mapYRangeShift] && !isOnSlope
+				&& !(nextObjectBelow instanceof Block)) {
 			standStill();
 			return false;
 		}

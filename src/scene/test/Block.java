@@ -81,7 +81,8 @@ class Block implements PushableObject, WalkThroughable {
 
 		if (weight >= 100 || ObjectMap.drawableObjectHashMap.get(x + " " + y + " " + (z + 1)) != null)
 			return false;
-		if (ObjectMap.drawableObjectHashMap.get(x + " " + y + " " + (z + 1) + " Player" + util.Constants.PLAYER1_ID) != null
+		if (ObjectMap.drawableObjectHashMap
+				.get(x + " " + y + " " + (z + 1) + " Player" + util.Constants.PLAYER1_ID) != null
 				|| ObjectMap.drawableObjectHashMap
 						.get(x + " " + y + " " + (z + 1) + " Player" + util.Constants.PLAYER2_ID) != null)
 			return false;
@@ -89,17 +90,27 @@ class Block implements PushableObject, WalkThroughable {
 	}
 
 	public boolean push(int previousWeight, int diffX, int diffY, int diffZ) {
-		if(FloorLevel.getInstance().isOutOfMap(x+diffX, y+diffY)) return false;
+
+		if (FloorLevel.getInstance().isOutOfMap(x + diffX, y + diffY))
+			return false;
 		if (this.weight + previousWeight > 100 || !isPushable())
 			return false;
-		if (ObjectMap.drawableObjectHashMap
-				.get((x + diffX) + " " + (y + diffY) + " " + (z + diffZ) + " Player" + util.Constants.PLAYER1_ID) != null
-				|| ObjectMap.drawableObjectHashMap.get(
-						(x + diffX) + " " + (y + diffY) + " " + (z + diffZ) + " Player" + util.Constants.PLAYER2_ID) != null)
+		if (ObjectMap.drawableObjectHashMap.get(
+				(x + diffX) + " " + (y + diffY) + " " + (z + diffZ) + " Player" + util.Constants.PLAYER1_ID) != null
+				|| ObjectMap.drawableObjectHashMap.get((x + diffX) + " " + (y + diffY) + " " + (z + diffZ) + " Player"
+						+ util.Constants.PLAYER2_ID) != null)
 			return false;
-		if(z != floorLevelMap[x+diffX +mapXRangeShift][y+diffY + mapYRangeShift]) return false;
+
 		IDrawable nextObjectObstacles = ObjectMap.drawableObjectHashMap
 				.get((x + diffX) + " " + (y + diffY) + " " + (z + diffZ));
+		if (z != floorLevelMap[x + diffX + mapXRangeShift][y + diffY + mapYRangeShift]) {
+			IDrawable nextObjectBelow = ObjectMap.drawableObjectHashMap
+					.get((x + diffX) + " " + (y + diffY) + " " + (z + diffZ - 1));
+
+			if (!(nextObjectBelow instanceof Block))
+				return false;
+		}
+
 		if (nextObjectObstacles == null) {
 			ObjectMap.drawableObjectHashMap.put((x + diffX) + " " + (y + diffY) + " " + (z + diffZ), this);
 			ObjectMap.drawableObjectHashMap.remove(x + " " + y + " " + z);

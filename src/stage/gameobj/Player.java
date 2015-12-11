@@ -14,7 +14,7 @@ import stage.Camera;
 import stage.FloorLevel;
 import stage.ObjectMap;
 import util.Constants.ColorSwatch;
-import util.Constants.PlayerSettings;
+import util.Constants.PlayerHelper;
 import util.Helper;
 import util.InputManager;
 
@@ -165,7 +165,7 @@ public class Player implements IDrawable {
 		}
 
 		// Set player drawing assets
-		baseColor = PlayerSettings.getPlayerColor(playerId);
+		baseColor = PlayerHelper.getPlayerColor(playerId);
 		mainTrailStroke = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 		mainTrailColor = Helper.getAlphaColor(baseColor, 150);
 		glowTrailStroke = new BasicStroke(8, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
@@ -210,16 +210,16 @@ public class Player implements IDrawable {
 			int yDir = 0;
 			int xDir = 0;
 
-			if (InputManager.getInstance().isKeyPressing(PlayerSettings.getUpKey(playerId))) {
+			if (PlayerHelper.isUpKeyPressing(playerId)) {
 				yDir--;
 			}
-			if (InputManager.getInstance().isKeyPressing(PlayerSettings.getDownKey(playerId))) {
+			if (PlayerHelper.isDownKeyPressing(playerId)) {
 				yDir++;
 			}
-			if (InputManager.getInstance().isKeyPressing(PlayerSettings.getLeftKey(playerId))) {
+			if (PlayerHelper.isLeftKeyPressing(playerId)) {
 				xDir--;
 			}
-			if (InputManager.getInstance().isKeyPressing(PlayerSettings.getRightKey(playerId))) {
+			if (PlayerHelper.isRightKeyPressing(playerId)) {
 				xDir++;
 			}
 

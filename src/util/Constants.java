@@ -53,7 +53,7 @@ public final class Constants {
 		public static final Color SHADOW = new Color(50, 76, 138);
 	}
 
-	public final static class PlayerSettings {
+	public final static class PlayerHelper {
 
 		public static Color getPlayerColor(int playerId) {
 			switch (playerId) {
@@ -66,48 +66,50 @@ public final class Constants {
 			}
 		}
 
-		public static int getLeftKey(int playerId) {
+		public static boolean isLeftKeyPressing(int playerId) {
 			switch (playerId) {
 				case PLAYER1_ID:
-					return KeyEvent.VK_A;
+					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_A);
 				case PLAYER2_ID:
-					return KeyEvent.VK_L;
+					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_L);
 				default:
 					throw new IllegalArgumentException("Invalid player id : " + playerId);
 
 			}
 		}
 
-		public static int getRightKey(int playerId) {
+		public static boolean isRightKeyPressing(int playerId) {
 			switch (playerId) {
 				case PLAYER1_ID:
-					return KeyEvent.VK_D;
+					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_D);
 				case PLAYER2_ID:
-					return KeyEvent.VK_QUOTE;
+					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_QUOTE)
+							|| InputManager.getInstance().isKeyPressing(16780807);
 				default:
 					throw new IllegalArgumentException("Invalid player id : " + playerId);
 
 			}
 		}
 
-		public static int getDownKey(int playerId) {
+		public static boolean isDownKeyPressing(int playerId) {
 			switch (playerId) {
 				case PLAYER1_ID:
-					return KeyEvent.VK_S;
+					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_S);
 				case PLAYER2_ID:
-					return KeyEvent.VK_SEMICOLON;
+					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_SEMICOLON)
+							|| InputManager.getInstance().isKeyPressing(16780839);
 				default:
 					throw new IllegalArgumentException("Invalid player id : " + playerId);
 
 			}
 		}
 
-		public static int getUpKey(int playerId) {
+		public static boolean isUpKeyPressing(int playerId) {
 			switch (playerId) {
 				case PLAYER1_ID:
-					return KeyEvent.VK_W;
+					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_W);
 				case PLAYER2_ID:
-					return KeyEvent.VK_P;
+					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_P);
 				default:
 					throw new IllegalArgumentException("Invalid player id : " + playerId);
 

@@ -77,8 +77,9 @@ public class InputManager implements KeyListener {
 	 */
 	@Override
 	public synchronized void keyPressed(KeyEvent e) {
-		if (!keyPressHasher.contains(e.getKeyCode())) {
-			keyPressBuffer.add(e.getKeyCode());
+		int keyCode = (e.getKeyCode() != 0) ? e.getKeyCode() : e.getExtendedKeyCode();
+		if (!keyPressHasher.contains(keyCode)) {
+			keyPressBuffer.add(keyCode);
 		}
 	}
 
@@ -88,7 +89,8 @@ public class InputManager implements KeyListener {
 	 */
 	@Override
 	public synchronized void keyReleased(KeyEvent e) {
-		keyReleaseBuffer.add(e.getKeyCode());
+		int keyCode = (e.getKeyCode() != 0) ? e.getKeyCode() : e.getExtendedKeyCode();
+		keyReleaseBuffer.add(keyCode);
 	}
 
 	/**

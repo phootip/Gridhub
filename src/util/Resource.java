@@ -1,8 +1,10 @@
 package util;
 
+import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
+import java.awt.Stroke;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -83,6 +85,17 @@ public class Resource {
 					new File(getResourceAsURI("fonts/" + fontWeight.getFontFileName())));
 			ge.registerFont(newFont);
 		}
+	}
+
+	private static final Stroke gameObjThickStroke = new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+	private static final Stroke gameObjThinStroke = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+	public static Stroke getGameObjectThickStroke() {
+		return gameObjThickStroke;
+	}
+
+	public static Stroke getGameObjectThinStroke() {
+		return gameObjThinStroke;
 	}
 
 }

@@ -69,13 +69,17 @@ public class GameStage extends Scene {
 		slopes.add(new Slope(6, 5, 0, Slope.ALIGNMENT_RIGHT));
 		slopes.add(new Slope(9, 10, 1, Slope.ALIGNMENT_RIGHT));
 		slopes.add(new Slope(-2, 3, 0, Slope.ALIGNMENT_RIGHT));
+		
+		slopes.add(new Slope(13, 3, 2, Slope.ALIGNMENT_RIGHT));
+		slopes.add(new Slope(16, 0, 2, Slope.ALIGNMENT_DOWN));
+		slopes.add(new Slope(16, 6, 2, Slope.ALIGNMENT_UP));
+		slopes.add(new Slope(19, 3, 2, Slope.ALIGNMENT_LEFT));
 
 		for (Slope eachSlope : slopes) {
 
 			int slopeStartX = eachSlope.getStartX();
 			int slopeStartY = eachSlope.getStartY();
 			int slopeStartZ = eachSlope.getStartZ();
-			int slopeEndZ = eachSlope.getEndZ();
 			int slopeEndX = eachSlope.getEndX();
 			int slopeEndY = eachSlope.getEndY();
 			int xBar = (slopeStartX + slopeEndX) / 2;
@@ -83,7 +87,7 @@ public class GameStage extends Scene {
 
 			ObjectMap.drawableObjectHashMap.put(slopeStartX + " " + slopeStartY + " " + slopeStartZ, eachSlope);
 			ObjectMap.drawableObjectHashMap.put(xBar + " " + yBar + " " + slopeStartZ, eachSlope);
-			ObjectMap.drawableObjectHashMap.put(slopeEndX + " " + slopeEndY + " " + slopeEndZ, eachSlope);
+			ObjectMap.drawableObjectHashMap.put(slopeEndX + " " + slopeEndY + " " + slopeStartZ, eachSlope);
 
 		}
 		// slopes.add(new Slope(5, 5, 2));

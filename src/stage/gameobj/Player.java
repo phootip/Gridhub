@@ -666,8 +666,6 @@ public class Player implements IDrawable {
 				ballDiffZ = drawZ - ballDiffZ;
 			}
 		}
-		
-		if (playerId == 1) System.out.println(oldCellZ + ":" + cellZ);
 
 		// drawZ = isOnSlope ? 1 : 0;
 		// move on slope cheating

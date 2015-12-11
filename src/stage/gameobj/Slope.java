@@ -1,14 +1,17 @@
 package stage.gameobj;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 
 import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 
 import core.geom.Vector2;
+import core.geom.Vector3;
 import stage.Camera;
 import util.Constants.ColorSwatch;
 import util.Helper;
+import util.Resource;
 
 /**
  * This class represents slope Object.
@@ -28,19 +31,19 @@ public class Slope implements IDrawable {
 	private boolean isAlignY;
 
 	/**
-	 * Constant representing the slope going toward right direction (+x).
+	 * Constant representing the slope going upstair in right direction (+x).
 	 */
 	public static final int ALIGNMENT_RIGHT = 1;
 	/**
-	 * Constant representing the slope going toward down direction (+y).
+	 * Constant representing the slope going upstair in down direction (+y).
 	 */
 	public static final int ALIGNMENT_DOWN = 2;
 	/**
-	 * Constant representing the slope going toward left direction (-x).
+	 * Constant representing the slope going upstair in left direction (-x).
 	 */
 	public static final int ALIGNMENT_LEFT = -1;
 	/**
-	 * Constant representing the slope going toward up direction (-y).
+	 * Constant representing the slope going upstair in up direction (-y).
 	 */
 	public static final int ALIGNMENT_UP = -2;
 
@@ -67,18 +70,21 @@ public class Slope implements IDrawable {
 			case ALIGNMENT_DOWN:
 				endX = startX;
 				endY = startY + 2;
+				break;
 			case ALIGNMENT_LEFT:
 				endX = startX - 2;
 				endY = startY;
+				break;
 			case ALIGNMENT_UP:
 				endX = startX;
 				endY = startY - 2;
+				break;
 
 			default:
 				throw new IllegalArgumentException("Invalid Slope alignment : " + alignment);
 		}
 		this.startZ = startZ;
-		endZ = startZ;
+		endZ = startZ + 1;
 		isAlignX = alignment == ALIGNMENT_RIGHT || alignment == ALIGNMENT_LEFT;
 		isAlignY = alignment == ALIGNMENT_DOWN || alignment == ALIGNMENT_UP;
 	}
@@ -199,31 +205,102 @@ public class Slope implements IDrawable {
 	 */
 	@Override
 	public void draw(Graphics2D g, Camera camera) {
-		// TODO Auto-generated method stub
-		int slopeStartX = startX;
-		int slopeStartY = startY;
-		int slopeStartZ = startZ;
 
-		Vector2 startV1 = camera.getDrawPosition(slopeStartX - 0.5f, slopeStartY + 0.5f, slopeStartZ);
-		Vector2 endV1 = camera.getDrawPosition(slopeStartX + 2.5f, slopeStartY + 0.5f, slopeStartZ + 1);
-		Vector2 startV2 = camera.getDrawPosition(slopeStartX - 0.5f, slopeStartY - 0.5f, slopeStartZ);
-		Vector2 endV2 = camera.getDrawPosition(slopeStartX + 2.5f, slopeStartY - 0.5f, slopeStartZ + 1);
+		Vector3 startP1 = new Vector3(startX, startY, startZ);
+		Vector3 endP1 = new Vector3(endX, endY, endZ);
+		Vector3 midP1 = new Vector3(endX, endY, startZ);
+		Vector3 startP2 = new Vector3(startP1);
+		Vector3 endP2 = new Vector3(endP1);
+		Vector3 midP2 = new Vector3(midP1);
 
-		Vector2 mid1 = camera.getDrawPosition(slopeStartX + 2.5f, slopeStartY + 0.5f, slopeStartZ);
-		Vector2 mid2 = camera.getDrawPosition(slopeStartX + 2.5f, slopeStartY - 0.5f, slopeStartZ);
+		if (isAlignX) {
+			float shifter = (startX < endX) ? -0.5f : 0.5f;
 
-		g.setStroke(new BasicStroke(3));
+			startP1.add(shifter, 0.5f, 0);
+			endP1.add(-shifter, 0.5f, 0);
+			midP1.add(-shifter, 0.5f, 0);
+
+			startP2.add(shifter, -0.5f, 0);
+			endP2.add(-shifter, -0.5f, 0);
+			midP2.add(-shifter, -0.5f, 0);
+
+		} else if (isAlignY) {
+			float shifter = (startY < endY) ? -0.5f : 0.5f;
+
+			startP1.add(0.5f, shifter, 0);
+			endP1.add(0.5f, -shifter, 0);
+			midP1.add(0.5f, -shifter, 0);
+
+			startP2.add(-0.5f, shifter, 0);
+			endP2.add(-0.5f, -shifter, 0);
+			midP2.add(-0.5f, -shifter, 0);
+		}
+
+		Vector2 startV1 = camera.getDrawPosition(startP1);
+		Vector2 endV1 = camera.getDrawPosition(endP1);
+		Vector2 midV1 = camera.getDrawPosition(midP1);
+		Vector2 startV2 = camera.getDrawPosition(startP2);
+		Vector2 endV2 = camera.getDrawPosition(endP2);
+		Vector2 midV2 = camera.getDrawPosition(midP2);
+
+		if (midV1.getY() < midV2.getY()) {
+			Vector2 temp;
+
+			temp = startV1;
+			startV1 = startV2;
+			startV2 = temp;
+
+			temp = midV1;
+			midV1 = midV2;
+			midV2 = temp;
+
+			temp = endV1;
+			endV1 = endV2;
+			endV2 = temp;
+		}
+		// Now, 1 is always nearer than 2.
+
+		// There are 2 types of drawing Slope: 1 inner line and 3 inner lines
+		boolean is3InnerLines = (midV1.getX() < startV1.getX()) != (midV1.getX() < midV2.getX());
+
+		int[] outerPolygonX = new int[5];
+		int[] outerPolygonY = new int[5];
+
+		outerPolygonX[0] = startV2.getIntX();
+		outerPolygonX[1] = startV1.getIntX();
+		outerPolygonX[2] = midV1.getIntX();
+		outerPolygonX[4] = endV2.getIntX();
+
+		outerPolygonY[0] = startV2.getIntY();
+		outerPolygonY[1] = startV1.getIntY();
+		outerPolygonY[2] = midV1.getIntY();
+		outerPolygonY[4] = endV2.getIntY();
+
+		if (is3InnerLines) {
+			outerPolygonX[3] = midV2.getIntX();
+			outerPolygonY[3] = midV2.getIntY();
+		} else {
+			outerPolygonX[3] = endV1.getIntX();
+			outerPolygonY[3] = endV1.getIntY();
+		}
+		
+		g.setColor(ColorSwatch.BACKGROUND);
+		g.fillPolygon(outerPolygonX, outerPolygonY, 5);
+		
 		g.setColor(ColorSwatch.FOREGROUND);
-		g.drawLine((int) startV1.getX(), (int) startV1.getY(), (int) endV1.getX(), (int) endV1.getY());
-		g.drawLine((int) startV2.getX(), (int) startV2.getY(), (int) endV2.getX(), (int) endV2.getY());
-		g.drawLine((int) startV1.getX(), (int) startV1.getY(), (int) startV2.getX(), (int) startV2.getY());
-		g.drawLine((int) endV1.getX(), (int) endV1.getY(), (int) endV2.getX(), (int) endV2.getY());
+		g.setStroke(Resource.getGameObjectThickStroke());
+		g.drawPolygon(outerPolygonX, outerPolygonY, 5);
 
-		g.drawLine((int) startV1.getX(), (int) startV1.getY(), (int) mid1.getX(), (int) mid1.getY());
-		g.drawLine((int) startV2.getX(), (int) startV2.getY(), (int) mid2.getX(), (int) mid2.getY());
-		g.drawLine((int) mid1.getX(), (int) mid1.getY(), (int) endV1.getX(), (int) endV1.getY());
-		g.drawLine((int) mid2.getX(), (int) mid2.getY(), (int) endV2.getX(), (int) endV2.getY());
-		g.drawLine((int) mid1.getX(), (int) mid1.getY(), (int) mid2.getX(), (int) mid2.getY());
+		// Inner lines
+		g.setStroke(Resource.getGameObjectThinStroke());
+		if (is3InnerLines) {
+			g.drawLine(endV1.getIntX(), endV1.getIntY(), startV1.getIntX(), startV1.getIntY());
+			g.drawLine(endV1.getIntX(), endV1.getIntY(), midV1.getIntX(), midV1.getIntY());
+			g.drawLine(endV1.getIntX(), endV1.getIntY(), endV2.getIntX(), endV2.getIntY());
+		} else {
+			g.drawLine(startV1.getIntX(), startV1.getIntY(), endV1.getIntX(), endV1.getIntY());
+		}
+
 	}
 
 	@Override
@@ -271,7 +348,6 @@ public class Slope implements IDrawable {
 			if (isReverse) {
 				ans = 1 - ans;
 			}
-			System.out.println(ans);
 
 			return ans + startZ;
 		} else if (isAlignY()) {

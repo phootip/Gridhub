@@ -3,20 +3,12 @@ package stage.gameobj;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
-import java.awt.Stroke;
 import java.awt.Transparency;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Line2D;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
-import java.awt.image.VolatileImage;
-
-import com.sun.xml.internal.bind.v2.TODO;
 
 import core.DrawManager;
 import core.geom.Vector2;
@@ -24,14 +16,10 @@ import stage.Camera;
 import stage.FloorLevel;
 import stage.ObjectMap;
 import util.Constants;
-import util.Helper;
+import util.Resource;
 import util.Constants.ColorSwatch;
 
 public class Block implements PushableObject, WalkThroughable {
-
-	private static final Stroke INNER_STROKE = new BasicStroke(1);
-
-	private static final Stroke OUTER_STROKE = new BasicStroke(3);
 
 	protected static final float BLOCK_HEIGHT = 1.0f;
 	private int x, y, z, nextX, nextY, nextZ, weight;
@@ -184,11 +172,11 @@ public class Block implements PushableObject, WalkThroughable {
 		g.setColor(ColorSwatch.BACKGROUND);
 		g.fillPolygon(new Polygon(outerBorderCoordX, outerBorderCoordY, 6));
 
-		g.setStroke(OUTER_STROKE);
+		g.setStroke(Resource.getGameObjectThickStroke());
 		g.setColor(ColorSwatch.FOREGROUND);
 		g.drawPolygon(new Polygon(outerBorderCoordX, outerBorderCoordY, 6));
 
-		g.setStroke(INNER_STROKE);
+		g.setStroke(Resource.getGameObjectThinStroke());
 		g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[0].getIntX(), outerBorder[0].getIntY());
 		g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[2].getIntX(), outerBorder[2].getIntY());
 		g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[4].getIntX(), outerBorder[4].getIntY());

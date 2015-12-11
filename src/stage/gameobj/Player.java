@@ -92,13 +92,15 @@ public class Player implements IDrawable {
 	}
 
 	public void setPlayerPosition(int cellX, int cellY, int cellZ) {
+		ObjectMap.drawableObjectHashMap.remove(new ObjectVector(this.cellX, this.cellY, this.cellZ, this.name));
 		this.cellX = cellX;
 		this.cellY = cellY;
 		this.cellZ = cellZ;
 		nextCellX = cellX;
 		nextCellY = cellY;
-		nextCellY = cellZ;
-
+		nextCellZ = cellZ;
+		ObjectMap.drawableObjectHashMap.put(new ObjectVector(nextCellX, nextCellY, nextCellZ, this.name), this);
+		isMoving = true;
 	}
 
 	public void setCellX(int x) {
@@ -277,7 +279,7 @@ public class Player implements IDrawable {
 			} else if (nextCellY - cellY != 0) {
 				standStill();
 			}
-		} else {
+		} else if(!(floorLevelMap.isOutOfMap(nextCellX, nextCellY))){
 			// not out of Map
 			// In case floor is not equals
 			if (cellZ != floorLevelMap.getZValueFromXY(floorLevelNextCellX, floorLevelNextCellY)) {
@@ -473,7 +475,7 @@ public class Player implements IDrawable {
 						}
 					}
 				}
-			} else {
+			} else if(cellZ == floorLevelMap.getZValueFromXY(floorLevelNextCellX, floorLevelNextCellY)) {
 				// if the Floorlevel is equal to Z
 				if (isOnSlope) {
 					// if player is on slope the only case player move at the same cellZ and floor is when player jump
@@ -483,7 +485,7 @@ public class Player implements IDrawable {
 				IDrawable nextCellObstacle = ObjectMap.drawableObjectHashMap.get(new ObjectVector(nextCellX, nextCellY, nextCellZ));
 
 
-				if (nextCellObstacle == null) {
+				if (nextCellObstacle == null || nextCellObstacle instanceof IWalkOnAble) {
 					// Action when player move diagonal
 					if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
 						// for Z there might not cause any problem
@@ -538,7 +540,7 @@ public class Player implements IDrawable {
 						moveAllDir();
 					}
 
-				} else if (nextCellObstacle != null && nextCellObstacle != this) {
+				} else if (nextCellObstacle != null && !(nextCellObstacle instanceof IWalkOnAble)) {
 
 					if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
 						// in case of moving in both y and x if there is an
@@ -598,7 +600,7 @@ public class Player implements IDrawable {
 							boolean isNextCellEntranceOfSlope = nextCellSlope.isSlopeEntrance(nextCellX, nextCellY);
 							
 							if (isNextCellEntranceOfSlope && nextCellSlope.isAlignX() && nextCellX - cellX != 0) {
-								System.out.println("GOGOGO");
+							
 								setCellZ(cellZ + 1);
 								moveOnlyXandZ();
 								isOnSlope = true;

@@ -70,10 +70,10 @@ public class GameStage extends Scene {
 		slopes.add(new Slope(9, 10, 1, Slope.ALIGNMENT_RIGHT));
 		slopes.add(new Slope(-2, 3, 0, Slope.ALIGNMENT_RIGHT));
 		
-		slopes.add(new Slope(13, 3, 2, Slope.ALIGNMENT_RIGHT));
-		slopes.add(new Slope(16, 0, 2, Slope.ALIGNMENT_DOWN));
-		slopes.add(new Slope(16, 6, 2, Slope.ALIGNMENT_UP));
-		slopes.add(new Slope(19, 3, 2, Slope.ALIGNMENT_LEFT));
+		slopes.add(new Slope(13, 4, 2, Slope.ALIGNMENT_RIGHT));
+		slopes.add(new Slope(16, 1, 2, Slope.ALIGNMENT_DOWN));
+		slopes.add(new Slope(16, 7, 2, Slope.ALIGNMENT_UP));
+		slopes.add(new Slope(19, 4, 2, Slope.ALIGNMENT_LEFT));
 
 		for (Slope eachSlope : slopes) {
 

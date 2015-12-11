@@ -17,8 +17,8 @@ public class LevelRenderer {
 		for (IDrawable obj : objectCollection) {
 			drawList.add(obj);
 		}
-		
-		final Vector2 depthChecker = new Vector2(0, 1).rotate(-camera.getRotationAngle()); 
+
+		final Vector2 depthChecker = new Vector2(0, 1).rotate(-camera.getRotationAngle());
 
 		drawList.sort(new Comparator<IDrawable>() {
 
@@ -29,9 +29,8 @@ public class LevelRenderer {
 				} else {
 					float depthA = depthChecker.getX() * o1.getDrawX() + depthChecker.getY() * o1.getDrawY();
 					float depthB = depthChecker.getX() * o2.getDrawX() + depthChecker.getY() * o2.getDrawY();
-					
-					if (depthA < depthB) return -1;
-					return 1;
+
+					return (int) Math.signum(depthA - depthB);
 				}
 			}
 		});

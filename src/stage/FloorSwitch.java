@@ -23,7 +23,7 @@ public class FloorSwitch {
 	protected int getX() {
 		return x;
 	}
-
+	
 	protected int getY() {
 		return y;
 	}
@@ -38,6 +38,12 @@ public class FloorSwitch {
 
 	protected int getMinimumWeight() {
 		return minimumWeight;
+	}
+	
+	
+
+	public boolean isAsserting() {
+		return isAsserting;
 	}
 
 	public FloorSwitch(int x, int y, int z, boolean defaultAssertion, int minimumWeight) {

@@ -8,14 +8,14 @@ public class ObjectVector {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		name = null;
+		name = "";
 	}
 
 	public ObjectVector(int x, int y, int z, String name) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.name = "";
+		this.name = name;
 	}
 
 	public void setVector(int x, int y, int z) {

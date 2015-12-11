@@ -12,6 +12,7 @@ import core.renderer.LevelRenderer;
 import scene.core.Scene;
 import stage.gameobj.Block;
 import stage.gameobj.IDrawable;
+import stage.gameobj.ObjectVector;
 import stage.gameobj.Player;
 import stage.gameobj.Slope;
 import util.Resource;
@@ -28,7 +29,7 @@ public class GameStage extends Scene {
 	private ArrayList<Slope> slopes = new ArrayList<>();
 
 	public GameStage() {
-		ObjectMap.drawableObjectHashMap = new HashMap<String, IDrawable>();
+		ObjectMap.drawableObjectHashMap = new HashMap<ObjectVector, IDrawable>();
 
 		floorLevelMap = new FloorLevel(25, 25);
 		int floorMapXSize = floorLevelMap.getSizeX();
@@ -85,9 +86,9 @@ public class GameStage extends Scene {
 			int xBar = (slopeStartX + slopeEndX) / 2;
 			int yBar = (slopeStartY + slopeEndY) / 2;
 
-			ObjectMap.drawableObjectHashMap.put(slopeStartX + " " + slopeStartY + " " + slopeStartZ, eachSlope);
-			ObjectMap.drawableObjectHashMap.put(xBar + " " + yBar + " " + slopeStartZ, eachSlope);
-			ObjectMap.drawableObjectHashMap.put(slopeEndX + " " + slopeEndY + " " + slopeStartZ, eachSlope);
+			ObjectMap.drawableObjectHashMap.put(new ObjectVector(slopeStartX, slopeStartY, slopeEndY), eachSlope);
+			ObjectMap.drawableObjectHashMap.put(new ObjectVector(xBar, yBar, slopeStartZ), eachSlope);
+			ObjectMap.drawableObjectHashMap.put(new ObjectVector(slopeEndX, slopeEndY, slopeStartZ), eachSlope);
 
 		}
 		// slopes.add(new Slope(5, 5, 2));
@@ -142,7 +143,7 @@ public class GameStage extends Scene {
 		// }
 
 		for (Block eachBlock : blocks) {
-			ObjectMap.drawableObjectHashMap.put(eachBlock.getX() + " " + eachBlock.getY() + " " + eachBlock.getZ(),
+			ObjectMap.drawableObjectHashMap.put(new ObjectVector(eachBlock.getX(), eachBlock.getY(), eachBlock.getZ()),
 					eachBlock);
 		}
 		// ObjectMap.drawableObjectHashMap.put(

@@ -3,9 +3,12 @@ package stage.gameobj;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
+
 import core.geom.Vector2;
 import stage.Camera;
 import util.Constants.ColorSwatch;
+import util.Helper;
 
 /**
  * This class represents slope Object.
@@ -236,6 +239,66 @@ public class Slope implements IDrawable {
 	@Override
 	public float getDrawZ() {
 		return startZ;
+	}
+
+	/**
+	 * Calculate the z-position of the ball, assuming that the ball is on this slope.
+	 * 
+	 * @param drawX
+	 *            current x-position of the ball
+	 * @param drawY
+	 *            current y-position of the ball
+	 * @return Current z-position of the ball.
+	 */
+	public float getBallZ(float drawX, float drawY) {
+
+		if (isAlignX()) {
+			float lowX = startX;
+			float highX = endX;
+			boolean isReverse = false;
+
+			if (lowX > highX) {
+				isReverse = true;
+
+				float temp = lowX;
+				lowX = highX;
+				highX = temp;
+			}
+
+			lowX -= 0.5f;
+			highX += 0.5f;
+			float ans = Helper.clamp(0, 1, Helper.interpolate(0, 1, (drawX - lowX) / (highX - lowX)));
+			if (isReverse) {
+				ans = 1 - ans;
+			}
+			System.out.println(ans);
+
+			return ans + startZ;
+		} else if (isAlignY()) {
+			float lowY = startY;
+			float highY = endY;
+			boolean isReverse = false;
+
+			if (lowY > highY) {
+				isReverse = true;
+
+				float temp = lowY;
+				lowY = highY;
+				highY = temp;
+			}
+
+			lowY -= 0.5f;
+			highY += 0.5f;
+			float ans = Helper.clamp(0, 1, Helper.interpolate(0, 1, (drawY - lowY) / (highY - lowY)));
+			if (isReverse) {
+				ans = 1 - ans;
+			}
+
+			return ans + startZ;
+		} else {
+			throw new RuntimeException("WHATT!!?!?!??");
+		}
+
 	}
 
 }

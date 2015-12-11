@@ -7,9 +7,6 @@ import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.sun.corba.se.impl.orbutil.closure.Constant;
-import com.sun.org.apache.bcel.internal.Constants;
-
 import core.geom.Vector2;
 import core.renderer.LevelRenderer;
 import scene.core.Scene;
@@ -26,9 +23,9 @@ public class GameStage extends Scene {
 	private Player player1;
 	private Player player2;
 	private FloorLevel floorLevelMap;
-	ArrayList<Block> blocks = new ArrayList<>();
-	ArrayList<FloorSwitch> floorSwitches = new ArrayList<>();
-	ArrayList<Slope> slopes = new ArrayList<>();
+	private ArrayList<Block> blocks = new ArrayList<>();
+	private ArrayList<FloorSwitch> floorSwitches = new ArrayList<>();
+	private ArrayList<Slope> slopes = new ArrayList<>();
 
 	public GameStage() {
 		ObjectMap.drawableObjectHashMap = new HashMap<String, IDrawable>();

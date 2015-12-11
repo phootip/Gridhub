@@ -4,7 +4,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
-import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 
 import com.sun.glass.events.KeyEvent;
@@ -25,9 +24,18 @@ public class Player implements IDrawable {
 	private static float BALL_TRAIL_RADIUS = 0.5f;
 	private static int MAX_TRAIL_LENGTH = 50;
 
-	private float x;
-	private float y;
-	private float z;
+	private static final BasicStroke BALL_GLOW_STROKE = new BasicStroke(3);
+	private static final BasicStroke BALL_MAIN_STROKE = new BasicStroke(9);
+
+	private Color baseColor;
+	private Stroke mainTrailStroke;
+	private Color mainTrailColor;
+	private Stroke glowTrailStroke;
+	private Color glowTrailColor;
+
+	private float drawX;
+	private float drawY;
+	private float drawZ;
 
 	private int oldCellX;
 	private int oldCellY;
@@ -50,15 +58,15 @@ public class Player implements IDrawable {
 	private FloorLevel floorLevelMap;
 
 	public float getDrawX() {
-		return x;
+		return drawX;
 	}
 
 	public float getDrawY() {
-		return y;
+		return drawY;
 	}
 
 	public float getDrawZ() {
-		return z;
+		return drawZ;
 	}
 
 	public int getCellX() {
@@ -125,9 +133,9 @@ public class Player implements IDrawable {
 	public Player(int playerId, FloorLevel floorLevelMap, int initialX, int initialY, int initialZ) {
 		this.floorLevelMap = floorLevelMap;
 
-		x = cellX = oldCellX = nextCellX = initialX;
-		y = cellY = oldCellY = nextCellY = initialY;
-		z = cellZ = oldCellZ = nextCellZ = initialZ;
+		drawX = cellX = oldCellX = nextCellX = initialX;
+		drawY = cellY = oldCellY = nextCellY = initialY;
+		drawZ = cellZ = oldCellZ = nextCellZ = initialZ;
 		this.playerId = playerId;
 
 		this.name = "Player" + playerId;
@@ -152,8 +160,16 @@ public class Player implements IDrawable {
 			shiftedTrailPosition.add(new ArrayList<>());
 
 			trailPosition.get(i).add(trailDots[i]);
-			shiftedTrailPosition.get(i).add(new Vector3(trailDots[i]).multiply(BALL_TRAIL_RADIUS).add(x, y, z));
+			shiftedTrailPosition.get(i)
+					.add(new Vector3(trailDots[i]).multiply(BALL_TRAIL_RADIUS).add(drawX, drawY, drawZ));
 		}
+
+		// Set player drawing assets
+		baseColor = PlayerSettings.getPlayerColor(playerId);
+		mainTrailStroke = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+		mainTrailColor = Helper.getAlphaColor(baseColor, 150);
+		glowTrailStroke = new BasicStroke(8, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+		glowTrailColor = Helper.getAlphaColor(baseColor, 75);
 	}
 
 	private boolean isMoving = false;
@@ -174,7 +190,8 @@ public class Player implements IDrawable {
 			newTrailDot.rotateXZ(angleXZ).rotateYZ(angleYZ);
 
 			trail.add(newTrailDot);
-			shiftedTrailPosition.get(i).add(new Vector3(newTrailDot).multiply(BALL_TRAIL_RADIUS).add(x, y, z));
+			shiftedTrailPosition.get(i)
+					.add(new Vector3(newTrailDot).multiply(BALL_TRAIL_RADIUS).add(drawX, drawY, drawZ));
 
 			if (trail.size() > MAX_TRAIL_LENGTH) {
 				trail.remove(0);
@@ -186,6 +203,7 @@ public class Player implements IDrawable {
 	public void update(int step, int cameraDirection) {
 		float ballDiffX = 0;
 		float ballDiffY = 0;
+		float ballDiffZ = 0;
 
 		if (!isMoving) {
 			// Not correlated with x-y axis of grid, just the keyboard.
@@ -290,7 +308,6 @@ public class Player implements IDrawable {
 								// will change to try push and move
 								moveOnlyXandZ();
 								isOnSlope = true;
-
 							} else {
 								standStill();
 							}
@@ -455,10 +472,11 @@ public class Player implements IDrawable {
 				}
 			} else {
 				// if the Floorlevel is equal to Z
-				if (isOnSlope)
+				if (isOnSlope) {
 					// if player is on slope the only case player move at the same cellZ and floor is when player jump
 					// back from slope entrance to the higher side
 					isOnSlope = false;
+				}
 				IDrawable nextCellObstacle = ObjectMap.drawableObjectHashMap
 						.get(nextCellX + " " + nextCellY + " " + nextCellZ);
 
@@ -593,9 +611,7 @@ public class Player implements IDrawable {
 
 		}
 
-		if (isMoving)
-
-		{
+		if (isMoving) {
 			walkStep += step;
 			int walkDuration = isMoveFast ? walkDurationFast : walkDurationSlow;
 
@@ -606,23 +622,54 @@ public class Player implements IDrawable {
 				oldCellX = cellX;
 				oldCellY = cellY;
 				oldCellZ = cellZ;
-				x = cellX;
-				y = cellY;
-				z = cellZ;
+				drawX = cellX;
+				drawY = cellY;
+
+				Slope currentOnSlope = null;
+				IDrawable candidateObj = ObjectMap.drawableObjectHashMap.get(cellX + " " + cellY + " " + (cellZ - 1));
+
+				if (candidateObj instanceof Slope) {
+					currentOnSlope = (Slope) candidateObj;
+				}
+
+				if (currentOnSlope != null) {
+					drawZ = currentOnSlope.getBallZ(drawX, drawY);
+				} else {
+					drawZ = cellZ;
+				}
 			} else {
 				float ratio = (float) walkStep / walkDuration;
-				ballDiffX = x;
-				ballDiffY = y;
+				ballDiffX = drawX;
+				ballDiffY = drawY;
+				ballDiffZ = drawZ;
 
 				// Try changing to sineInterpolate for weird effect!
-				x = Helper.interpolate(oldCellX, cellX, ratio);
-				y = Helper.interpolate(oldCellY, cellY, ratio);
-				z = Helper.interpolate(oldCellZ, cellZ, ratio);
+				drawX = Helper.interpolate(oldCellX, cellX, ratio);
+				drawY = Helper.interpolate(oldCellY, cellY, ratio);
 
-				ballDiffX = x - ballDiffX;
-				ballDiffY = y - ballDiffY;
+				Slope currentOnSlope = null;
+				IDrawable candidateObj = ObjectMap.drawableObjectHashMap.get(
+						Math.round(drawX) + " " + Math.round(drawY) + " " + ((ratio < 0.5f ? oldCellZ : cellZ) - 1));
+
+				if (candidateObj instanceof Slope) {
+					currentOnSlope = (Slope) candidateObj;
+				}
+
+				if (currentOnSlope != null) {
+					drawZ = currentOnSlope.getBallZ(drawX, drawY);
+				} else {
+					drawZ = ratio < 0.5f ? oldCellZ : cellZ;
+				}
+
+				ballDiffX = drawX - ballDiffX;
+				ballDiffY = drawY - ballDiffY;
+				ballDiffZ = drawZ - ballDiffZ;
 			}
 		}
+		
+		if (playerId == 1) System.out.println(oldCellZ + ":" + cellZ);
+
+		// drawZ = isOnSlope ? 1 : 0;
 		// move on slope cheating
 		// if (y == 10) {
 		// if (x < 10 - 0.5)
@@ -633,24 +680,20 @@ public class Player implements IDrawable {
 		// z = Helper.interpolate(0, 1, (x - 9.5f) / 3f);
 		// }
 
-		updateTrail(ballDiffX, ballDiffY);
+		updateTrail((float) Math.hypot(ballDiffX, ballDiffZ) * Math.signum(ballDiffX),
+				(float) Math.hypot(ballDiffY, ballDiffZ) * Math.signum(ballDiffY));
 	}
 
 	public void draw(Graphics2D g, Camera camera) {
 
 		float ballRadius = camera.getDrawSizeZ(BALL_RADIUS);
-		Vector2 ballCenter = camera.getDrawPosition(x, y, z).subtract(0, ballRadius);
+		Vector2 ballCenter = camera.getDrawPosition(drawX, drawY, drawZ).subtract(0, ballRadius);
 
 		g.setColor(ColorSwatch.BACKGROUND);
-		g.fill(new Ellipse2D.Float(ballCenter.getX() - ballRadius, ballCenter.getY() - ballRadius, ballRadius * 2,
-				ballRadius * 2));
+		g.fillOval(ballCenter.getIntX() - (int) ballRadius, ballCenter.getIntY() - (int) ballRadius,
+				(int) (ballRadius * 2), (int) (ballRadius * 2));
 
 		// Draw trail
-		Color baseColor = PlayerSettings.getPlayerColor(playerId);
-		Stroke mainTrailStroke = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-		Color mainTrailColor = Helper.getAlphaColor(baseColor, 150);
-		Stroke glowTrailStroke = new BasicStroke(8, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-		Color glowTrailColor = Helper.getAlphaColor(baseColor, 75);
 		for (int i = 0; i < shiftedTrailPosition.size(); i++) {
 
 			int n = shiftedTrailPosition.get(i).size();
@@ -684,14 +727,14 @@ public class Player implements IDrawable {
 
 		// Draw a ball
 
-		g.setStroke(new BasicStroke(9));
+		g.setStroke(BALL_MAIN_STROKE);
 		g.setColor(Helper.getAlphaColor(baseColor, 128));
-		g.draw(new Ellipse2D.Float(ballCenter.getX() - ballRadius, ballCenter.getY() - ballRadius, ballRadius * 2,
-				ballRadius * 2));
-		g.setStroke(new BasicStroke(3));
+		g.drawOval(ballCenter.getIntX() - (int) ballRadius, ballCenter.getIntY() - (int) ballRadius,
+				(int) (ballRadius * 2), (int) (ballRadius * 2));
+		g.setStroke(BALL_GLOW_STROKE);
 		g.setColor(new Color(0xFF, 0xFF, 0xFF));
-		g.draw(new Ellipse2D.Float(ballCenter.getX() - ballRadius, ballCenter.getY() - ballRadius, ballRadius * 2,
-				ballRadius * 2));
+		g.drawOval(ballCenter.getIntX() - (int) ballRadius, ballCenter.getIntY() - (int) ballRadius,
+				(int) (ballRadius * 2), (int) (ballRadius * 2));
 	}
 
 	private void pushXOrPushY(IDrawable nextXObstacle, IDrawable nextYObstacle) {
@@ -818,7 +861,8 @@ public class Player implements IDrawable {
 	private boolean tryMoveAndPushYDirection() {
 		IDrawable nextObjectBelow = ObjectMap.drawableObjectHashMap
 				.get(cellX + " " + nextCellY + " " + (nextCellZ - 1));
-		if (cellZ != floorLevelMap.getZValueFromXY(cellX, nextCellY) && !isOnSlope && !(nextObjectBelow instanceof Block)) {
+		if (cellZ != floorLevelMap.getZValueFromXY(cellX, nextCellY) && !isOnSlope
+				&& !(nextObjectBelow instanceof Block)) {
 			standStill();
 			return false;
 		}

@@ -4,7 +4,6 @@ import java.awt.Graphics2D;
 import java.util.HashMap;
 
 import stage.gameobj.IDrawable;
-import sun.security.jca.GetInstance.Instance;
 
 /**
  * This class represents the floorLevel (Z value) for each Scene or Stage

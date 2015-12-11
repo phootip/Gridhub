@@ -46,13 +46,13 @@ public class GameStage extends Scene {
 			}
 		}
 		// map floor checking
-		// for (int j = 0; j < floorMapYSize; j++) {
-		// for (int i = 0; i < floorMapXSize; i++) {
-		// System.out.print(FloorLevel.getInstance().getZValueFromXY(i, j));
-		// if(i == floorMapXSize - 1) System.out.println();
-		//
-		// }
-		// }
+		 for (int j = 0; j < floorMapYSize; j++) {
+		 for (int i = 0; i < floorMapXSize; i++) {
+		 System.out.print(floorLevelMap.getZValueFromXY(i, j));
+		 if(i == floorMapXSize - 1) System.out.println();
+		
+		 }
+		 }
 		player1 = new Player(util.Constants.PLAYER1_ID, floorLevelMap, 9, 4, 1);
 		player2 = new Player(util.Constants.PLAYER2_ID, floorLevelMap, 0, 0, 0);
 
@@ -111,7 +111,7 @@ public class GameStage extends Scene {
 		// blocks.add(new Block(2, 0, 1, 20, true));
 		// blocks.add(new Block(2, 1, 0, 20, true));
 		// blocks.add(new Block(2, 2, 3, 20, true));
-
+		blocks.add(new Block(16, 4, 2, 20, true, floorLevelMap));
 		blocks.add(new Block(2, 3, 0, 20, true, floorLevelMap));
 		blocks.add(new Block(2, 4, 0, 20, true, floorLevelMap));
 		blocks.add(new Block(2, 5, 0, 20, true, floorLevelMap));

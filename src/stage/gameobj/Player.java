@@ -247,7 +247,7 @@ public class Player implements IDrawable {
 			}
 
 		}
-		// if(playerId == 1) System.out.println(cellX);
+//		 if(playerId == 2) System.out.println(cellZ);
 		// check for NextStepCell
 		// first check floor level
 		int floorLevelCellX = cellX;
@@ -324,7 +324,7 @@ public class Player implements IDrawable {
 						// exit the slope from both direction when there is the box waiting
 						Slope slopeBelow = (Slope) ObjectMap.drawableObjectHashMap
 								.get(cellX + " " + cellY + " " + (cellZ - 1));
-
+						
 						if (nextCellX - cellX != 0 && slopeBelow.isAlignX() && nextCellY - cellY == 0) {
 							if (slopeBelow.isSlopeExit(cellX, cellY)) {
 								if (nextCellBelow == null) {
@@ -438,7 +438,7 @@ public class Player implements IDrawable {
 						.get(nextCellX + " " + nextCellY + " " + nextCellZ) instanceof Slope)) {
 					// when the floor is not equal but next move is slope this means player is on the
 					// the higher side of the slope and prepare to move down (cellZ and nextZ of slope will match)
-
+					
 					Slope slopeNextCell = (Slope) ObjectMap.drawableObjectHashMap
 							.get(nextCellX + " " + nextCellY + " " + nextCellZ);
 					boolean isNextX_ZValueEqual = cellZ == floorLevelMap.getZValueFromXY(floorLevelNextCellX,
@@ -597,6 +597,7 @@ public class Player implements IDrawable {
 								isOnSlope = true;
 							} else if (isNextCellEntranceOfSlope && nextCellSlope.isAlignY()
 									&& nextCellY - cellY != 0) {
+								setCellZ(cellZ+1);
 								moveOnlyYandZ();
 								isOnSlope = true;
 							} else {

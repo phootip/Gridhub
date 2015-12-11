@@ -130,7 +130,7 @@ public class Slope implements IDrawable {
 	 * @return whether it is Slope Exit
 	 */
 	public boolean isSlopeExit(int x, int y) {
-		return x == endX && y == startY;
+		return x == endX && y == endY;
 	}
 
 	/**

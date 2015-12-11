@@ -86,7 +86,7 @@ public class GameStage extends Scene {
 			int xBar = (slopeStartX + slopeEndX) / 2;
 			int yBar = (slopeStartY + slopeEndY) / 2;
 
-			ObjectMap.drawableObjectHashMap.put(new ObjectVector(slopeStartX, slopeStartY, slopeEndY), eachSlope);
+			ObjectMap.drawableObjectHashMap.put(new ObjectVector(slopeStartX, slopeStartY, slopeStartZ), eachSlope);
 			ObjectMap.drawableObjectHashMap.put(new ObjectVector(xBar, yBar, slopeStartZ), eachSlope);
 			ObjectMap.drawableObjectHashMap.put(new ObjectVector(slopeEndX, slopeEndY, slopeStartZ), eachSlope);
 

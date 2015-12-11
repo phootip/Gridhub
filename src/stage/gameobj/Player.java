@@ -594,8 +594,11 @@ public class Player implements IDrawable {
 						} else if (nextCellObstacle instanceof Slope) {
 							// check if isSlopeEntrace
 							Slope nextCellSlope = (Slope) nextCellObstacle;
+							
 							boolean isNextCellEntranceOfSlope = nextCellSlope.isSlopeEntrance(nextCellX, nextCellY);
+							
 							if (isNextCellEntranceOfSlope && nextCellSlope.isAlignX() && nextCellX - cellX != 0) {
+								System.out.println("GOGOGO");
 								setCellZ(cellZ + 1);
 								moveOnlyXandZ();
 								isOnSlope = true;

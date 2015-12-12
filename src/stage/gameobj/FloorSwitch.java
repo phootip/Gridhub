@@ -1,4 +1,4 @@
-package stage;
+package stage.gameobj;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -7,7 +7,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 
 import core.geom.Vector2;
-import stage.gameobj.Player;
+import stage.Camera;
 import util.Helper;
 
 public class FloorSwitch {

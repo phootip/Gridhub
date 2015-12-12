@@ -8,7 +8,7 @@ import java.util.HashMap;
  * @author Kasidit Iamthong
  *
  */
-public class Vector2 {
+public final class Vector2 {
 
 	private float x;
 	private float y;

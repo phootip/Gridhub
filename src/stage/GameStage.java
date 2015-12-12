@@ -1,16 +1,13 @@
 package stage;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import core.geom.Vector2;
 import core.renderer.LevelRenderer;
 import scene.core.Scene;
 import stage.gameobj.Block;
+import stage.gameobj.FloorSwitch;
 import stage.gameobj.GateToGateTeleport;
 import stage.gameobj.IDrawable;
 import stage.gameobj.ObjectVector;
@@ -18,7 +15,6 @@ import stage.gameobj.Player;
 import stage.gameobj.Slope;
 import stage.gameobj.TeleportGate;
 import stage.gameobj.TeleportToArea;
-import util.Resource;
 import util.Constants.ColorSwatch;
 
 public class GameStage extends Scene {
@@ -75,6 +71,16 @@ public class GameStage extends Scene {
 		slopes.add(new Slope(6, 5, 0, Slope.ALIGNMENT_RIGHT));
 		slopes.add(new Slope(9, 10, 1, Slope.ALIGNMENT_RIGHT));
 		slopes.add(new Slope(-2, 3, 0, Slope.ALIGNMENT_RIGHT));
+
+		blocks.add(new Block(6, 11, 0, 20, true, floorLevelMap));
+		blocks.add(new Block(7, 11, 0, 20, true, floorLevelMap));
+		blocks.add(new Block(8, 11, 0, 20, true, floorLevelMap));
+		blocks.add(new Block(6, 12, 0, 20, true, floorLevelMap));
+		blocks.add(new Block(7, 12, 0, 20, true, floorLevelMap));
+		blocks.add(new Block(8, 12, 0, 20, true, floorLevelMap));
+		blocks.add(new Block(6, 13, 0, 20, true, floorLevelMap));
+		blocks.add(new Block(7, 13, 0, 20, true, floorLevelMap));
+		blocks.add(new Block(8, 13, 0, 20, true, floorLevelMap));
 
 		slopes.add(new Slope(13, 4, 2, Slope.ALIGNMENT_RIGHT));
 		slopes.add(new Slope(16, 1, 2, Slope.ALIGNMENT_DOWN));
@@ -246,11 +252,6 @@ public class GameStage extends Scene {
 		 */
 
 		LevelRenderer.draw(ObjectMap.drawableObjectHashMap.values(), g, camera);
-
-		// Drawing slope
-		// for (int i = 0; i < slopes.size(); i++) {
-		// slopes.get(i).draw(g, camera);
-		// }
 
 	}
 

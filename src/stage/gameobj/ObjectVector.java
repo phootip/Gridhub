@@ -1,6 +1,6 @@
 package stage.gameobj;
 
-public class ObjectVector {
+public final class ObjectVector {
 	private int x, y, z;
 	private String name;
 
@@ -56,7 +56,7 @@ public class ObjectVector {
 
 	@Override
 	public boolean equals(Object obj) {
-		// This equals method doesnot prevent comparing with subClass
+		// This equals method does not prevent comparing with subClass
 
 		if (obj == null)
 			return false;

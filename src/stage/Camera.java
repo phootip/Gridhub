@@ -42,7 +42,19 @@ public class Camera {
 		return rotation;
 	}
 
+	/**
+	 * Get the camera rotation angle in radian.
+	 * 
+	 * @return A camera rotation angle, ranged between [0, 2PI)
+	 */
 	public float getRotationAngle() {
+		float ans = rotationAngle;
+		while (ans >= Math.PI * 2) {
+			ans -= Math.PI * 2;
+		}
+		while (ans < 0) {
+			ans += Math.PI * 2;
+		}
 		return rotationAngle;
 	}
 

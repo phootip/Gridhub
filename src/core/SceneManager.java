@@ -3,6 +3,7 @@ package core;
 import java.awt.Graphics2D;
 
 import scene.core.Scene;
+import util.Constants;
 import util.InputManager;
 
 /**
@@ -51,7 +52,7 @@ public class SceneManager {
 		}
 
 		if (this.currentScene != null) {
-			this.currentScene.update(100);
+			this.currentScene.update(Constants.GAME_SPEED);
 
 			do {
 				InputManager.getInstance().update();

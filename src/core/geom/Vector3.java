@@ -7,7 +7,7 @@ package core.geom;
  * @author Kasidit Iamthong
  *
  */
-public class Vector3 {
+public final class Vector3 {
 
 	private float x;
 	private float y;

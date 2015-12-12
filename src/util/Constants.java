@@ -33,6 +33,11 @@ public final class Constants {
 	public static int MAX_FRAME_PER_SECOND = 60;
 
 	/**
+	 * The speed of the game. Default is 100. The number should be divisible by 100, or 100 is divisible by it.
+	 */
+	public static int GAME_SPEED = 100;
+
+	/**
 	 * A unique ID for Player1
 	 */
 	public static final int PLAYER1_ID = 1;

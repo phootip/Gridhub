@@ -116,7 +116,7 @@ public class GameStage extends Scene {
 		blocks.add(new Block(2, 9, 0, 20, true, floorLevelMap));
 		blocks.add(new Block(2, 10, 0, 20, true, floorLevelMap));
 
-		blocks.add(new Block(1, 3, 0, 20, true, floorLevelMap));
+		//blocks.add(new Block(1, 3, 0, 20, true, floorLevelMap));
 		blocks.add(new Block(2, 3, 1, 20, true, floorLevelMap));
 		blocks.add(new Block(3, 3, 0, 20, true, floorLevelMap));
 		blocks.add(new Block(4, 3, 0, 20, true, floorLevelMap));
@@ -151,7 +151,7 @@ public class GameStage extends Scene {
         floorSwitches.add(new FloorSwitch(1, 0, 0, false, 20));
 		floorSwitches.add(new FloorSwitch(4, 0, 0, false, 10));
 		
-        Gate gate1 = new Gate(0, 0, 0);
+        Gate gate1 = new Gate(1, 3, 0);
         GateController gateController = new GateController(floorSwitches, new int[] {0,1,0,1}, gate1);    
         gateControllers.add(gateController);
         gates.add(gate1);
@@ -184,6 +184,12 @@ public class GameStage extends Scene {
 		for(FloorSwitch eachSwitch : floorSwitches) {
 			ObjectMap.drawableObjectHashMap.put(new ObjectVector(eachSwitch.getX(), eachSwitch.getY(), eachSwitch.getZ(),"Switch"), eachSwitch);
 		}
+		
+		for(Gate eachGate : gates) {
+			ObjectMap.drawableObjectHashMap.put(new ObjectVector(eachGate.getX(), eachGate.getY(), eachGate.getZ()), eachGate);
+		}
+		
+		
 		
 		ObjectMap.drawableObjectHashMap.put(new ObjectVector(player1.getCellX(), player1.getCellY(), player1.getCellZ(),player1.getName()), player1);
 		ObjectMap.drawableObjectHashMap.put(new ObjectVector(player2.getCellX(), player2.getCellY(), player2.getCellZ(),player2.getName()), player2);

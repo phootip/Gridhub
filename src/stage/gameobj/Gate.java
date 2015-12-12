@@ -5,7 +5,7 @@ import java.awt.Graphics2D;
 import stage.Camera;
 import stage.ObjectMap;
 
-public class Gate implements IDrawable, IWalkOnAble {
+public class Gate implements IDrawable {
 	private boolean isAsserted;
 	private int x, y, z;
 
@@ -21,20 +21,26 @@ public class Gate implements IDrawable, IWalkOnAble {
 	
 	public void update(int step) {
 		
-		if(isAsserted && isObjectAbove()) {
+		if(isAsserted) {
 			gateActivationProgress += step;
+		} else {
+			gateActivationProgress = 0;
+			if(ObjectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z)) == null ) {
+				ObjectMap.drawableObjectHashMap.put(new ObjectVector(x, y, z), this);
+			}
 		}
 		
 		if(gateActivationProgress >= gateProgressControl) {
 			// TODO take an action when gate is asserted
-			performActionToPlayer(getPlayerAbove());
+			performActionToPlayer();
 			gateActivationProgress = 0;
 		}
 	}
 	
-	public void performActionToPlayer(Player p) {
+	public void performActionToPlayer() {
 		// do action
-		System.out.println("You won Yay");
+		ObjectMap.drawableObjectHashMap.remove(new ObjectVector(x, y, z));
+		
 	}
 	
 	
@@ -59,7 +65,7 @@ public class Gate implements IDrawable, IWalkOnAble {
 		return z;
 	}
 
-	@Override
+	
 	public boolean isObjectAbove() {
 		// teleportGate check only player above
 		if (getPlayerAbove() != null) {

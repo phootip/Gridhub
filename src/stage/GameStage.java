@@ -20,6 +20,7 @@ import stage.gameobj.Player;
 import stage.gameobj.Slope;
 import stage.gameobj.SwitchController;
 import stage.gameobj.TeleportGate;
+import stage.gameobj.TeleportGateController;
 import stage.gameobj.TeleportToArea;
 import util.Resource;
 import util.Constants.ColorSwatch;
@@ -34,8 +35,9 @@ public class GameStage extends Scene {
 	private ArrayList<FloorSwitch> floorSwitches = new ArrayList<>();
 	private ArrayList<Slope> slopes = new ArrayList<>();
 	ArrayList<TeleportGate> teleportGates = new ArrayList<>();
-	ArrayList<GateController> gateControllers = new ArrayList<>();
+	ArrayList<SwitchController> switchController = new ArrayList<>();
 	ArrayList<Gate> gates = new ArrayList<>();
+	
 
 	public GameStage() {
 		ObjectMap.drawableObjectHashMap = new HashMap<ObjectVector, IDrawable>();
@@ -152,8 +154,10 @@ public class GameStage extends Scene {
 		floorSwitches.add(new FloorSwitch(4, 0, 0, false, 10));
 		
         Gate gate1 = new Gate(1, 3, 0);
-        GateController gateController = new GateController(floorSwitches, new int[] {0,1,0,1}, gate1);    
-        gateControllers.add(gateController);
+        GateController gateController = new GateController(floorSwitches, new int[] {0,1,0,1}, gate1);  
+        TeleportGateController teleController = new TeleportGateController(floorSwitches, new int[] {0,1,0,1}, gateTele3);
+        switchController.add((SwitchController)gateController);
+        switchController.add((SwitchController) teleController);
         gates.add(gate1);
         
         for (Slope eachSlope : slopes) {
@@ -213,8 +217,8 @@ public class GameStage extends Scene {
 		for (TeleportGate teleGate : teleportGates) {
 			teleGate.update(step);
 		}
-		for(GateController gateControl : gateControllers) {
-			gateControl.update();
+		for(SwitchController eachController : switchController) {
+			eachController.update();
 		}
 		for(Gate each : gates) {
 			each.update(step);

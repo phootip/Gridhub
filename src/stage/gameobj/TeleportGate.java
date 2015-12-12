@@ -17,8 +17,9 @@ public abstract class TeleportGate implements IDrawable, IWalkOnAble {
 
 	public TeleportGate(int x, int y, int z) {
 		this.x = x;
-		this.y = y;
+		this.y = y; 
 		this.z = z;
+		isAsserted = true;
 	}
 
 	protected abstract void teleport(Player p);
@@ -32,7 +33,7 @@ public abstract class TeleportGate implements IDrawable, IWalkOnAble {
 		if (!isObjectAbove()) {
 			isActive = true;
 		}
-		if (isObjectAbove() && isActive) {
+		if (isObjectAbove() && isActive && isAsserted) {
 			teleportProgress += step;
 			
 		} else {

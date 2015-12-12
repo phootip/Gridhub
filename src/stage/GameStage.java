@@ -11,11 +11,14 @@ import core.geom.Vector2;
 import core.renderer.LevelRenderer;
 import scene.core.Scene;
 import stage.gameobj.Block;
+import stage.gameobj.Gate;
+import stage.gameobj.GateController;
 import stage.gameobj.GateToGateTeleport;
 import stage.gameobj.IDrawable;
 import stage.gameobj.ObjectVector;
 import stage.gameobj.Player;
 import stage.gameobj.Slope;
+import stage.gameobj.SwitchController;
 import stage.gameobj.TeleportGate;
 import stage.gameobj.TeleportToArea;
 import util.Resource;
@@ -31,10 +34,12 @@ public class GameStage extends Scene {
 	private ArrayList<FloorSwitch> floorSwitches = new ArrayList<>();
 	private ArrayList<Slope> slopes = new ArrayList<>();
 	ArrayList<TeleportGate> teleportGates = new ArrayList<>();
+	ArrayList<GateController> gateControllers = new ArrayList<>();
+	ArrayList<Gate> gates = new ArrayList<>();
 
 	public GameStage() {
 		ObjectMap.drawableObjectHashMap = new HashMap<ObjectVector, IDrawable>();
-
+		
 		floorLevelMap = new FloorLevel(25, 25);
 		int floorMapXSize = floorLevelMap.getSizeX();
 		int floorMapYSize = floorLevelMap.getSizeY();
@@ -63,12 +68,12 @@ public class GameStage extends Scene {
 		player2 = new Player(util.Constants.PLAYER2_ID, floorLevelMap, 0, 0, 0);
 
 		camera = new Camera(player1);
-
-		floorSwitches.add(new FloorSwitch(6, 1, 0, false, 5));
-		floorSwitches.add(new FloorSwitch(6, 3, 0, false, 10));
-		floorSwitches.add(new FloorSwitch(6, 5, 0, false, 20));
-		floorSwitches.add(new FloorSwitch(6, 7, 0, true, 10));
-		floorSwitches.add(new FloorSwitch(6, 9, 0, true, 20));
+		
+		
+//		floorSwitches.add(new FloorSwitch(6, 3, 0, false, 10));
+//		floorSwitches.add(new FloorSwitch(6, 5, 0, false, 20));
+//		floorSwitches.add(new FloorSwitch(6, 7, 0, true, 10));
+//		floorSwitches.add(new FloorSwitch(6, 9, 0, true, 20));
 
 		slopes.add(new Slope(6, 10, 0, Slope.ALIGNMENT_RIGHT));
 
@@ -131,6 +136,8 @@ public class GameStage extends Scene {
 		// blocks.add(new Block(i, j + 1, 0, 1, true));
 		// }
 		// }
+		
+		
 
 		GateToGateTeleport gateTele1 = new GateToGateTeleport(0, 1, 0);
 		GateToGateTeleport gateTele2 = new GateToGateTeleport(9, 0, 1, gateTele1);
@@ -140,6 +147,14 @@ public class GameStage extends Scene {
 		teleportGates.add(gateTele2);
 		teleportGates.add(gateTele3);
         teleportGates.add(new TeleportToArea(10, 4, 1, 0, 2, 0));
+        
+        floorSwitches.add(new FloorSwitch(1, 0, 0, false, 20));
+		floorSwitches.add(new FloorSwitch(4, 0, 0, false, 10));
+		
+        Gate gate1 = new Gate(0, 0, 0);
+        GateController gateController = new GateController(floorSwitches, new int[] {0,1,0,1}, gate1);    
+        gateControllers.add(gateController);
+        gates.add(gate1);
         
         for (Slope eachSlope : slopes) {
 
@@ -166,11 +181,17 @@ public class GameStage extends Scene {
 					eachBlock);
 		}
 		
+		for(FloorSwitch eachSwitch : floorSwitches) {
+			ObjectMap.drawableObjectHashMap.put(new ObjectVector(eachSwitch.getX(), eachSwitch.getY(), eachSwitch.getZ(),"Switch"), eachSwitch);
+		}
+		
 		ObjectMap.drawableObjectHashMap.put(new ObjectVector(player1.getCellX(), player1.getCellY(), player1.getCellZ(),player1.getName()), player1);
 		ObjectMap.drawableObjectHashMap.put(new ObjectVector(player2.getCellX(), player2.getCellY(), player2.getCellZ(),player2.getName()), player2);
 		// ObjectMap.drawableObjectHashMap.put(
 		// player1.getCellX() + " " + player1.getCellY() + " " + player1.getCellZ() + " " + player1.getName(),
 		// player1);
+		
+		
 	}
 
 	@Override
@@ -181,10 +202,16 @@ public class GameStage extends Scene {
 		player2.update(step, camera.getRotation());
 
 		for (FloorSwitch fs : floorSwitches) {
-			fs.update(step, player1);
+			fs.update(step);
 		}
 		for (TeleportGate teleGate : teleportGates) {
 			teleGate.update(step);
+		}
+		for(GateController gateControl : gateControllers) {
+			gateControl.update();
+		}
+		for(Gate each : gates) {
+			each.update(step);
 		}
 
 	}

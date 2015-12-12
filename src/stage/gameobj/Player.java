@@ -50,12 +50,18 @@ public class Player implements IDrawable {
 	private int nextCellZ;
 
 	private String name;
+	private final int weight = 50;
 	private boolean isOnSlope;
 
 	private ArrayList<ArrayList<Vector3>> trailPosition;
 	private ArrayList<ArrayList<Vector3>> shiftedTrailPosition;
 
 	private FloorLevel floorLevelMap;
+	
+	
+	public int getWeight() {
+		return weight;
+	}
 
 	public float getDrawX() {
 		return drawX;

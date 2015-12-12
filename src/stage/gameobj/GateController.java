@@ -15,11 +15,13 @@ public class GateController extends SwitchController {
 	@Override
 	public void performHitAction() {
 		gate.setAsserted(true);
+		
 	}
 
 	@Override
 	public void reverseAction() {
 		gate.setAsserted(false);
+		
 		
 	}
 

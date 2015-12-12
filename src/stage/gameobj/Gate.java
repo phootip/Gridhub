@@ -34,6 +34,7 @@ public class Gate implements IDrawable, IWalkOnAble {
 	
 	public void performActionToPlayer(Player p) {
 		// do action
+		System.out.println("You won Yay");
 	}
 	
 	

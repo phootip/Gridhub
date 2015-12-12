@@ -25,6 +25,9 @@ public abstract class SwitchController {
 				rowLookUp += (int) Math.pow(2, i);
 			}
 		}
+		
+		//System.out.println(rowLookUp);
+		if(rowLookUp < 0) return;
 		try {
 			isLogicCombinationHit = logicLookUpArray[rowLookUp] == 1;
 		} catch (IndexOutOfBoundsException e) {
@@ -34,7 +37,7 @@ public abstract class SwitchController {
 		}
 		
 		if(isLogicCombinationHit) performHitAction();
-		else reverseAction();
+		else reverseAction(); 
 		
 	}
 	

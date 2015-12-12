@@ -42,18 +42,20 @@ public class FloorPiece implements IDrawable {
 
 	@Override
 	public float getDrawZ() {
-		return z;
+		return z - 0.1f;
 	}
 	
 	private static BufferedImage cachedFloorImg;
-	private static int cachedFloorImgSize = 100;
+	private static int cachedFloorImgSize = 65;
+	private static final float OUTER_PADDING = 0.50f;
+	private static final float INNER_PADDING = 0.45f;
 	
 	private static void drawFloor(Graphics2D g, Camera camera, float x, float y, float z, boolean isRawDrawPosition) {
 
-		Vector2 cornerA = camera.getDrawPosition(x + 0.5f, y + 0.5f, z, isRawDrawPosition);
-		Vector2 cornerB = camera.getDrawPosition(x - 0.5f, y + 0.5f, z, isRawDrawPosition);
-		Vector2 cornerC = camera.getDrawPosition(x - 0.5f, y - 0.5f, z, isRawDrawPosition);
-		Vector2 cornerD = camera.getDrawPosition(x + 0.5f, y - 0.5f, z, isRawDrawPosition);
+		Vector2 cornerA = camera.getDrawPosition(x + OUTER_PADDING, y + OUTER_PADDING, z, isRawDrawPosition);
+		Vector2 cornerB = camera.getDrawPosition(x - OUTER_PADDING, y + OUTER_PADDING, z, isRawDrawPosition);
+		Vector2 cornerC = camera.getDrawPosition(x - OUTER_PADDING, y - OUTER_PADDING, z, isRawDrawPosition);
+		Vector2 cornerD = camera.getDrawPosition(x + OUTER_PADDING, y - OUTER_PADDING, z, isRawDrawPosition);
 
 		int[] outerPolygonX = new int[4];
 		int[] outerPolygonY = new int[4];
@@ -69,9 +71,26 @@ public class FloorPiece implements IDrawable {
 		g.setColor(ColorSwatch.BACKGROUND);
 		g.fillPolygon(outerPolygonX, outerPolygonY, 4);
 		
+		
+		Vector2 cornerA2 = camera.getDrawPosition(x + INNER_PADDING, y + INNER_PADDING, z, isRawDrawPosition);
+		Vector2 cornerB2 = camera.getDrawPosition(x - INNER_PADDING, y + INNER_PADDING, z, isRawDrawPosition);
+		Vector2 cornerC2 = camera.getDrawPosition(x - INNER_PADDING, y - INNER_PADDING, z, isRawDrawPosition);
+		Vector2 cornerD2 = camera.getDrawPosition(x + INNER_PADDING, y - INNER_PADDING, z, isRawDrawPosition);
+
+		int[] outerPolygonX2 = new int[4];
+		int[] outerPolygonY2 = new int[4];
+		outerPolygonX2[0] = cornerA2.getIntX();
+		outerPolygonY2[0] = cornerA2.getIntY();
+		outerPolygonX2[1] = cornerB2.getIntX();
+		outerPolygonY2[1] = cornerB2.getIntY();
+		outerPolygonX2[2] = cornerC2.getIntX();
+		outerPolygonY2[2] = cornerC2.getIntY();
+		outerPolygonX2[3] = cornerD2.getIntX();
+		outerPolygonY2[3] = cornerD2.getIntY();
+		
 		g.setStroke(Resource.getGameObjectThinStroke());
 		g.setColor(ColorSwatch.SHADOW);
-		g.drawPolygon(outerPolygonX, outerPolygonY, 4);
+		g.drawPolygon(outerPolygonX2, outerPolygonY2, 4);
 
 	}
 	

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import core.renderer.LevelRenderer;
 import scene.core.Scene;
 import stage.gameobj.Block;
+import stage.gameobj.FloorPiece;
 import stage.gameobj.FloorSwitch;
 import stage.gameobj.GateToGateTeleport;
 import stage.gameobj.IDrawable;
@@ -177,6 +178,10 @@ public class GameStage extends Scene {
 		// ObjectMap.drawableObjectHashMap.put(
 		// player1.getCellX() + " " + player1.getCellY() + " " + player1.getCellZ() + " " + player1.getName(),
 		// player1);
+		
+		for (FloorPiece floor : floorLevelMap.getFloorPieces()) {
+			ObjectMap.drawableObjectHashMap.put(floor.getObjectVector(), floor);
+		}
 	}
 
 	@Override
@@ -201,6 +206,7 @@ public class GameStage extends Scene {
 		camera.setSceneSize(sceneWidth, sceneHeight);
 
 		Block.refreshDrawCache(camera);
+		FloorPiece.refreshDrawCache(camera);
 
 		// Draw background
 		g.setColor(ColorSwatch.BACKGROUND);

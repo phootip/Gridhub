@@ -21,7 +21,7 @@ import util.InputManager;
 public class Player implements IDrawable {
 
 	protected static float BALL_RADIUS = 0.4f;
-	private static float BALL_TRAIL_RADIUS = 0.5f;
+	private static float BALL_TRAIL_RADIUS = 0.4f;
 	private static int MAX_TRAIL_LENGTH = 50;
 
 	private static final BasicStroke BALL_GLOW_STROKE = new BasicStroke(3);

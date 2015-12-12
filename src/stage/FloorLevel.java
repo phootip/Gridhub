@@ -1,8 +1,11 @@
 package stage;
 
 import java.awt.Graphics2D;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import stage.gameobj.FloorPiece;
 import stage.gameobj.IDrawable;
 
 /**
@@ -21,6 +24,7 @@ public class FloorLevel implements IDrawable {
 
 	/**
 	 * Get size of map in x-axis.
+	 * 
 	 * @return Integer representing size of map in x-axis.
 	 */
 	public int getSizeX() {
@@ -29,6 +33,7 @@ public class FloorLevel implements IDrawable {
 
 	/**
 	 * Get size of map in y-axis.
+	 * 
 	 * @return Integer representing size of map in y-axis.
 	 */
 	public int getSizeY() {
@@ -47,6 +52,18 @@ public class FloorLevel implements IDrawable {
 		floorLevelMap = new int[gridSizeX][gridSizeY];
 		sizeX = gridSizeX;
 		sizeY = gridSizeY;
+	}
+
+	public List<FloorPiece> getFloorPieces() {
+		ArrayList<FloorPiece> pieceList = new ArrayList<>(); 
+		
+		for (int i = 0; i < sizeX; i++) {
+			for (int j = 0; j < sizeY; j++) {
+				pieceList.add(new FloorPiece(i, j, getZValueFromXY(i, j)));
+			}
+		}
+		
+		return pieceList;
 	}
 
 	public int[][] getFloorMap() {
@@ -96,5 +113,5 @@ public class FloorLevel implements IDrawable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
+
 }

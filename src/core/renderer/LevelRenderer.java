@@ -24,14 +24,14 @@ public class LevelRenderer {
 
 			@Override
 			public int compare(IDrawable o1, IDrawable o2) {
-				if (o1.getDrawZ() != o2.getDrawZ()) {
-					return (o1.getDrawZ() < o2.getDrawZ()) ? -1 : 1;
-				} else {
-					float depthA = depthChecker.getX() * o1.getDrawX() + depthChecker.getY() * o1.getDrawY();
-					float depthB = depthChecker.getX() * o2.getDrawX() + depthChecker.getY() * o2.getDrawY();
+//				if (o1.getDrawZ() != o2.getDrawZ()) {
+//					return (o1.getDrawZ() < o2.getDrawZ()) ? -1 : 1;
+//				} else {
+					float depthA = depthChecker.getX() * o1.getDrawX() + depthChecker.getY() * o1.getDrawY() + o1.getDrawZ();
+					float depthB = depthChecker.getX() * o2.getDrawX() + depthChecker.getY() * o2.getDrawY() + o2.getDrawZ();
 
 					return (int) Math.signum(depthA - depthB);
-				}
+//				}
 			}
 		});
 

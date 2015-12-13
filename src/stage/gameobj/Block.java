@@ -46,6 +46,22 @@ public class Block implements PushableObject, WalkThroughable {
 	public Block(int x, int y, int z, FloorLevel floorLevelMap) {
 		this(x, y, z, 100, false, floorLevelMap);
 	}
+	
+	public void setZ(int diffZ) {
+		if(z + diffZ < 0) return;
+		IDrawable nextZObject = ObjectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z+diffZ));
+		if(nextZObject instanceof Block) return;
+		if(nextZObject instanceof Slope) return;
+		
+		if (ObjectMap.drawableObjectHashMap.get( new ObjectVector(x, y, z+diffZ, "Player" + util.Constants.PLAYER1_ID)
+				) != null
+				|| ObjectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z+diffZ, "Player" + util.Constants.PLAYER2_ID)) != null)
+			return;
+		
+		ObjectMap.drawableObjectHashMap.remove(new ObjectVector(x, y, this.z));
+		this.z += diffZ;
+		ObjectMap.drawableObjectHashMap.put(new ObjectVector(x, y, this.z), this);
+	}
 
 	public Block(int x, int y, int z, int weight, boolean isWalkThroughable, FloorLevel floorLevelMap) {
 		this.floorLevelMap = floorLevelMap;

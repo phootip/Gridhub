@@ -7,8 +7,12 @@ import java.util.HashMap;
 import stage.renderer.LevelRenderer;
 import scene.core.Scene;
 import stage.gameobj.Block;
+<<<<<<< HEAD
 import stage.gameobj.FloorPiece;
 import stage.gameobj.FloorSwitch;
+=======
+import stage.gameobj.BlockController;
+>>>>>>> ControllerAndObjectFix
 import stage.gameobj.Gate;
 import stage.gameobj.GateController;
 import stage.gameobj.GateToGateTeleport;
@@ -123,7 +127,11 @@ public class GameStage extends Scene {
 		blocks.add(new Block(2, 9, 0, 20, true, floorLevelMap));
 		blocks.add(new Block(2, 10, 0, 20, true, floorLevelMap));
 
+<<<<<<< HEAD
 		// blocks.add(new Block(1, 3, 0, 20, true, floorLevelMap));
+=======
+		blocks.add(new Block(1, 4, 1, 150, true, floorLevelMap));
+>>>>>>> ControllerAndObjectFix
 		blocks.add(new Block(2, 3, 1, 20, true, floorLevelMap));
 		blocks.add(new Block(3, 3, 0, 20, true, floorLevelMap));
 		blocks.add(new Block(4, 3, 0, 20, true, floorLevelMap));
@@ -155,6 +163,7 @@ public class GameStage extends Scene {
 
 		floorSwitches.add(new FloorSwitch(1, 0, 0, false, 20));
 		floorSwitches.add(new FloorSwitch(4, 0, 0, false, 10));
+<<<<<<< HEAD
 
 		Gate gate1 = new Gate(1, 3, 0);
 		GateController gateController = new GateController(floorSwitches, new int[] { 0, 1, 0, 1 }, gate1);
@@ -165,6 +174,19 @@ public class GameStage extends Scene {
 		gates.add(gate1);
 
 		for (Slope eachSlope : slopes) {
+=======
+		
+        Gate gate1 = new Gate(1, 3, 0);
+        GateController gateController = new GateController(floorSwitches, new int[] {0,1,0,1}, gate1);  
+        TeleportGateController teleController = new TeleportGateController(floorSwitches, new int[] {0,1,0,1}, gateTele3);
+        BlockController bController = new BlockController(floorSwitches, new int[] {0,1,0,1}, blocks.get(8), BlockController.MOVE_DOWN_TYPE, 1);
+        switchController.add((SwitchController)gateController);
+        switchController.add((SwitchController) teleController);
+        switchController.add((SwitchController) bController);
+        gates.add(gate1);
+        
+        for (Slope eachSlope : slopes) {
+>>>>>>> ControllerAndObjectFix
 
 			int slopeStartX = eachSlope.getStartX();
 			int slopeStartY = eachSlope.getStartY();

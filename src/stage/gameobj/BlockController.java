@@ -17,7 +17,7 @@ public class BlockController extends SwitchController {
 		this.controllType = controlType;
 		this.moveStep = moveStep;
 		this.hasPerfomrmHit = false;
-		this.hasPerformReverse = false;
+		this.hasPerformReverse = true;
 	}
 
 	public static final int MOVE_UP_TYPE = 1;
@@ -29,26 +29,27 @@ public class BlockController extends SwitchController {
 		if (controllType == 1 && !hasPerfomrmHit) {
 			hasPerfomrmHit = true;
 			hasPerformReverse = false;
-			block.push(0, 0, 0, moveStep);
+			block.setZ(moveStep);
 			
 		} else if (controllType == 2 && !hasPerfomrmHit) {
+			System.out.println("Hello");
 			hasPerfomrmHit = true;
 			hasPerformReverse = false;
-			block.push(0, 0, 0, -moveStep);
+			block.setZ(-moveStep);
 		} 
 	}
 
 	@Override
 	public void reverseAction() {
 		// TODO Auto-generated method stub
-		if (controllType == 1) {
+		if (controllType == 1 && !hasPerformReverse) {
 			hasPerfomrmHit = false;
 			hasPerformReverse = true;
-			block.push(0, 0, 0, -moveStep);
-		} else if (controllType == 2) {
+			block.setZ(-moveStep);
+		} else if (controllType == 2 && !hasPerformReverse) {
 			hasPerfomrmHit = false;
 			hasPerformReverse = true;
-			block.push(0, 0, 0, moveStep);
+			block.setZ(moveStep);
 		} 
 	}
 

@@ -83,7 +83,7 @@ public class Resource {
 		for (FontWeight fontWeight : FontWeight.values()) {
 			Font newFont = Font.createFont(Font.TRUETYPE_FONT,
 					new File(getResourceAsURI("fonts/" + fontWeight.getFontFileName())));
-			ge.registerFont(newFont);
+			ge.registerFont(newFont); 
 		}
 	}
 

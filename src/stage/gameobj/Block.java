@@ -40,7 +40,7 @@ public class Block implements PushableObject, WalkThroughable {
 		return z;
 	}
 
-	protected int getWeight() {
+	public int getWeight() {
 		return weight;
 	}
 
@@ -73,7 +73,8 @@ public class Block implements PushableObject, WalkThroughable {
 	}
 
 	public boolean push(int previousWeight, int diffX, int diffY, int diffZ) {
-
+		if (z + diffZ < 0)
+			return false;
 		if (floorLevelMap.isOutOfMap(x + diffX, y + diffY))
 			return false;
 		if (this.weight + previousWeight > 100 || !isPushable())
@@ -94,7 +95,7 @@ public class Block implements PushableObject, WalkThroughable {
 				return false;
 		}
 
-		if (nextObjectObstacles == null) {
+		if (nextObjectObstacles == null || nextObjectObstacles instanceof IWalkOnAble) {
 			ObjectMap.drawableObjectHashMap.put(new ObjectVector(x + diffX, y + diffY, z + diffZ), this);
 			ObjectMap.drawableObjectHashMap.remove(new ObjectVector(x, y, z));
 			this.x += diffX;

@@ -50,12 +50,18 @@ public class Player implements IDrawable {
 	private int nextCellZ;
 
 	private String name;
+	private final int weight = 50;
 	private boolean isOnSlope;
 
 	private ArrayList<ArrayList<Vector3>> trailPosition;
 	private ArrayList<ArrayList<Vector3>> shiftedTrailPosition;
 
 	private FloorLevel floorLevelMap;
+	
+	
+	public int getWeight() {
+		return weight;
+	}
 
 	public int getCellX() {
 		return cellX;
@@ -527,7 +533,7 @@ public class Player implements IDrawable {
 					}
 
 				} else if (nextCellObstacle != null && !(nextCellObstacle instanceof IWalkOnAble)) {
-
+					
 					if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
 						// in case of moving in both y and x if there is an
 						// obstacles and it's pushable object
@@ -598,6 +604,8 @@ public class Player implements IDrawable {
 							} else {
 								standStill();
 							}
+						} else if(nextCellObstacle instanceof Gate) {
+							standStill();
 						}
 
 					}

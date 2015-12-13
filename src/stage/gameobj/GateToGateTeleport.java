@@ -7,7 +7,9 @@ public class GateToGateTeleport extends TeleportGate {
 	public GateToGateTeleport(int x, int y, int z) {
 		super(x, y, z);
 		// TODO Auto-generated constructor stub
+		this.destinationGate = null;
 		this.isActive = true;
+		
 	}
 	
 	public GateToGateTeleport(int x, int y, int z , TeleportGate destinationGate) {
@@ -22,8 +24,10 @@ public class GateToGateTeleport extends TeleportGate {
 		
 		// TODO Auto-generated method stub
 		try {
-			p.setPlayerPosition(destinationGate.getX(), destinationGate.getY(),	 destinationGate.getZ());
 			destinationGate.setActive(false);
+			p.setPlayerPosition(destinationGate.getX(), destinationGate.getY(),	 destinationGate.getZ());
+			
+			
 		} catch (NullPointerException e) {
 			// TODO: handle exception
 			System.out.println("No Destination TeleportGate");

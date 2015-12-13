@@ -30,7 +30,7 @@ public abstract class TeleportGate implements IDrawable, IWalkOnAble {
 	protected int teleportProgress = 0;
 
 	public void update(int step) {
-
+		
 		if (!isObjectAbove()) {
 			isActive = true;
 		}

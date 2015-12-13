@@ -20,24 +20,37 @@ import util.Constants.ColorSwatch;
 
 public class FloorPiece implements IDrawable {
 
+	private static final float BOUNDARY_BORDER_SHIFTER = 0.5f;
 	private int x, y, z;
+	private boolean showPXBorder, showPYBorder, showNXBorder, showNYBorder;
 
-	public FloorPiece(int x, int y, int z) {
+	public FloorPiece(int x, int y, int z, boolean showPXBorder, boolean showPYBorder, boolean showNXBorder,
+			boolean showNYBorder) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+		this.showPXBorder = showPXBorder;
+		this.showPYBorder = showPYBorder;
+		this.showNXBorder = showNXBorder;
+		this.showNYBorder = showNYBorder;
+	}
+
+	@Deprecated
+	public FloorPiece(int x, int y, int z) {
+		this(x, y, z, false, false, false, false);
 	}
 
 	public ObjectVector getObjectVector() {
 		return new ObjectVector(x, y, z, "FloorPiece");
 	}
 
-	private static BufferedImage cachedFloorImg;
+	private static BufferedImage[] cachedFloorImg = new BufferedImage[16];
 	private static int cachedFloorImgSize = 65;
 	private static final float OUTER_PADDING = 0.5f;
 	private static final float INNER_PADDING = 0.4f;
 
-	private static void drawFloor(Graphics2D g, Camera camera, float x, float y, float z, boolean isRawDrawPosition) {
+	private static void drawFloor(Graphics2D g, Camera camera, float x, float y, float z, boolean isRawDrawPosition,
+			boolean[] showBorderList) {
 
 		Vector2 cornerA = camera.getDrawPosition(x + OUTER_PADDING, y + OUTER_PADDING, z, isRawDrawPosition);
 		Vector2 cornerB = camera.getDrawPosition(x - OUTER_PADDING, y + OUTER_PADDING, z, isRawDrawPosition);
@@ -87,26 +100,83 @@ public class FloorPiece implements IDrawable {
 		g.setColor(Helper.getAlphaColorPercentage(ColorSwatch.SHADOW, 0.2));
 		g.drawPolygon(innerPolygonX, innerPolygonY, 4);
 
+		g.setStroke(Resource.getGameObjectThickStroke());
+		g.setColor(ColorSwatch.FOREGROUND);
+
+		if (showBorderList[0]) {
+			Vector2 from = camera.getDrawPosition(x + BOUNDARY_BORDER_SHIFTER, y + BOUNDARY_BORDER_SHIFTER, z,
+					isRawDrawPosition);
+			Vector2 to = camera.getDrawPosition(x + BOUNDARY_BORDER_SHIFTER, y - BOUNDARY_BORDER_SHIFTER, z,
+					isRawDrawPosition);
+			g.drawLine(from.getIntX(), from.getIntY(), to.getIntX(), to.getIntY());
+		}
+		if (showBorderList[1]) {
+			Vector2 from = camera.getDrawPosition(x - BOUNDARY_BORDER_SHIFTER, y + BOUNDARY_BORDER_SHIFTER, z,
+					isRawDrawPosition);
+			Vector2 to = camera.getDrawPosition(x + BOUNDARY_BORDER_SHIFTER, y + BOUNDARY_BORDER_SHIFTER, z,
+					isRawDrawPosition);
+			g.drawLine(from.getIntX(), from.getIntY(), to.getIntX(), to.getIntY());
+		}
+		if (showBorderList[2]) {
+			Vector2 from = camera.getDrawPosition(x - BOUNDARY_BORDER_SHIFTER, y + BOUNDARY_BORDER_SHIFTER, z,
+					isRawDrawPosition);
+			Vector2 to = camera.getDrawPosition(x - BOUNDARY_BORDER_SHIFTER, y - BOUNDARY_BORDER_SHIFTER, z,
+					isRawDrawPosition);
+			g.drawLine(from.getIntX(), from.getIntY(), to.getIntX(), to.getIntY());
+		}
+		if (showBorderList[3]) {
+			Vector2 from = camera.getDrawPosition(x + BOUNDARY_BORDER_SHIFTER, y - BOUNDARY_BORDER_SHIFTER, z,
+					isRawDrawPosition);
+			Vector2 to = camera.getDrawPosition(x - BOUNDARY_BORDER_SHIFTER, y - BOUNDARY_BORDER_SHIFTER, z,
+					isRawDrawPosition);
+			g.drawLine(from.getIntX(), from.getIntY(), to.getIntX(), to.getIntY());
+		}
+
 	}
 
 	public static void refreshDrawCache(Camera camera) {
 		if (Constants.CACHE_DRAWABLE) {
-			cachedFloorImg = DrawManager.getInstance().createBlankBufferedImage(cachedFloorImgSize, cachedFloorImgSize,
-					Transparency.BITMASK);
-			Graphics2D g = cachedFloorImg.createGraphics();
+			for (int i = 0; i < 16; i++) {
+				cachedFloorImg[i] = DrawManager.getInstance().createBlankBufferedImage(cachedFloorImgSize,
+						cachedFloorImgSize, Transparency.BITMASK);
+				Graphics2D g = cachedFloorImg[i].createGraphics();
 
-			g.setComposite(AlphaComposite.Src);
-			g.setColor(new Color(0, 0, 0, 0));
-			g.fillRect(0, 0, cachedFloorImgSize, cachedFloorImgSize); // Clears the image.
-			g.setComposite(AlphaComposite.SrcOver);
+				g.setComposite(AlphaComposite.Src);
+				g.setColor(new Color(0, 0, 0, 0));
+				g.fillRect(0, 0, cachedFloorImgSize, cachedFloorImgSize); // Clears the image.
+				g.setComposite(AlphaComposite.SrcOver);
 
-			g.setTransform(AffineTransform.getTranslateInstance(cachedFloorImgSize / 2, cachedFloorImgSize / 2));
-			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g.setTransform(AffineTransform.getTranslateInstance(cachedFloorImgSize / 2, cachedFloorImgSize / 2));
+				g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-			drawFloor(g, camera, 0, 0, 0, true);
+				drawFloor(g, camera, 0, 0, 0, true, decodeBorderHashing(i));
 
-			g.dispose();
+				g.dispose();
+			}
 		}
+	}
+
+	private int getBorderHashing() {
+		int ans = 0;
+		if (showPXBorder)
+			ans += 1 << 1;
+		if (showPYBorder)
+			ans += 1 << 2;
+		if (showNXBorder)
+			ans += 1 << 3;
+		if (showNYBorder)
+			ans += 1 << 4;
+
+		return ans / 2;
+	}
+
+	private static boolean[] decodeBorderHashing(int num) {
+		boolean[] ans = new boolean[4];
+		for (int i = 0; i < 4; i++) {
+			ans[i] = num % 2 == 1;
+			num /= 2;
+		}
+		return ans;
 	}
 
 	@Override
@@ -114,11 +184,12 @@ public class FloorPiece implements IDrawable {
 		if (Constants.CACHE_DRAWABLE) {
 			Vector2 drawPosition = camera.getDrawPosition(x, y, z);
 
-			g.drawImage(cachedFloorImg, drawPosition.getIntX() - cachedFloorImgSize / 2,
+			g.drawImage(cachedFloorImg[getBorderHashing()], drawPosition.getIntX() - cachedFloorImgSize / 2,
 					drawPosition.getIntY() - cachedFloorImgSize / 2, null);
 		} else {
-			drawFloor(g, camera, x, y, z, false);
+			drawFloor(g, camera, x, y, z, false, decodeBorderHashing(getBorderHashing()));
 		}
+
 	}
 
 	@Override

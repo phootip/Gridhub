@@ -1,6 +1,8 @@
 package stage;
 
+import java.awt.BasicStroke;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +28,7 @@ import stage.gameobj.TeleportGate;
 import stage.gameobj.TeleportGateController;
 import stage.gameobj.TeleportToArea;
 import util.Constants.ColorSwatch;
+import util.Helper;
 import util.Resource;
 
 public class GameStage extends Scene {
@@ -276,6 +279,7 @@ public class GameStage extends Scene {
 			FloorPiece.refreshDrawCache(camera);
 
 			AffineTransform oldTransform = g.getTransform();
+			Rectangle oldClip = g.getClipBounds();
 
 			g.setClip(sceneWidth * i / cameraList.length, 0, sceneWidth / cameraList.length, sceneHeight);
 			g.translate(sceneWidth * i / cameraList.length, 0);
@@ -283,10 +287,15 @@ public class GameStage extends Scene {
 			LevelRenderer.draw(ObjectMap.drawableObjectHashMap.values(), g, camera);
 
 			g.setTransform(oldTransform);
+			g.setClip(oldClip);
 
 			if (i > 0) {
-				g.setColor(ColorSwatch.FOREGROUND);
-				g.setStroke(Resource.getGameObjectThickStroke());
+				g.setColor(Helper.getAlphaColorPercentage(ColorSwatch.BACKGROUND, 1));
+				g.setStroke(new BasicStroke(9));
+				g.drawLine(sceneWidth * i / cameraList.length, 0, sceneWidth * i / cameraList.length, sceneHeight);
+				
+				g.setColor(ColorSwatch.SHADOW);
+				g.setStroke(new BasicStroke(5));
 				g.drawLine(sceneWidth * i / cameraList.length, 0, sceneWidth * i / cameraList.length, sceneHeight);
 			}
 

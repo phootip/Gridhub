@@ -55,14 +55,19 @@ public class FloorLevel {
 	}
 
 	public List<FloorPiece> getFloorPieces() {
-		ArrayList<FloorPiece> pieceList = new ArrayList<>(); 
-		
+		ArrayList<FloorPiece> pieceList = new ArrayList<>();
+
 		for (int i = 0; i < sizeX; i++) {
 			for (int j = 0; j < sizeY; j++) {
-				pieceList.add(new FloorPiece(i, j, getZValueFromXY(i, j)));
+				int z = getZValueFromXY(i, j);
+				boolean showPXBorder = isOutOfMap(i + 1, j) || (getZValueFromXY(i + 1, j) != z);
+				boolean showPYBorder = isOutOfMap(i, j + 1) || (getZValueFromXY(i, j + 1) != z);
+				boolean showNXBorder = isOutOfMap(i - 1, j) || (getZValueFromXY(i - 1, j) != z);
+				boolean showNYBorder = isOutOfMap(i, j - 1) || (getZValueFromXY(i, j - 1) != z);
+				pieceList.add(new FloorPiece(i, j, z, showPXBorder, showPYBorder, showNXBorder, showNYBorder));
 			}
 		}
-		
+
 		return pieceList;
 	}
 

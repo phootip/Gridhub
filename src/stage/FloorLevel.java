@@ -77,14 +77,14 @@ public class FloorLevel {
 	}
 
 	public void setZValue(int x, int y, int z) {
-		if (x >= sizeX || x < 0 || y >= sizeY || y < 0 || z < 0)
+		if (x > sizeX-1 || x < 0 || y > sizeY-1 || y < 0 || z < 0)
 			return;
 		else
 			floorLevelMap[x][y] = z;
 	}
 
 	public boolean isOutOfMap(int x, int y) {
-		return x >= sizeX || x < 0 || y > sizeY || y < 0;
+		return x > sizeX-1 || x < 0 || y > sizeY-1 || y < 0;
 	}
 
 }

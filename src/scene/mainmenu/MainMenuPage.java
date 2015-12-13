@@ -12,6 +12,10 @@ import util.Constants.ColorSwatch;
 
 abstract class MainMenuPage {
 
+	private static final int HEADER_TOP_MARGIN = 50;
+	private static final int HEADER_RIGHT_MARGIN = 100;
+	private static final int HEADER_FONT_HEIGHT = 100;
+	protected static final int TOP_MARGIN = HEADER_FONT_HEIGHT + HEADER_TOP_MARGIN;
 	protected boolean isVisible;
 	protected MainMenuScene parent;
 	protected Font headerFont;
@@ -20,10 +24,10 @@ abstract class MainMenuPage {
 
 	protected MainMenuPage(MainMenuScene parent) {
 		this.parent = parent;
-		this.headerFont = Resource.getInstance().getDefaultFont(100, Resource.FontWeight.REGULAR);
+		this.headerFont = Resource.getInstance().getDefaultFont(HEADER_FONT_HEIGHT, Resource.FontWeight.REGULAR);
 	}
 
-	protected boolean isVisible() {
+	protected final boolean isVisible() {
 		return isVisible;
 	}
 
@@ -32,9 +36,9 @@ abstract class MainMenuPage {
 	}
 
 	protected int showStep = 0;
-	protected int showDuration = 100 * 30;
+	protected final int showDuration = 100 * 30;
 
-	protected void progressShowAnimation(int step) {
+	protected final void progressShowAnimation(int step) {
 		if (this.isVisible) {
 			showStep += step;
 			if (showStep > showDuration) {
@@ -48,7 +52,7 @@ abstract class MainMenuPage {
 		}
 	}
 
-	protected void checkForPageExit() {
+	protected final void checkForPageExit() {
 		if (this.isVisible && InputManager.getInstance().isKeyTriggering(KeyEvent.VK_ESCAPE)) {
 			this.parent.setPage(PageName.TOP_MAIN_MENU);
 		}
@@ -59,11 +63,11 @@ abstract class MainMenuPage {
 		checkForPageExit();
 	}
 
-	protected int getShiftDistance(int sceneWidth) {
+	protected final int getShiftDistance(int sceneWidth) {
 		return (int) Helper.sineInterpolate(sceneWidth, 0, (float) showStep / showDuration);
 	}
 
-	private void drawShifterBackground(Graphics2D g, int sceneWidth, int sceneHeight) {
+	private final void drawShifterBackground(Graphics2D g, int sceneWidth, int sceneHeight) {
 		if (this.showStep < this.showDuration) {
 			g.setColor(ColorSwatch.BACKGROUND);
 			int shiftDistance = getShiftDistance(sceneWidth);
@@ -71,13 +75,13 @@ abstract class MainMenuPage {
 		}
 	}
 
-	private void drawHeader(Graphics2D g, int sceneWidth, String pageName) {
+	private final void drawHeader(Graphics2D g, int sceneWidth, String pageName) {
 		if (pageName == null)
 			return;
 
 		g.setFont(this.headerFont);
-		int headerX = getShiftDistance(sceneWidth) + 100;
-		int headerY = 50 + g.getFontMetrics().getAscent();
+		int headerX = getShiftDistance(sceneWidth) + HEADER_RIGHT_MARGIN;
+		int headerY = HEADER_TOP_MARGIN + g.getFontMetrics().getAscent();
 		g.setColor(ColorSwatch.SHADOW);
 		g.drawString(pageName, headerX + 5, headerY + 5);
 		g.setColor(ColorSwatch.FOREGROUND);

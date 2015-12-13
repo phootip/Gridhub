@@ -1,6 +1,9 @@
 package util;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
 
 import core.geom.Vector2;
 import core.geom.Vector3;
@@ -211,7 +214,39 @@ public class Helper {
 			throw new IllegalArgumentException("Low value cannot be higher than high value : " + low + " > " + high);
 		}
 		return Math.max(low, Math.min(high, value));
+	}
 
+	/**
+	 * Get preferred drawString position so that the string to be drawn is centered in the rectangle.
+	 * 
+	 * @param text
+	 *            the text to be drawn
+	 * @param font
+	 *            the font to be used in drawing
+	 * @param g
+	 *            {@link Graphics2D} object.
+	 * @param x
+	 *            the left position of the rectangle
+	 * @param y
+	 *            the top position of the rectangle
+	 * @param width
+	 *            the width of the rectangle
+	 * @param height
+	 *            the height of the rectangle
+	 * @return The position of text that its position can be directly passed into
+	 *         {@link Graphics2D#drawString(String, float, float)}.
+	 */
+	public static Vector2 getCenteredTextPosition(String text, Font font, Graphics2D g, int x, int y, int width, int height) {
+		FontMetrics fontMetric = g.getFontMetrics(font);
+
+		int textWidth = fontMetric.stringWidth(text);
+		int textHeight = fontMetric.getHeight();
+		int textAscent = fontMetric.getAscent();
+
+		float drawX = x + (width - textWidth) / 2f;
+		float drawY = y + (height - textHeight) / 2f + textAscent;
+
+		return new Vector2(drawX, drawY);
 	}
 
 }

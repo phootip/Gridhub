@@ -31,7 +31,7 @@ public class Camera {
 		return this.player.getDrawPosition();
 	}
 
-	private final float FOLLOW_SPEED = (float) Math.pow(5, 1.0 / 60);
+	private final float FOLLOW_SPEED = 30;
 
 	private int rotation = 0;
 	private int oldRotation = 0;
@@ -63,7 +63,8 @@ public class Camera {
 	}
 
 	public void update(int step) {
-		centerPos.add(getPreferredCenterPos().subtract(centerPos).multiply(1 / (float) Math.pow(FOLLOW_SPEED, step)));
+		centerPos.add(getPreferredCenterPos().subtract(centerPos)
+				.multiply((float) (1 / Math.pow(FOLLOW_SPEED, 100f / step))));
 
 		if (!isRotating) {
 			int direction = 0;

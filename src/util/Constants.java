@@ -52,6 +52,11 @@ public final class Constants {
 	 */
 	public static final Dimension MINIMUM_WINDOW_SIZE = new Dimension(1366, 768);
 
+	/**
+	 * The name of file collecting chapter list data.
+	 */
+	public static final String CHAPTER_LIST_FILE_NAME = "ChapterList";
+
 	public final static class ColorSwatch {
 		public static final Color BACKGROUND = new Color(25, 38, 69);
 		public static final Color FOREGROUND = Color.WHITE;

@@ -7,15 +7,14 @@ import java.util.List;
 import scene.core.Scene;
 import util.Constants.ColorSwatch;
 
-public class MainMenuScene extends Scene {
+final public class MainMenuScene extends Scene {
 
 	private List<MainMenuPage> pageList;
 	private MainMenuPage currentPage;
 
 	private TopMainMenuPage topMainMenuPage;
 	
-	private OnePlayerPage onePlayerPage;
-	private TwoPlayerPage twoPlayerPage;
+	private PlayPage playPage;
 	private LevelEditorPage levelEditorPage;
 	private OptionPage optionPage;
 	private AboutPage aboutPage;
@@ -29,8 +28,7 @@ public class MainMenuScene extends Scene {
 		}
 		topMainMenuPage.setVisible(true);
 
-		onePlayerPage = new OnePlayerPage(this);
-		twoPlayerPage = new TwoPlayerPage(this);
+		playPage = new PlayPage(this);
 		levelEditorPage = new LevelEditorPage(this);
 		optionPage = new OptionPage(this);
 		aboutPage = new AboutPage(this);
@@ -41,8 +39,7 @@ public class MainMenuScene extends Scene {
 		// Add top menu the first one, so the rendering will be behind the
 		// others
 		pageList.add(topMainMenuPage);
-		pageList.add(onePlayerPage);
-		pageList.add(twoPlayerPage);
+		pageList.add(playPage);
 		pageList.add(levelEditorPage);
 		pageList.add(optionPage);
 		pageList.add(aboutPage);
@@ -75,7 +72,7 @@ public class MainMenuScene extends Scene {
 	}
 
 	protected enum PageName {
-		TOP_MAIN_MENU, ONE_PLAYER, TWO_PLAYER, LEVEL_EDITOR, OPTION, ABOUT
+		TOP_MAIN_MENU, PLAY, LEVEL_EDITOR, OPTION, ABOUT
 	}
 
 	protected void setPage(PageName pageName) {
@@ -83,11 +80,8 @@ public class MainMenuScene extends Scene {
 		case TOP_MAIN_MENU:
 			setPage(topMainMenuPage);
 			break;
-		case ONE_PLAYER:
-			setPage(onePlayerPage);
-			break;
-		case TWO_PLAYER:
-			setPage(twoPlayerPage);
+		case PLAY:
+			setPage(playPage);
 			break;
 		case LEVEL_EDITOR:
 			setPage(levelEditorPage);

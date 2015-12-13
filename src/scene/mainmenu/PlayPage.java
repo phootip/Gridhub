@@ -6,7 +6,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 
-import core.PlayMode;
 import core.geom.Vector2;
 import scene.level.LevelSelector;
 import util.Constants.ColorSwatch;
@@ -30,7 +29,10 @@ final public class PlayPage extends MainMenuPage {
 
 	@Override
 	protected void update(int step) {
-		super.update(step);
+		progressShowAnimation(step);
+		if (!levelSelector.isEscapeKeyHandled()) {
+			checkForPageExit();
+		}
 
 		if (this.isVisible) {
 			levelSelector.update(step);
@@ -62,7 +64,11 @@ final public class PlayPage extends MainMenuPage {
 
 	@Override
 	protected String getPageName() {
-		return "Play";
+		if (levelSelector.isPlayModeSelected()) {
+			return "Play | " + levelSelector.getSelectedPlayMode().getFullModeName();
+		} else {
+			return "Play";
+		}
 	}
 
 }

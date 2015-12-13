@@ -10,8 +10,8 @@ import java.util.List;
 
 import com.google.gson.Gson;
 
-import core.PlayMode;
 import util.Constants;
+import util.Constants.PlayMode;
 
 final public class LevelFetcher {
 

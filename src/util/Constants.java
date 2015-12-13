@@ -126,4 +126,28 @@ public final class Constants {
 			}
 		}
 	}
+	
+	public enum PlayMode {
+		SINGLE_PLAYER("Single Player", "singleplayer"), COOP_MODE("Co-op mode", "coop");
+
+		private String folderName;
+		private String fullModeName;
+
+		/**
+		 * @return The folder name corresponding to play mode.
+		 */
+		public String getLevelFolderName() {
+			return folderName;
+		}
+
+		private PlayMode(String fullModeName, String folderName) {
+			this.folderName = folderName;
+			this.fullModeName = fullModeName;
+		}
+		
+		public String getFullModeName() {
+			return fullModeName;
+		}
+
+	}
 }

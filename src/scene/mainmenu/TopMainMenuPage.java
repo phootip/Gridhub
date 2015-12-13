@@ -74,16 +74,18 @@ final public class TopMainMenuPage extends MainMenuPage {
 	}
 
 	private void detectKey() {
-		if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_UP)) {
-			selectingMenu--;
-		}
-		if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_DOWN)) {
-			selectingMenu++;
+		if (hiddenShifterStep < hiddenShifterDuration) {
+			if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_UP)) {
+				selectingMenu--;
+			}
+			if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_DOWN)) {
+				selectingMenu++;
+			}
 		}
 
 		selectingMenu = (selectingMenu + menuItem.length) % menuItem.length;
 
-		if (hiddenShifterStep == 0 && InputManager.getInstance().isKeyTriggering(KeyEvent.VK_ENTER)) {
+		if (hiddenShifterStep == 0 && InputManager.getInstance().checkKeyTriggeringWithRemoval(KeyEvent.VK_ENTER)) {
 			switch (selectingMenu) {
 				case 0:
 					this.parent.setPage(MainMenuScene.PageName.PLAY);

@@ -41,10 +41,14 @@ public class GameStage extends Scene {
 	private ArrayList<Block> blocks = new ArrayList<>();
 	private ArrayList<FloorSwitch> floorSwitches = new ArrayList<>();
 	private ArrayList<Slope> slopes = new ArrayList<>();
+	
 	private ArrayList<GateToGateTeleport> teleportGates = new ArrayList<>();
-	private ArrayList<GateToGateTeleport> teleportLinked = new ArrayList<>();
+	//private ArrayList<GateToGateTeleport> teleportLinked = new ArrayList<>();
+	private int[] telePortLink;
 	private ArrayList<TeleportToArea> teleportToAreas = new ArrayList<>();
+	
 	private ArrayList<GateController> gateControllers = new ArrayList<>();
+
 	private ArrayList<BlockController> blockControllers = new ArrayList<>();
 	private ArrayList<TeleportGateController> teleportGateControllers = new ArrayList<>();
 	private ArrayList<Gate> gates = new ArrayList<>();
@@ -53,9 +57,12 @@ public class GameStage extends Scene {
 	private ArrayList<Block>datasetGsonBlock;
 	private ArrayList<FloorSwitch> dataSetFloorSwitches;
 	private ArrayList<Slope> dataSetSlopes;
+	
 	private ArrayList<GateToGateTeleport> dataSetTeleportToGates;
-	private ArrayList<GateToGateTeleport> dataSetTeleportLink;
-	private ArrayList<TeleportToArea> dataSetTeleportToArea;
+	//private ArrayList<GateToGateTeleport> dataSetTeleportLink;
+	private int[] dataSetLinkTeleport;
+ 	private ArrayList<TeleportToArea> dataSetTeleportToArea;
+	
 	private ArrayList<GateController> dataSetsGateController;
 	private ArrayList<BlockController> dataSetBlockController;
 	private ArrayList<TeleportGateController> datasetTeleportGateController;
@@ -124,18 +131,20 @@ public class GameStage extends Scene {
 		blocks.add(new Block(8, 3, 0, 20, true, floorLevelMap));
 				
 
-		GateToGateTeleport gateTele1 = new GateToGateTeleport(0, 1, 0);
-		GateToGateTeleport gateTele2 = new GateToGateTeleport(5, 0, 1);
-		GateToGateTeleport gateTele3 = new GateToGateTeleport(16, 4, 3);
+		GateToGateTeleport gateTele0 = new GateToGateTeleport(0, 1, 0);
+		GateToGateTeleport gateTele1 = new GateToGateTeleport(5, 0, 1);
+		GateToGateTeleport gateTele2 = new GateToGateTeleport(16, 4, 3);
 		
+		teleportGates.add(gateTele0);
 		teleportGates.add(gateTele1);
-		//teleportGates.add(gateTele2);
-		teleportGates.add(gateTele3);
+		teleportGates.add(gateTele2);
 		teleportToAreas.add(new TeleportToArea(10, 4, 1, 0, 2, 0));
 		
-		teleportLinked.add(gateTele3);
-		//teleportLinked.add(gateTele1);
-		teleportLinked.add(gateTele1);
+		telePortLink = new int[]{2,0,0};
+		
+//		teleportLinked.add(gateTele2);
+//		teleportLinked.add(gateTele1);
+//		teleportLinked.add(gateTele0);
 		
 
 		floorSwitches.add(new FloorSwitch(1, 0, 0, false, 20));
@@ -157,7 +166,8 @@ public class GameStage extends Scene {
 		String slopeJson = gson.toJson(slopes);
 		
 		String teleportGateJson = gson.toJson(teleportGates);
-		String teleportGateLinkJson = gson.toJson(teleportLinked);
+//		String teleportGateLinkJson = gson.toJson(teleportLinked);
+		String teleportGateLinkJson = gson.toJson(telePortLink);
 		String teleportGateToAreaJson = gson.toJson(teleportToAreas);
 		
 //		String swControllerJson = gson.toJson(switchController);
@@ -181,15 +191,15 @@ public class GameStage extends Scene {
 		dataSetFloorSwitches = gson.fromJson(floorSwitchJson,floorSwitchType);
 		dataSetSlopes = gson.fromJson(slopeJson,slopeType);
 		dataSetTeleportToGates = gson.fromJson(teleportGateJson,teleportToGateType);
-		dataSetTeleportLink = gson.fromJson(teleportGateLinkJson,teleportToGateType);
+		dataSetLinkTeleport = gson.fromJson(teleportGateLinkJson , int[].class);
 		dataSetTeleportToArea = gson.fromJson(teleportGateToAreaJson, teleportToAreaType);
 //		dataSetswitchController = gson.fromJson(swControllerJson,switchControllerType);
 		dataSetsGate = gson.fromJson(gateJson,gateType);
         
-		for(int i = 0 ; i < dataSetTeleportLink.size() ; i++) {
-			TeleportGate destinationGate = dataSetTeleportLink.get(i);
+		
+		for(int i = 0 ; i < dataSetTeleportToGates.size() ; i++) {
 			GateToGateTeleport mainGate = dataSetTeleportToGates.get(i);
-			mainGate.setDestinationTelelportGate(destinationGate);
+			mainGate.setDestinationTelelportGate(dataSetTeleportToGates.get(dataSetLinkTeleport[i]));
 		}
 		
         for (Slope eachSlope : dataSetSlopes) {
@@ -259,7 +269,7 @@ public class GameStage extends Scene {
 			fs.update(step);
 		}
 		
-		System.out.println(dataSetTeleportToArea.size() + " " + dataSetTeleportToGates.size());
+		
 		for (GateToGateTeleport teleGate : dataSetTeleportToGates) {
 			teleGate.update(step);
 		}

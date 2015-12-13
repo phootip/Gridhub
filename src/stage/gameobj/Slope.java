@@ -388,19 +388,26 @@ public class Slope implements ILargeDrawable {
 		g.setColor(ColorSwatch.BACKGROUND);
 		g.fillPolygon(outerPolygonX, outerPolygonY, 5);
 
+		int[] outerPolylineX = new int[4];
+		int[] outerPolylineY = new int[4];
+
+		outerPolylineX[0] = endV2.getIntX();
+		outerPolylineX[1] = startV2.getIntX();
+		outerPolylineX[2] = startV1.getIntX();
+		outerPolylineX[3] = midV1.getIntX();
+
+		outerPolylineY[0] = endV2.getIntY();
+		outerPolylineY[1] = startV2.getIntY();
+		outerPolylineY[2] = startV1.getIntY();
+		outerPolylineY[3] = midV1.getIntY();
+
 		g.setColor(ColorSwatch.FOREGROUND);
 		g.setStroke(Resource.getGameObjectThickStroke());
-		g.drawPolygon(outerPolygonX, outerPolygonY, 5);
+		g.drawPolyline(outerPolylineX, outerPolylineY, 4);
 
 		// Inner lines
 		g.setStroke(Resource.getGameObjectThinStroke());
-		if (is3InnerLines) {
-			g.drawLine(endV1.getIntX(), endV1.getIntY(), startV1.getIntX(), startV1.getIntY());
-			g.drawLine(endV1.getIntX(), endV1.getIntY(), midV1.getIntX(), midV1.getIntY());
-			g.drawLine(endV1.getIntX(), endV1.getIntY(), endV2.getIntX(), endV2.getIntY());
-		} else {
-			g.drawLine(startV1.getIntX(), startV1.getIntY(), endV1.getIntX(), endV1.getIntY());
-		}
+		g.drawLine(endV1.getIntX(), endV1.getIntY(), startV1.getIntX(), startV1.getIntY());
 	}
 
 	private void drawMiddlePiece(Graphics2D g, Camera camera) {
@@ -409,7 +416,7 @@ public class Slope implements ILargeDrawable {
 		int y = (startY + endY) / 2;
 		int z = startZ;
 
-		float[][] cornerShifter = new float[][] { { -0.5f, -0.5f }, { +0.5f, -0.5f }, { +0.5f, +0.5f },
+		final float[][] cornerShifter = new float[][] { { -0.5f, -0.5f }, { +0.5f, -0.5f }, { +0.5f, +0.5f },
 				{ -0.5f, +0.5f } };
 		float[] cornerHeight = new float[] { endZ - startZ, endZ - startZ, endZ - startZ, endZ - startZ };
 		cornerHeight[0] *= (x - 1 == startX || y - 1 == startY) ? 1 / 3f : 2 / 3f;
@@ -458,14 +465,22 @@ public class Slope implements ILargeDrawable {
 		g.setColor(ColorSwatch.BACKGROUND);
 		g.fillPolygon(new Polygon(outerBorderCoordX, outerBorderCoordY, 6));
 
-		g.setStroke(Resource.getGameObjectThickStroke());
+		// g.setStroke(Resource.getGameObjectThickStroke());
 		g.setColor(ColorSwatch.FOREGROUND);
-		g.drawPolygon(new Polygon(outerBorderCoordX, outerBorderCoordY, 6));
+		// g.drawPolygon(new Polygon(outerBorderCoordX, outerBorderCoordY, 6));
 
 		g.setStroke(Resource.getGameObjectThinStroke());
-		g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[0].getIntX(), outerBorder[0].getIntY());
-		g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[2].getIntX(), outerBorder[2].getIntY());
-		g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[4].getIntX(), outerBorder[4].getIntY());
+		if ((cornerShifter[(furthestBaseId + 2) % 4][1] == cornerShifter[(furthestBaseId + 3) % 4][1]) == isAlignX) {
+			g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[2].getIntX(), outerBorder[2].getIntY());
+			g.setStroke(Resource.getGameObjectThickStroke());
+			g.drawLine(outerBorderCoordX[0], outerBorderCoordY[0], outerBorderCoordX[1], outerBorderCoordY[1]);
+			g.drawLine(outerBorderCoordX[3], outerBorderCoordY[3], outerBorderCoordX[4], outerBorderCoordY[4]);
+		} else {
+			g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[4].getIntX(), outerBorder[4].getIntY());
+			g.setStroke(Resource.getGameObjectThickStroke());
+			g.drawLine(outerBorderCoordX[0], outerBorderCoordY[0], outerBorderCoordX[5], outerBorderCoordY[5]);
+			g.drawLine(outerBorderCoordX[3], outerBorderCoordY[3], outerBorderCoordX[2], outerBorderCoordY[2]);
+		}
 	}
 
 	private void drawEndPiece(Graphics2D g, Camera camera) {
@@ -527,12 +542,47 @@ public class Slope implements ILargeDrawable {
 
 		g.setStroke(Resource.getGameObjectThickStroke());
 		g.setColor(ColorSwatch.FOREGROUND);
-		g.drawPolygon(new Polygon(outerBorderCoordX, outerBorderCoordY, 6));
+		// g.drawPolygon(new Polygon(outerBorderCoordX, outerBorderCoordY, 6));
+
+		int[] shiftDir = new int[] { (furthestBaseId + 2) % 4, (furthestBaseId + 3) % 4, (furthestBaseId + 3) % 4,
+				furthestBaseId, (furthestBaseId + 1) % 4, (furthestBaseId + 1) % 4 };
+		if (isAlignX) {
+			for (int i = 0; i < 6; i++) {
+				if (cornerShifter[shiftDir[i]][0] != (startX - endX) / 4f
+						|| cornerShifter[shiftDir[(i + 1) % 6]][0] != (startX - endX) / 4f) {
+					g.drawLine(outerBorderCoordX[i], outerBorderCoordY[i], outerBorderCoordX[(i + 1) % 6],
+							outerBorderCoordY[(i + 1) % 6]);
+				}
+			}
+		} else {
+			for (int i = 0; i < 6; i++) {
+				if (cornerShifter[shiftDir[i]][1] != (startY - endY) / 4f
+						|| cornerShifter[shiftDir[(i + 1) % 6]][1] != (startY - endY) / 4f) {
+					g.drawLine(outerBorderCoordX[i], outerBorderCoordY[i], outerBorderCoordX[(i + 1) % 6],
+							outerBorderCoordY[(i + 1) % 6]);
+				}
+			}
+		}
 
 		g.setStroke(Resource.getGameObjectThinStroke());
-		g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[0].getIntX(), outerBorder[0].getIntY());
-		g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[2].getIntX(), outerBorder[2].getIntY());
-		g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[4].getIntX(), outerBorder[4].getIntY());
+
+		if (isAlignX) {
+			for (int i = 0; i < 6; i += 2) {
+				if (cornerShifter[(furthestBaseId + 2) % 4][0] != (startX - endX) / 4f
+						|| cornerShifter[shiftDir[i]][0] != (startX - endX) / 4f) {
+					g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[i].getIntX(),
+							outerBorder[i].getIntY());
+				}
+			}
+		} else {
+			for (int i = 0; i < 6; i += 2) {
+				if (cornerShifter[(furthestBaseId + 2) % 4][1] != (startY - endY) / 4f
+						|| cornerShifter[shiftDir[i]][1] != (startY - endY) / 4f) {
+					g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[i].getIntX(),
+							outerBorder[i].getIntY());
+				}
+			}
+		}
 
 		/*Vector3 startP1 = new Vector3(startX, startY, startZ);
 		Vector3 endP1 = new Vector3(endX, endY, endZ);
@@ -634,11 +684,11 @@ public class Slope implements ILargeDrawable {
 	@Override
 	public void draw(Graphics2D g, Camera camera, Vector3 position) {
 		if (position.equals(new Vector3(startX, startY, startZ - START_Z_SHIFTER))) {
-			drawStartPiece(g, camera);
+			 drawStartPiece(g, camera);
 		} else if (position.equals(new Vector3(endX, endY, startZ))) {
 			drawEndPiece(g, camera);
 		} else {
-			drawMiddlePiece(g, camera);
+			 drawMiddlePiece(g, camera);
 		}
 	}
 

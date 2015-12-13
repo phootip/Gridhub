@@ -1,6 +1,9 @@
 package stage;
 
+import java.awt.BasicStroke;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -25,10 +28,13 @@ import stage.gameobj.TeleportGate;
 import stage.gameobj.TeleportGateController;
 import stage.gameobj.TeleportToArea;
 import util.Constants.ColorSwatch;
+import util.Helper;
+import util.Resource;
 
 public class GameStage extends Scene {
 
-	private Camera camera;
+	private Camera camera1;
+	private Camera camera2;
 	private Player player1;
 	private Player player2;
 	private FloorLevel floorLevelMap;
@@ -69,7 +75,8 @@ public class GameStage extends Scene {
 		player1 = new Player(util.Constants.PLAYER1_ID, floorLevelMap, 9, 4, 1);
 		player2 = new Player(util.Constants.PLAYER2_ID, floorLevelMap, 0, 0, 0);
 
-		camera = new Camera(player1);
+		camera1 = new Camera(player1);
+		camera2 = new Camera(player2);
 
 		// floorSwitches.add(new FloorSwitch(6, 3, 0, false, 10));
 		// floorSwitches.add(new FloorSwitch(6, 5, 0, false, 20));
@@ -163,18 +170,18 @@ public class GameStage extends Scene {
 		floorSwitches.add(new FloorSwitch(1, 0, 0, false, 20));
 		floorSwitches.add(new FloorSwitch(4, 0, 0, false, 10));
 
-		
-        Gate gate1 = new Gate(1, 3, 0);
-        GateController gateController = new GateController(floorSwitches, new int[] {0,1,0,1}, gate1);  
-        TeleportGateController teleController = new TeleportGateController(floorSwitches, new int[] {0,1,0,1}, gateTele3);
-        BlockController bController = new BlockController(floorSwitches, new int[] {0,1,0,1}, blocks.get(8), BlockController.MOVE_DOWN_TYPE, 1);
-        switchController.add((SwitchController)gateController);
-        switchController.add((SwitchController) teleController);
-        switchController.add((SwitchController) bController);
-        gates.add(gate1);
-        
-        for (Slope eachSlope : slopes) {
+		Gate gate1 = new Gate(1, 3, 0);
+		GateController gateController = new GateController(floorSwitches, new int[] { 0, 1, 0, 1 }, gate1);
+		TeleportGateController teleController = new TeleportGateController(floorSwitches, new int[] { 0, 1, 0, 1 },
+				gateTele3);
+		BlockController bController = new BlockController(floorSwitches, new int[] { 0, 1, 0, 1 }, blocks.get(8),
+				BlockController.MOVE_DOWN_TYPE, 1);
+		switchController.add((SwitchController) gateController);
+		switchController.add((SwitchController) teleController);
+		switchController.add((SwitchController) bController);
+		gates.add(gate1);
 
+		for (Slope eachSlope : slopes) {
 
 			int slopeStartX = eachSlope.getStartX();
 			int slopeStartY = eachSlope.getStartY();
@@ -228,9 +235,10 @@ public class GameStage extends Scene {
 	@Override
 	public void update(int step) {
 
-		camera.update(step);
-		player1.update(step, camera.getRotation());
-		player2.update(step, camera.getRotation());
+		camera1.update(step);
+		camera2.update(step);
+		player1.update(step, camera1.getRotation());
+		player2.update(step, camera2.getRotation());
 
 		for (FloorSwitch fs : floorSwitches) {
 			fs.update(step);
@@ -239,12 +247,15 @@ public class GameStage extends Scene {
 			teleGate.update(step);
 		}
 		for (Slope slope : slopes) {
-			slope.update(step, camera);
+			slope.update(step, camera1);
 		}
 		for (SwitchController eachController : switchController) {
 			eachController.update();
 		}
 		for (Gate each : gates) {
+			each.update(step);
+		}
+		for (Block each : blocks) {
 			each.update(step);
 		}
 
@@ -253,61 +264,42 @@ public class GameStage extends Scene {
 	@Override
 	public void draw(Graphics2D g, int sceneWidth, int sceneHeight) {
 
-		camera.setSceneSize(sceneWidth, sceneHeight);
-
-		Block.refreshDrawCache(camera);
-		FloorPiece.refreshDrawCache(camera);
-
 		// Draw background
 		g.setColor(ColorSwatch.BACKGROUND);
 		g.fillRect(0, 0, sceneWidth, sceneHeight);
 
-		// Draw grid line
+		Camera[] cameraList = new Camera[] { camera1, camera2 };
 
-		// int gridSizeX = floorLevelMap.getSizeX();
-		// int gridSizeY = floorLevelMap.getSizeY();
-		//
-		// g.setStroke(new BasicStroke(1));
-		// g.setColor(ColorSwatch.SHADOW);
-		// for (int i = 0; i < gridSizeX; i++) {
-		// Vector2 startPos = camera.getDrawPosition(i + 0.5f, -gridSizeY - 0.5f, 0);
-		// Vector2 endPos = camera.getDrawPosition(i + 0.5f, gridSizeY + 0.5f, 0);
-		// g.drawLine(startPos.getIntX(), startPos.getIntY(), endPos.getIntX(), endPos.getIntY());
-		// }
-		// for (int i = 0; i < gridSizeY; i++) {
-		// Vector2 startPos2 = camera.getDrawPosition(-gridSizeX - 0.5f, i + 0.5f, 0);
-		// Vector2 endPos2 = camera.getDrawPosition(gridSizeX + 0.5f, i + 0.5f, 0);
-		// g.drawLine(startPos2.getIntX(), startPos2.getIntY(), endPos2.getIntX(), endPos2.getIntY());
-		// }
-		// g.setStroke(new BasicStroke(3));
-		// // Draw floor border
-		// int[] x = new int[4];
-		// int[] y = new int[4];
-		//
-		// Vector2[] v = new Vector2[4];
-		// v[0] = camera.getDrawPosition(-0.5f, -0.5f, 0);
-		// v[1] = camera.getDrawPosition(-0.5f, gridSizeY + 0.5f, 0);
-		// v[2] = camera.getDrawPosition(gridSizeX + 0.5f, gridSizeY + 0.5f, 0);
-		// v[3] = camera.getDrawPosition(gridSizeX + 0.5f, -0.5f, 0);
-		//
-		// for (int k = 0; k < 4; k++) {
-		// x[k] = (int) v[k].getX();
-		// y[k] = (int) v[k].getY();
-		// }
-		//
-		// g.drawPolygon(x, y, 4);
+		for (int i = 0; i < cameraList.length; i++) {
+			Camera camera = cameraList[i];
 
-		// Draw things
+			camera.setSceneSize(sceneWidth / cameraList.length, sceneHeight);
 
-		/*
-		 * player1.draw(g, camera); player2.draw(g, camera);
-		 * 
-		 * for (Block b : blocks) { b.draw(g, camera); }
-		 * 
-		 * for (FloorSwitch fs : floorSwitches) { fs.draw(g, camera); }
-		 */
+			Block.refreshDrawCache(camera);
+			FloorPiece.refreshDrawCache(camera);
 
-		LevelRenderer.draw(ObjectMap.drawableObjectHashMap.values(), g, camera);
+			AffineTransform oldTransform = g.getTransform();
+			Rectangle oldClip = g.getClipBounds();
+
+			g.setClip(sceneWidth * i / cameraList.length, 0, sceneWidth / cameraList.length, sceneHeight);
+			g.translate(sceneWidth * i / cameraList.length, 0);
+
+			LevelRenderer.draw(ObjectMap.drawableObjectHashMap.values(), g, camera);
+
+			g.setTransform(oldTransform);
+			g.setClip(oldClip);
+
+			if (i > 0) {
+				g.setColor(Helper.getAlphaColorPercentage(ColorSwatch.BACKGROUND, 1));
+				g.setStroke(new BasicStroke(9));
+				g.drawLine(sceneWidth * i / cameraList.length, 0, sceneWidth * i / cameraList.length, sceneHeight);
+				
+				g.setColor(ColorSwatch.SHADOW);
+				g.setStroke(new BasicStroke(5));
+				g.drawLine(sceneWidth * i / cameraList.length, 0, sceneWidth * i / cameraList.length, sceneHeight);
+			}
+
+		}
 
 	}
 

@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import core.geom.Vector2;
 import core.geom.Vector3;
 import stage.gameobj.Player;
+import util.Constants;
 import util.Helper;
 import util.InputManager;
 
@@ -69,9 +70,9 @@ public class Camera {
 		if (!isRotating) {
 			int direction = 0;
 
-			if (InputManager.getInstance().isKeyPressing(KeyEvent.VK_Q)) {
+			if (Constants.PlayerHelper.isRotateCameraLeftPressing(player.getPlayerId())) {
 				direction += 3;
-			} else if (InputManager.getInstance().isKeyPressing(KeyEvent.VK_E)) {
+			} else if (Constants.PlayerHelper.isRotateCameraRightPressing(player.getPlayerId())) {
 				direction += 1;
 			}
 

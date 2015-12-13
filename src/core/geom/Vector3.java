@@ -1,13 +1,17 @@
 package core.geom;
 
 /**
- * The 3-dimensional vector (or 3-tuple) for easier geometry operation. This
- * class support method chaining.
+ * The 3-dimensional vector (or 3-tuple) for easier geometry operation. This class support method chaining.
  * 
  * @author Kasidit Iamthong
  *
  */
 public final class Vector3 {
+
+	/**
+	 * A zero vector (a vector that has all of its component value equals to zero).
+	 */
+	public static final Vector3 ZERO = new Vector3(0, 0, 0);
 
 	private float x;
 	private float y;
@@ -71,8 +75,7 @@ public final class Vector3 {
 	}
 
 	/**
-	 * Create a 3-dimensional vector object with value ({@code x}, {@code y},
-	 * {@code z}).
+	 * Create a 3-dimensional vector object with value ({@code x}, {@code y}, {@code z}).
 	 * 
 	 * @param x
 	 *            the value of x.
@@ -130,8 +133,7 @@ public final class Vector3 {
 	}
 
 	/**
-	 * Subtract this vector with specified value. This is equivalent to adding
-	 * by negation of these values.
+	 * Subtract this vector with specified value. This is equivalent to adding by negation of these values.
 	 * 
 	 * @param x
 	 *            the value of x
@@ -146,8 +148,7 @@ public final class Vector3 {
 	}
 
 	/**
-	 * Subtract this vector with specified value. This is equivalent to adding
-	 * by negation of these values.
+	 * Subtract this vector with specified value. This is equivalent to adding by negation of these values.
 	 * 
 	 * @param v
 	 *            another vector that its value will be used for subtraction.
@@ -190,8 +191,7 @@ public final class Vector3 {
 	}
 
 	/**
-	 * Negate the value of this vector. This is equivalent to multiplying vector
-	 * by -1.
+	 * Negate the value of this vector. This is equivalent to multiplying vector by -1.
 	 * 
 	 * @return This object itself for method chaining.
 	 */
@@ -204,8 +204,7 @@ public final class Vector3 {
 	}
 
 	/**
-	 * Rotate this vector in plane X-Y plane with the specified degree,
-	 * according to the right-hand rule.
+	 * Rotate this vector in plane X-Y plane with the specified degree, according to the right-hand rule.
 	 * 
 	 * @param angle
 	 *            the specified angle in radian.
@@ -222,8 +221,7 @@ public final class Vector3 {
 	}
 
 	/**
-	 * Rotate this vector in plane Y-Z plane with the specified degree,
-	 * according to the right-hand rule.
+	 * Rotate this vector in plane Y-Z plane with the specified degree, according to the right-hand rule.
 	 * 
 	 * @param angle
 	 *            the specified angle in radian.
@@ -240,8 +238,7 @@ public final class Vector3 {
 	}
 
 	/**
-	 * Rotate this vector in plane X-Z plane with the specified degree,
-	 * according to the right-hand rule.
+	 * Rotate this vector in plane X-Z plane with the specified degree, according to the right-hand rule.
 	 * 
 	 * @param angle
 	 *            the specified angle in radian.
@@ -288,6 +285,6 @@ public final class Vector3 {
 		if (Float.floatToIntBits(z) != Float.floatToIntBits(other.z))
 			return false;
 		return true;
-	}  
+	}
 
 }

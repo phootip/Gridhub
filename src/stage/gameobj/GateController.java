@@ -2,7 +2,7 @@ package stage.gameobj;
 
 import java.util.ArrayList;
 
-import stage.FloorSwitch;
+import stage.gameobj.FloorSwitch;
 
 public class GateController extends SwitchController {
 	private Gate gate;

@@ -2,6 +2,7 @@ package stage.gameobj;
 
 import java.awt.Graphics2D;
 
+import core.geom.Vector3;
 import stage.Camera;
 import stage.ObjectMap;
 
@@ -88,28 +89,16 @@ public class Gate implements IDrawable {
 
 		return null;
 	}
-	@Override
-	public float getDrawX() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public float getDrawY() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public float getDrawZ() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 	@Override
 	public void draw(Graphics2D g, Camera camera) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public Vector3 getDrawPosition() {
+		return new Vector3(x, y, z);
 	}
 
 }

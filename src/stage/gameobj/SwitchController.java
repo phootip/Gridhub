@@ -2,7 +2,7 @@ package stage.gameobj;
 
 import java.util.ArrayList;
 
-import stage.FloorSwitch;
+import stage.gameobj.FloorSwitch;
 
 public abstract class SwitchController {
 	private ArrayList<FloorSwitch> floorSwitchesControllerSet = new ArrayList<>();

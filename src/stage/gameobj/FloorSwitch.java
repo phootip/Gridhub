@@ -6,21 +6,18 @@ import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 
-
-
 import core.geom.Vector2;
-<<<<<<< HEAD:src/stage/gameobj/FloorSwitch.java
+import core.geom.Vector3;
 import stage.Camera;
-=======
+import stage.ObjectMap;
 import stage.gameobj.Block;
 import stage.gameobj.IDrawable;
 import stage.gameobj.IWalkOnAble;
 import stage.gameobj.Player;
 import stage.gameobj.ObjectVector;
->>>>>>> origin/ControllerAndObjectFix:src/stage/FloorSwitch.java
 import util.Helper;
 
-public class FloorSwitch implements IDrawable,IWalkOnAble{
+public class FloorSwitch implements IDrawable, IWalkOnAble {
 
 	private final float EPS = 1e-3f;
 
@@ -33,13 +30,17 @@ public class FloorSwitch implements IDrawable,IWalkOnAble{
 	protected int getX() {
 		return x;
 	}
-	
+
 	protected int getY() {
 		return y;
 	}
 
 	protected int getZ() {
 		return z;
+	}
+
+	public ObjectVector getObjectVectorWithName() {
+		return new ObjectVector(x, y, z, "Switch");
 	}
 
 	protected boolean isDefaultAssertion() {
@@ -49,8 +50,6 @@ public class FloorSwitch implements IDrawable,IWalkOnAble{
 	protected int getMinimumWeight() {
 		return minimumWeight;
 	}
-	
-	
 
 	public boolean isAsserting() {
 		return isAsserting;
@@ -82,13 +81,13 @@ public class FloorSwitch implements IDrawable,IWalkOnAble{
 
 		// This is just for testing. In production, link FloorSwitch with the
 		// HashMap instead.
-		
+
 		Player p = getPlayerAbove();
 		Block b = getBlockAbove();
-		
-		if(p != null) {
+
+		if (p != null) {
 			this.currentWeight = p.getWeight();
-		} else if(b != null) {
+		} else if (b != null) {
 			this.currentWeight = b.getWeight();
 		} else {
 			this.currentWeight = 0;
@@ -168,7 +167,7 @@ public class FloorSwitch implements IDrawable,IWalkOnAble{
 		if (getPlayerAbove() != null || getBlockAbove() != null) {
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -186,33 +185,18 @@ public class FloorSwitch implements IDrawable,IWalkOnAble{
 
 		return null;
 	}
+
 	private Block getBlockAbove() {
 		IDrawable objectAbove = ObjectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z));
-		if(objectAbove != null && objectAbove instanceof Block) {
-			return (Block)objectAbove;
-		}
-		else return null;
-	}
-	
-	
-	
-	
-	@Override
-	public float getDrawX() {
-		// TODO Auto-generated method stub
-		return x;
+		if (objectAbove != null && objectAbove instanceof Block) {
+			return (Block) objectAbove;
+		} else
+			return null;
 	}
 
 	@Override
-	public float getDrawY() {
-		// TODO Auto-generated method stub
-		return y;
-	}
-
-	@Override
-	public float getDrawZ() {
-		// TODO Auto-generated method stub
-		return z;
+	public Vector3 getDrawPosition() {
+		return new Vector3(x, y, z);
 	}
 
 }

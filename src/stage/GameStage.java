@@ -238,7 +238,7 @@ public class GameStage extends Scene {
 		camera1.update(step);
 		camera2.update(step);
 		player1.update(step, camera1.getRotation());
-		player2.update(step, camera1.getRotation());
+		player2.update(step, camera2.getRotation());
 
 		for (FloorSwitch fs : floorSwitches) {
 			fs.update(step);

@@ -2,6 +2,7 @@ package stage.gameobj;
 
 import java.awt.Graphics2D;
 
+import core.geom.Vector3;
 import stage.Camera;
 import stage.ObjectMap;
 import stage.gameobj.IDrawable;
@@ -28,13 +29,13 @@ public abstract class TeleportGate implements IDrawable, IWalkOnAble {
 	protected int teleportProgress = 0;
 
 	public void update(int step) {
-		
+
 		if (!isObjectAbove()) {
 			isActive = true;
 		}
 		if (isObjectAbove() && isActive) {
 			teleportProgress += step;
-			
+
 		} else {
 			teleportProgress = 0;
 		}
@@ -92,21 +93,8 @@ public abstract class TeleportGate implements IDrawable, IWalkOnAble {
 	}
 
 	@Override
-	public float getDrawX() {
-		// TODO Auto-generated method stub
-		return this.x;
-	}
-
-	@Override
-	public float getDrawY() {
-		// TODO Auto-generated method stub
-		return this.y;
-	}
-
-	@Override
-	public float getDrawZ() {
-		// TODO Auto-generated method stub
-		return this.z;
+	public Vector3 getDrawPosition() {
+		return new Vector3(this.x, this.y, this.z);
 	}
 
 	public int getX() {
@@ -120,7 +108,5 @@ public abstract class TeleportGate implements IDrawable, IWalkOnAble {
 	public int getZ() {
 		return z;
 	}
-	
-	
 
 }

@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 
 import core.DrawManager;
 import core.geom.Vector2;
+import core.geom.Vector3;
 import stage.Camera;
 import stage.FloorLevel;
 import stage.ObjectMap;
@@ -20,6 +21,7 @@ import util.Constants.ColorSwatch;
 
 public class Block implements PushableObject, WalkThroughable {
 
+	private static final float BLOCK_SIZE = 0.5f;
 	protected static final float BLOCK_HEIGHT = 1.0f;
 	private int x, y, z, nextX, nextY, nextZ, weight;
 	private boolean isWalkThroughable;
@@ -60,12 +62,12 @@ public class Block implements PushableObject, WalkThroughable {
 
 	public boolean isPushable() {
 
-		if (weight >= 100 || ObjectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z+1)) != null)
+		if (weight >= 100 || ObjectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z + 1)) != null)
 			return false;
 		if (ObjectMap.drawableObjectHashMap
-				.get(new ObjectVector(x, y, z+1,"Player" +  util.Constants.PLAYER1_ID)) != null
+				.get(new ObjectVector(x, y, z + 1, "Player" + util.Constants.PLAYER1_ID)) != null
 				|| ObjectMap.drawableObjectHashMap
-						.get(new ObjectVector(x, y, z+1,"Player" +  util.Constants.PLAYER2_ID)) != null)
+						.get(new ObjectVector(x, y, z + 1, "Player" + util.Constants.PLAYER2_ID)) != null)
 			return false;
 		return true;
 	}
@@ -76,23 +78,24 @@ public class Block implements PushableObject, WalkThroughable {
 			return false;
 		if (this.weight + previousWeight > 100 || !isPushable())
 			return false;
-		if (ObjectMap.drawableObjectHashMap.get( new ObjectVector(x+diffX, y+diffY, z+diffZ, "Player" + util.Constants.PLAYER1_ID)
-				) != null
-				|| ObjectMap.drawableObjectHashMap.get(new ObjectVector(x+diffX, y+diffY, z+diffZ, "Player" + util.Constants.PLAYER2_ID)) != null)
+		if (ObjectMap.drawableObjectHashMap
+				.get(new ObjectVector(x + diffX, y + diffY, z + diffZ, "Player" + util.Constants.PLAYER1_ID)) != null
+				|| ObjectMap.drawableObjectHashMap.get(new ObjectVector(x + diffX, y + diffY, z + diffZ,
+						"Player" + util.Constants.PLAYER2_ID)) != null)
 			return false;
 
 		IDrawable nextObjectObstacles = ObjectMap.drawableObjectHashMap
-				.get(new ObjectVector(x+diffX, y+diffY, z+diffZ));
+				.get(new ObjectVector(x + diffX, y + diffY, z + diffZ));
 		if (z != floorLevelMap.getZValueFromXY(x + diffX, y + diffY)) {
 			IDrawable nextObjectBelow = ObjectMap.drawableObjectHashMap
-					.get(new ObjectVector(x+diffX, y+diffY, z+diffZ-1));
+					.get(new ObjectVector(x + diffX, y + diffY, z + diffZ - 1));
 
 			if (!(nextObjectBelow instanceof Block))
 				return false;
 		}
 
 		if (nextObjectObstacles == null) {
-			ObjectMap.drawableObjectHashMap.put(new ObjectVector(x+diffX, y+diffY, z+diffZ), this);
+			ObjectMap.drawableObjectHashMap.put(new ObjectVector(x + diffX, y + diffY, z + diffZ), this);
 			ObjectMap.drawableObjectHashMap.remove(new ObjectVector(x, y, z));
 			this.x += diffX;
 			this.y += diffY;
@@ -104,7 +107,7 @@ public class Block implements PushableObject, WalkThroughable {
 				boolean isPushed = ((PushableObject) nextObjectObstacles).push(previousWeight + this.weight, diffX,
 						diffY, diffZ);
 				if (isPushed) {
-					ObjectMap.drawableObjectHashMap.put(new ObjectVector(x+diffX, y+diffY, z+diffZ), this);
+					ObjectMap.drawableObjectHashMap.put(new ObjectVector(x + diffX, y + diffY, z + diffZ), this);
 					ObjectMap.drawableObjectHashMap.remove(new ObjectVector(x, y, z));
 					this.x += diffX;
 					this.y += diffY;
@@ -124,8 +127,8 @@ public class Block implements PushableObject, WalkThroughable {
 
 	private static BufferedImage cachedBoxImg;
 	private static int cachedBoxImgSize = 150;
-	private static final float[][] cornerShifter = new float[][] { { -0.5f, -0.5f }, { +0.5f, -0.5f }, { +0.5f, +0.5f },
-			{ -0.5f, +0.5f } };
+	private static final float[][] cornerShifter = new float[][] { { -BLOCK_SIZE, -BLOCK_SIZE },
+			{ +BLOCK_SIZE, -BLOCK_SIZE }, { +BLOCK_SIZE, +BLOCK_SIZE }, { -BLOCK_SIZE, +BLOCK_SIZE } };
 
 	private static void drawBlock(Graphics2D g, Camera camera, float x, float y, float z, boolean isRawDrawPosition) {
 
@@ -214,18 +217,8 @@ public class Block implements PushableObject, WalkThroughable {
 	}
 
 	@Override
-	public float getDrawX() {
-		return x;
-	}
-
-	@Override
-	public float getDrawY() {
-		return y;
-	}
-
-	@Override
-	public float getDrawZ() {
-		return z;
+	public Vector3 getDrawPosition() {
+		return new Vector3(x, y, z);
 	}
 
 }

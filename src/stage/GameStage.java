@@ -4,7 +4,7 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import core.renderer.LevelRenderer;
+import stage.renderer.LevelRenderer;
 import scene.core.Scene;
 import stage.gameobj.Block;
 import stage.gameobj.FloorPiece;
@@ -146,9 +146,9 @@ public class GameStage extends Scene {
 		teleportGates.add(gateTele1);
 		teleportGates.add(gateTele2);
 		teleportGates.add(gateTele3);
-        teleportGates.add(new TeleportToArea(10, 4, 1, 0, 2, 0));
-        
-        for (Slope eachSlope : slopes) {
+		teleportGates.add(new TeleportToArea(10, 4, 1, 0, 2, 0));
+
+		for (Slope eachSlope : slopes) {
 
 			int slopeStartX = eachSlope.getStartX();
 			int slopeStartY = eachSlope.getStartY();
@@ -164,21 +164,26 @@ public class GameStage extends Scene {
 
 		}
 
-        for(TeleportGate eachTeleport : teleportGates) {
-        	ObjectMap.drawableObjectHashMap.put(new ObjectVector(eachTeleport.getX(), eachTeleport.getY(), eachTeleport.getZ()), eachTeleport);
-        }
-        
+		for (TeleportGate eachTeleport : teleportGates) {
+			ObjectMap.drawableObjectHashMap
+					.put(new ObjectVector(eachTeleport.getX(), eachTeleport.getY(), eachTeleport.getZ()), eachTeleport);
+		}
+
 		for (Block eachBlock : blocks) {
 			ObjectMap.drawableObjectHashMap.put(new ObjectVector(eachBlock.getX(), eachBlock.getY(), eachBlock.getZ()),
 					eachBlock);
 		}
-		
-		ObjectMap.drawableObjectHashMap.put(new ObjectVector(player1.getCellX(), player1.getCellY(), player1.getCellZ(),player1.getName()), player1);
-		ObjectMap.drawableObjectHashMap.put(new ObjectVector(player2.getCellX(), player2.getCellY(), player2.getCellZ(),player2.getName()), player2);
+
+		ObjectMap.drawableObjectHashMap.put(
+				new ObjectVector(player1.getCellX(), player1.getCellY(), player1.getCellZ(), player1.getName()),
+				player1);
+		ObjectMap.drawableObjectHashMap.put(
+				new ObjectVector(player2.getCellX(), player2.getCellY(), player2.getCellZ(), player2.getName()),
+				player2);
 		// ObjectMap.drawableObjectHashMap.put(
 		// player1.getCellX() + " " + player1.getCellY() + " " + player1.getCellZ() + " " + player1.getName(),
 		// player1);
-		
+
 		for (FloorPiece floor : floorLevelMap.getFloorPieces()) {
 			ObjectMap.drawableObjectHashMap.put(floor.getObjectVector(), floor);
 		}
@@ -196,6 +201,9 @@ public class GameStage extends Scene {
 		}
 		for (TeleportGate teleGate : teleportGates) {
 			teleGate.update(step);
+		}
+		for (Slope slope : slopes) {
+			slope.update(step, camera);
 		}
 
 	}
@@ -256,7 +264,7 @@ public class GameStage extends Scene {
 		 * 
 		 * for (FloorSwitch fs : floorSwitches) { fs.draw(g, camera); }
 		 */
-
+		
 		LevelRenderer.draw(ObjectMap.drawableObjectHashMap.values(), g, camera);
 
 	}

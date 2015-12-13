@@ -11,7 +11,7 @@ import util.InputManager;
 public class Camera {
 	private float zoomFactor = 50;
 
-	private Vector2 centerPos;
+	private Vector3 centerPos;
 
 	private int sceneWidth;
 	private int sceneHeight;
@@ -23,8 +23,12 @@ public class Camera {
 	}
 
 	public Camera(Player player) {
-		centerPos = new Vector2(player.getDrawX(), player.getDrawY());
 		this.player = player;
+		this.centerPos = getPreferredCenterPos();
+	}
+
+	private Vector3 getPreferredCenterPos() {
+		return this.player.getDrawPosition();
 	}
 
 	private final float FOLLOW_SPEED = (float) Math.pow(5, 1.0 / 60);
@@ -59,8 +63,7 @@ public class Camera {
 	}
 
 	public void update(int step) {
-		centerPos.add(new Vector2(player.getDrawX(), player.getDrawY()).subtract(centerPos)
-				.multiply(1 / (float) Math.pow(FOLLOW_SPEED, step)));
+		centerPos.add(getPreferredCenterPos().subtract(centerPos).multiply(1 / (float) Math.pow(FOLLOW_SPEED, step)));
 
 		if (!isRotating) {
 			int direction = 0;
@@ -110,7 +113,8 @@ public class Camera {
 	}
 
 	public Vector2 getDrawPosition(float x, float y, float z) {
-		return new Vector2(x, y).subtract(centerPos).rotate(rotationAngle).multiply(zoomFactor, zoomFactor * yFactor)
+		return new Vector2(x, y).subtract(centerPos.getX(), centerPos.getY()).rotate(rotationAngle)
+				.add(0, centerPos.getZ() + 0.5f).multiply(zoomFactor, zoomFactor * yFactor)
 				.add(sceneWidth / 2f, sceneHeight / 2f - getDrawSizeZ(z));
 	}
 

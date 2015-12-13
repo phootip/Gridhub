@@ -16,7 +16,7 @@ import stage.gameobj.IDrawable;
  *
  */
 
-public class FloorLevel implements IDrawable {
+public class FloorLevel {
 
 	private int[][] floorLevelMap;
 	private int sizeX;
@@ -85,33 +85,6 @@ public class FloorLevel implements IDrawable {
 
 	public boolean isOutOfMap(int x, int y) {
 		return x >= sizeX || x < 0 || y > sizeY || y < 0;
-	}
-
-	/**
-	 * draw floor grid line in the scene
-	 */
-	@Override
-	public void draw(Graphics2D g, Camera camera) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public float getDrawX() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public float getDrawY() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public float getDrawZ() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 }

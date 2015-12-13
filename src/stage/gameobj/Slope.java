@@ -1,10 +1,10 @@
 package stage.gameobj;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
-
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
+import java.awt.Polygon;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import core.geom.Vector2;
 import core.geom.Vector3;
@@ -20,13 +20,16 @@ import util.Resource;
  *
  */
 
-public class Slope implements IDrawable {
+public class Slope implements ILargeDrawable {
+	private static final float START_Z_SHIFTER = 0.15f;
 	private int startX;
 	private int startY;
 	private int startZ;
 	private int endZ;
 	private int endX;
 	private int endY;
+	private int drawX;
+	private int drawY;
 	private boolean isAlignX;
 	private boolean isAlignY;
 
@@ -87,6 +90,29 @@ public class Slope implements IDrawable {
 		endZ = startZ + 1;
 		isAlignX = alignment == ALIGNMENT_RIGHT || alignment == ALIGNMENT_LEFT;
 		isAlignY = alignment == ALIGNMENT_DOWN || alignment == ALIGNMENT_UP;
+	}
+
+	public void update(int step, Camera camera) {
+		// Calculate drawX and drawY
+
+		float cameraAngle = camera.getRotationAngle();
+		if (cameraAngle < Math.PI * 1 / 2) {
+			// System.out.println("1");
+			drawX = Math.max(startX, endX);
+			drawY = Math.max(startY, endY);
+		} else if (cameraAngle < Math.PI * 2 / 2) {
+			// System.out.println("2");
+			drawX = Math.max(startX, endX);
+			drawY = Math.min(startY, endY);
+		} else if (cameraAngle < Math.PI * 3 / 2) {
+			// System.out.println("3");
+			drawX = Math.min(startX, endX);
+			drawY = Math.min(startY, endY);
+		} else {
+			// System.out.println("4");
+			drawX = Math.min(startX, endX);
+			drawY = Math.max(startY, endY);
+		}
 	}
 
 	/**
@@ -205,10 +231,85 @@ public class Slope implements IDrawable {
 	 */
 	@Override
 	public void draw(Graphics2D g, Camera camera) {
+		throw new UnsupportedOperationException("Please call draw() method with position parameter instead.");
+	}
 
+	/**
+	 * Calculate the z-position of the ball, assuming that the ball is on this slope.
+	 * 
+	 * @param drawX
+	 *            current x-position of the ball
+	 * @param drawY
+	 *            current y-position of the ball
+	 * @return Current z-position of the ball.
+	 */
+	public float getBallZ(float drawX, float drawY) {
+
+		if (isAlignX()) {
+			float lowX = startX;
+			float highX = endX;
+			boolean isReverse = false;
+
+			if (lowX > highX) {
+				isReverse = true;
+
+				float temp = lowX;
+				lowX = highX;
+				highX = temp;
+			}
+
+			lowX -= 0.5f;
+			highX += 0.5f;
+			float ans = Helper.clamp(0, 1, Helper.interpolate(0, 1, (drawX - lowX) / (highX - lowX)));
+			if (isReverse) {
+				ans = 1 - ans;
+			}
+
+			return ans + startZ;
+		} else if (isAlignY()) {
+			float lowY = startY;
+			float highY = endY;
+			boolean isReverse = false;
+
+			if (lowY > highY) {
+				isReverse = true;
+
+				float temp = lowY;
+				lowY = highY;
+				highY = temp;
+			}
+
+			lowY -= 0.5f;
+			highY += 0.5f;
+			float ans = Helper.clamp(0, 1, Helper.interpolate(0, 1, (drawY - lowY) / (highY - lowY)));
+			if (isReverse) {
+				ans = 1 - ans;
+			}
+
+			return ans + startZ;
+		} else {
+			throw new RuntimeException("WHATT!!?!?!??");
+		}
+
+	}
+
+	@Override
+	public Collection<Vector3> getDrawPositionList() {
+		List<Vector3> positionList = new ArrayList<>();
+
+		for (int i = Math.min(startX, endX); i <= Math.max(startX, endX); i++) {
+			for (int j = Math.min(startY, endY); j <= Math.max(startY, endY); j++) {
+				positionList.add(new Vector3(i, j, startZ + (i == startX && j == startY ? -START_Z_SHIFTER : 0)));
+			}
+		}
+
+		return positionList;
+	}
+
+	private void drawStartPiece(Graphics2D g, Camera camera) {
 		Vector3 startP1 = new Vector3(startX, startY, startZ);
-		Vector3 endP1 = new Vector3(endX, endY, endZ);
-		Vector3 midP1 = new Vector3(endX, endY, startZ);
+		Vector3 endP1 = new Vector3(startX, startY, (startZ * 2 + endZ) / 3f);
+		Vector3 midP1 = new Vector3(startX, startY, startZ);
 		Vector3 startP2 = new Vector3(startP1);
 		Vector3 endP2 = new Vector3(endP1);
 		Vector3 midP2 = new Vector3(midP1);
@@ -283,10 +384,10 @@ public class Slope implements IDrawable {
 			outerPolygonX[3] = endV1.getIntX();
 			outerPolygonY[3] = endV1.getIntY();
 		}
-		
+
 		g.setColor(ColorSwatch.BACKGROUND);
 		g.fillPolygon(outerPolygonX, outerPolygonY, 5);
-		
+
 		g.setColor(ColorSwatch.FOREGROUND);
 		g.setStroke(Resource.getGameObjectThickStroke());
 		g.drawPolygon(outerPolygonX, outerPolygonY, 5);
@@ -300,81 +401,250 @@ public class Slope implements IDrawable {
 		} else {
 			g.drawLine(startV1.getIntX(), startV1.getIntY(), endV1.getIntX(), endV1.getIntY());
 		}
-
 	}
 
-	@Override
-	public float getDrawX() {
-		return startX;
-	}
+	private void drawMiddlePiece(Graphics2D g, Camera camera) {
 
-	@Override
-	public float getDrawY() {
-		return startY;
-	}
+		int x = (startX + endX) / 2;
+		int y = (startY + endY) / 2;
+		int z = startZ;
 
-	@Override
-	public float getDrawZ() {
-		return startZ;
-	}
+		float[][] cornerShifter = new float[][] { { -0.5f, -0.5f }, { +0.5f, -0.5f }, { +0.5f, +0.5f },
+				{ -0.5f, +0.5f } };
+		float[] cornerHeight = new float[] { endZ - startZ, endZ - startZ, endZ - startZ, endZ - startZ };
+		cornerHeight[0] *= (x - 1 == startX || y - 1 == startY) ? 1 / 3f : 2 / 3f;
+		cornerHeight[1] *= (x + 1 == startX || y - 1 == startY) ? 1 / 3f : 2 / 3f;
+		cornerHeight[2] *= (x + 1 == startX || y + 1 == startY) ? 1 / 3f : 2 / 3f;
+		cornerHeight[3] *= (x - 1 == startX || y + 1 == startY) ? 1 / 3f : 2 / 3f;
 
-	/**
-	 * Calculate the z-position of the ball, assuming that the ball is on this slope.
-	 * 
-	 * @param drawX
-	 *            current x-position of the ball
-	 * @param drawY
-	 *            current y-position of the ball
-	 * @return Current z-position of the ball.
-	 */
-	public float getBallZ(float drawX, float drawY) {
-
-		if (isAlignX()) {
-			float lowX = startX;
-			float highX = endX;
-			boolean isReverse = false;
-
-			if (lowX > highX) {
-				isReverse = true;
-
-				float temp = lowX;
-				lowX = highX;
-				highX = temp;
-			}
-
-			lowX -= 0.5f;
-			highX += 0.5f;
-			float ans = Helper.clamp(0, 1, Helper.interpolate(0, 1, (drawX - lowX) / (highX - lowX)));
-			if (isReverse) {
-				ans = 1 - ans;
-			}
-
-			return ans + startZ;
-		} else if (isAlignY()) {
-			float lowY = startY;
-			float highY = endY;
-			boolean isReverse = false;
-
-			if (lowY > highY) {
-				isReverse = true;
-
-				float temp = lowY;
-				lowY = highY;
-				highY = temp;
-			}
-
-			lowY -= 0.5f;
-			highY += 0.5f;
-			float ans = Helper.clamp(0, 1, Helper.interpolate(0, 1, (drawY - lowY) / (highY - lowY)));
-			if (isReverse) {
-				ans = 1 - ans;
-			}
-
-			return ans + startZ;
-		} else {
-			throw new RuntimeException("WHATT!!?!?!??");
+		Vector2[] basis = new Vector2[4];
+		for (int i = 0; i < 4; i++) {
+			basis[i] = camera.getDrawPosition(x + cornerShifter[i][0], y + cornerShifter[i][1], z);
 		}
 
+		int furthestBaseId = 0;
+		Vector2 furthestBase = basis[0];
+
+		for (int i = 1; i < 4; i++) {
+			if (basis[i].getY() < furthestBase.getY()) {
+				furthestBaseId = i;
+				furthestBase = basis[i];
+			}
+		}
+
+		Vector2[] outerBorder = new Vector2[6];
+		Vector2 innerPoint;
+
+		outerBorder[0] = basis[(furthestBaseId + 2) % 4];
+		outerBorder[1] = basis[(furthestBaseId + 3) % 4];
+		outerBorder[2] = camera.getDrawPosition(x + cornerShifter[(furthestBaseId + 3) % 4][0],
+				y + cornerShifter[(furthestBaseId + 3) % 4][1], z + cornerHeight[(furthestBaseId + 3) % 4]);
+		outerBorder[3] = camera.getDrawPosition(x + cornerShifter[furthestBaseId][0],
+				y + cornerShifter[furthestBaseId][1], z + cornerHeight[furthestBaseId]);
+		outerBorder[4] = camera.getDrawPosition(x + cornerShifter[(furthestBaseId + 1) % 4][0],
+				y + cornerShifter[(furthestBaseId + 1) % 4][1], z + cornerHeight[(furthestBaseId + 1) % 4]);
+		outerBorder[5] = basis[(furthestBaseId + 1) % 4];
+
+		innerPoint = camera.getDrawPosition(x + cornerShifter[(furthestBaseId + 2) % 4][0],
+				y + cornerShifter[(furthestBaseId + 2) % 4][1], z + cornerHeight[(furthestBaseId + 2) % 4]);
+
+		int[] outerBorderCoordX = new int[6];
+		int[] outerBorderCoordY = new int[6];
+		for (int i = 0; i < 6; i++) {
+			outerBorderCoordX[i] = (int) outerBorder[i].getX();
+			outerBorderCoordY[i] = (int) outerBorder[i].getY();
+		}
+
+		g.setColor(ColorSwatch.BACKGROUND);
+		g.fillPolygon(new Polygon(outerBorderCoordX, outerBorderCoordY, 6));
+
+		g.setStroke(Resource.getGameObjectThickStroke());
+		g.setColor(ColorSwatch.FOREGROUND);
+		g.drawPolygon(new Polygon(outerBorderCoordX, outerBorderCoordY, 6));
+
+		g.setStroke(Resource.getGameObjectThinStroke());
+		g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[0].getIntX(), outerBorder[0].getIntY());
+		g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[2].getIntX(), outerBorder[2].getIntY());
+		g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[4].getIntX(), outerBorder[4].getIntY());
+	}
+
+	private void drawEndPiece(Graphics2D g, Camera camera) {
+
+		int x = endX;
+		int y = endY;
+		int z = startZ;
+
+		float[][] cornerShifter = new float[][] { { -0.5f, -0.5f }, { +0.5f, -0.5f }, { +0.5f, +0.5f },
+				{ -0.5f, +0.5f } };
+		float[] cornerHeight = new float[] { endZ - startZ, endZ - startZ, endZ - startZ, endZ - startZ };
+		int centerX = (startX + endX) / 2;
+		int centerY = (startY + endY) / 2;
+		cornerHeight[0] *= (centerX - 1 == startX || centerY - 1 == startY) ? 2 / 3f : 1;
+		cornerHeight[1] *= (centerX + 1 == startX || centerY - 1 == startY) ? 2 / 3f : 1;
+		cornerHeight[2] *= (centerX + 1 == startX || centerY + 1 == startY) ? 2 / 3f : 1;
+		cornerHeight[3] *= (centerX - 1 == startX || centerY + 1 == startY) ? 2 / 3f : 1;
+
+		Vector2[] basis = new Vector2[4];
+		for (int i = 0; i < 4; i++) {
+			basis[i] = camera.getDrawPosition(x + cornerShifter[i][0], y + cornerShifter[i][1], z);
+		}
+
+		int furthestBaseId = 0;
+		Vector2 furthestBase = basis[0];
+
+		for (int i = 1; i < 4; i++) {
+			if (basis[i].getY() < furthestBase.getY()) {
+				furthestBaseId = i;
+				furthestBase = basis[i];
+			}
+		}
+
+		Vector2[] outerBorder = new Vector2[6];
+		Vector2 innerPoint;
+
+		outerBorder[0] = basis[(furthestBaseId + 2) % 4];
+		outerBorder[1] = basis[(furthestBaseId + 3) % 4];
+		outerBorder[2] = camera.getDrawPosition(x + cornerShifter[(furthestBaseId + 3) % 4][0],
+				y + cornerShifter[(furthestBaseId + 3) % 4][1], z + cornerHeight[(furthestBaseId + 3) % 4]);
+		outerBorder[3] = camera.getDrawPosition(x + cornerShifter[furthestBaseId][0],
+				y + cornerShifter[furthestBaseId][1], z + cornerHeight[furthestBaseId]);
+		outerBorder[4] = camera.getDrawPosition(x + cornerShifter[(furthestBaseId + 1) % 4][0],
+				y + cornerShifter[(furthestBaseId + 1) % 4][1], z + cornerHeight[(furthestBaseId + 1) % 4]);
+		outerBorder[5] = basis[(furthestBaseId + 1) % 4];
+
+		innerPoint = camera.getDrawPosition(x + cornerShifter[(furthestBaseId + 2) % 4][0],
+				y + cornerShifter[(furthestBaseId + 2) % 4][1], z + cornerHeight[(furthestBaseId + 2) % 4]);
+
+		int[] outerBorderCoordX = new int[6];
+		int[] outerBorderCoordY = new int[6];
+		for (int i = 0; i < 6; i++) {
+			outerBorderCoordX[i] = (int) outerBorder[i].getX();
+			outerBorderCoordY[i] = (int) outerBorder[i].getY();
+		}
+
+		g.setColor(ColorSwatch.BACKGROUND);
+		g.fillPolygon(new Polygon(outerBorderCoordX, outerBorderCoordY, 6));
+
+		g.setStroke(Resource.getGameObjectThickStroke());
+		g.setColor(ColorSwatch.FOREGROUND);
+		g.drawPolygon(new Polygon(outerBorderCoordX, outerBorderCoordY, 6));
+
+		g.setStroke(Resource.getGameObjectThinStroke());
+		g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[0].getIntX(), outerBorder[0].getIntY());
+		g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[2].getIntX(), outerBorder[2].getIntY());
+		g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[4].getIntX(), outerBorder[4].getIntY());
+
+		/*Vector3 startP1 = new Vector3(startX, startY, startZ);
+		Vector3 endP1 = new Vector3(endX, endY, endZ);
+		Vector3 midP1 = new Vector3(endX, endY, startZ);
+		Vector3 startP2 = new Vector3(startP1);
+		Vector3 endP2 = new Vector3(endP1);
+		Vector3 midP2 = new Vector3(midP1);
+		
+		if (isAlignX) {
+			float shifter = (startX < endX) ? -0.5f : 0.5f;
+		
+			startP1.add(shifter, 0.5f, 0);
+			endP1.add(-shifter, 0.5f, 0);
+			midP1.add(-shifter, 0.5f, 0);
+		
+			startP2.add(shifter, -0.5f, 0);
+			endP2.add(-shifter, -0.5f, 0);
+			midP2.add(-shifter, -0.5f, 0);
+		
+		} else if (isAlignY) {
+			float shifter = (startY < endY) ? -0.5f : 0.5f;
+		
+			startP1.add(0.5f, shifter, 0);
+			endP1.add(0.5f, -shifter, 0);
+			midP1.add(0.5f, -shifter, 0);
+		
+			startP2.add(-0.5f, shifter, 0);
+			endP2.add(-0.5f, -shifter, 0);
+			midP2.add(-0.5f, -shifter, 0);
+		}
+		
+		Vector2 startV1 = camera.getDrawPosition(startP1);
+		Vector2 endV1 = camera.getDrawPosition(endP1);
+		Vector2 midV1 = camera.getDrawPosition(midP1);
+		Vector2 startV2 = camera.getDrawPosition(startP2);
+		Vector2 endV2 = camera.getDrawPosition(endP2);
+		Vector2 midV2 = camera.getDrawPosition(midP2);
+		
+		if (midV1.getY() < midV2.getY()) {
+			Vector2 temp;
+		
+			temp = startV1;
+			startV1 = startV2;
+			startV2 = temp;
+		
+			temp = midV1;
+			midV1 = midV2;
+			midV2 = temp;
+		
+			temp = endV1;
+			endV1 = endV2;
+			endV2 = temp;
+		}
+		// Now, 1 is always nearer than 2.
+		
+		// There are 2 types of drawing Slope: 1 inner line and 3 inner lines
+		boolean is3InnerLines = (midV1.getX() < startV1.getX()) != (midV1.getX() < midV2.getX());
+		
+		int[] outerPolygonX = new int[5];
+		int[] outerPolygonY = new int[5];
+		
+		outerPolygonX[0] = startV2.getIntX();
+		outerPolygonX[1] = startV1.getIntX();
+		outerPolygonX[2] = midV1.getIntX();
+		outerPolygonX[4] = endV2.getIntX();
+		
+		outerPolygonY[0] = startV2.getIntY();
+		outerPolygonY[1] = startV1.getIntY();
+		outerPolygonY[2] = midV1.getIntY();
+		outerPolygonY[4] = endV2.getIntY();
+		
+		if (is3InnerLines) {
+			outerPolygonX[3] = midV2.getIntX();
+			outerPolygonY[3] = midV2.getIntY();
+		} else {
+			outerPolygonX[3] = endV1.getIntX();
+			outerPolygonY[3] = endV1.getIntY();
+		}
+		
+		g.setColor(ColorSwatch.BACKGROUND);
+		g.fillPolygon(outerPolygonX, outerPolygonY, 5);
+		
+		g.setColor(ColorSwatch.FOREGROUND);
+		g.setStroke(Resource.getGameObjectThickStroke());
+		g.drawPolygon(outerPolygonX, outerPolygonY, 5);
+		
+		// Inner lines
+		g.setStroke(Resource.getGameObjectThinStroke());
+		if (is3InnerLines) {
+			g.drawLine(endV1.getIntX(), endV1.getIntY(), startV1.getIntX(), startV1.getIntY());
+			g.drawLine(endV1.getIntX(), endV1.getIntY(), midV1.getIntX(), midV1.getIntY());
+			g.drawLine(endV1.getIntX(), endV1.getIntY(), endV2.getIntX(), endV2.getIntY());
+		} else {
+			g.drawLine(startV1.getIntX(), startV1.getIntY(), endV1.getIntX(), endV1.getIntY());
+		}*/
+
+	}
+
+	@Override
+	public void draw(Graphics2D g, Camera camera, Vector3 position) {
+		if (position.equals(new Vector3(startX, startY, startZ - START_Z_SHIFTER))) {
+			drawStartPiece(g, camera);
+		} else if (position.equals(new Vector3(endX, endY, startZ))) {
+			drawEndPiece(g, camera);
+		} else {
+			drawMiddlePiece(g, camera);
+		}
+	}
+
+	@Override
+	public Vector3 getDrawPosition() {
+		throw new UnsupportedOperationException("Please call getDrawPositionList() method instead.");
 	}
 
 }

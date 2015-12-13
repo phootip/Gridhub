@@ -11,8 +11,10 @@ import java.awt.image.BufferedImage;
 
 import core.DrawManager;
 import core.geom.Vector2;
+import core.geom.Vector3;
 import stage.Camera;
 import util.Constants;
+import util.Helper;
 import util.Resource;
 import util.Constants.ColorSwatch;
 
@@ -30,26 +32,11 @@ public class FloorPiece implements IDrawable {
 		return new ObjectVector(x, y, z, "FloorPiece");
 	}
 
-	@Override
-	public float getDrawX() {
-		return x;
-	}
-
-	@Override
-	public float getDrawY() {
-		return y;
-	}
-
-	@Override
-	public float getDrawZ() {
-		return z - 0.1f;
-	}
-	
 	private static BufferedImage cachedFloorImg;
 	private static int cachedFloorImgSize = 65;
-	private static final float OUTER_PADDING = 0.50f;
-	private static final float INNER_PADDING = 0.45f;
-	
+	private static final float OUTER_PADDING = 0.5f;
+	private static final float INNER_PADDING = 0.4f;
+
 	private static void drawFloor(Graphics2D g, Camera camera, float x, float y, float z, boolean isRawDrawPosition) {
 
 		Vector2 cornerA = camera.getDrawPosition(x + OUTER_PADDING, y + OUTER_PADDING, z, isRawDrawPosition);
@@ -69,31 +56,39 @@ public class FloorPiece implements IDrawable {
 		outerPolygonY[3] = cornerD.getIntY();
 
 		g.setColor(ColorSwatch.BACKGROUND);
-		g.fillPolygon(outerPolygonX, outerPolygonY, 4);
-		
-		
+		for (int i = 0; i < 5; i++) {
+			g.fillPolygon(outerPolygonX, outerPolygonY, 4);
+			for (int j = 0; j < 4; j++) {
+				outerPolygonY[j]++;
+			}
+		}
+
 		Vector2 cornerA2 = camera.getDrawPosition(x + INNER_PADDING, y + INNER_PADDING, z, isRawDrawPosition);
 		Vector2 cornerB2 = camera.getDrawPosition(x - INNER_PADDING, y + INNER_PADDING, z, isRawDrawPosition);
 		Vector2 cornerC2 = camera.getDrawPosition(x - INNER_PADDING, y - INNER_PADDING, z, isRawDrawPosition);
 		Vector2 cornerD2 = camera.getDrawPosition(x + INNER_PADDING, y - INNER_PADDING, z, isRawDrawPosition);
 
-		int[] outerPolygonX2 = new int[4];
-		int[] outerPolygonY2 = new int[4];
-		outerPolygonX2[0] = cornerA2.getIntX();
-		outerPolygonY2[0] = cornerA2.getIntY();
-		outerPolygonX2[1] = cornerB2.getIntX();
-		outerPolygonY2[1] = cornerB2.getIntY();
-		outerPolygonX2[2] = cornerC2.getIntX();
-		outerPolygonY2[2] = cornerC2.getIntY();
-		outerPolygonX2[3] = cornerD2.getIntX();
-		outerPolygonY2[3] = cornerD2.getIntY();
-		
+		int[] innerPolygonX = new int[4];
+		int[] innerPolygonY = new int[4];
+		innerPolygonX[0] = cornerA2.getIntX();
+		innerPolygonY[0] = cornerA2.getIntY();
+		innerPolygonX[1] = cornerB2.getIntX();
+		innerPolygonY[1] = cornerB2.getIntY();
+		innerPolygonX[2] = cornerC2.getIntX();
+		innerPolygonY[2] = cornerC2.getIntY();
+		innerPolygonX[3] = cornerD2.getIntX();
+		innerPolygonY[3] = cornerD2.getIntY();
+
 		g.setStroke(Resource.getGameObjectThinStroke());
 		g.setColor(ColorSwatch.SHADOW);
-		g.drawPolygon(outerPolygonX2, outerPolygonY2, 4);
+		g.drawPolygon(innerPolygonX, innerPolygonY, 4);
+
+		g.setStroke(new java.awt.BasicStroke(7));
+		g.setColor(Helper.getAlphaColorPercentage(ColorSwatch.SHADOW, 0.2));
+		g.drawPolygon(innerPolygonX, innerPolygonY, 4);
 
 	}
-	
+
 	public static void refreshDrawCache(Camera camera) {
 		if (Constants.CACHE_DRAWABLE) {
 			cachedFloorImg = DrawManager.getInstance().createBlankBufferedImage(cachedFloorImgSize, cachedFloorImgSize,
@@ -124,6 +119,11 @@ public class FloorPiece implements IDrawable {
 		} else {
 			drawFloor(g, camera, x, y, z, false);
 		}
+	}
+
+	@Override
+	public Vector3 getDrawPosition() {
+		return new Vector3(x, y, z - 0.5f);
 	}
 
 }

@@ -57,18 +57,6 @@ public class Player implements IDrawable {
 
 	private FloorLevel floorLevelMap;
 
-	public float getDrawX() {
-		return drawX;
-	}
-
-	public float getDrawY() {
-		return drawY;
-	}
-
-	public float getDrawZ() {
-		return drawZ;
-	}
-
 	public int getCellX() {
 		return cellX;
 	}
@@ -249,7 +237,6 @@ public class Player implements IDrawable {
 			}
 
 		}
-		// if(playerId == 2) System.out.println(cellZ);
 		// check for NextStepCell
 		// first check floor level
 		int floorLevelCellX = cellX;
@@ -928,6 +915,11 @@ public class Player implements IDrawable {
 			// nothing
 			moveOnlyXandZ();
 		}
+	}
+
+	@Override
+	public Vector3 getDrawPosition() {
+		return new Vector3(drawX, drawY, drawZ);
 	}
 
 }

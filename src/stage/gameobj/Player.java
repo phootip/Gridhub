@@ -81,7 +81,7 @@ public class Player implements IDrawable {
 
 	private int playerId;
 
-	protected int getPlayerId() {
+	public int getPlayerId() {
 		return playerId;
 	}
 

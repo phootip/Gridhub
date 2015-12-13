@@ -24,6 +24,7 @@ public class Block implements PushableObject, WalkThroughable {
 	private static final float BLOCK_SIZE = 0.5f;
 	protected static final float BLOCK_HEIGHT = 1.0f;
 	private int x, y, z, nextX, nextY, nextZ, weight;
+	private Vector3 drawPosition;
 	private boolean isWalkThroughable;
 	private FloorLevel floorLevelMap;
 	// private boolean isObjectAbove;
@@ -47,18 +48,22 @@ public class Block implements PushableObject, WalkThroughable {
 	public Block(int x, int y, int z, FloorLevel floorLevelMap) {
 		this(x, y, z, 100, false, floorLevelMap);
 	}
-	
+
 	public void setZ(int diffZ) {
-		if(z + diffZ < 0) return;
-		IDrawable nextZObject = ObjectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z+diffZ));
-		if(nextZObject instanceof Block) return;
-		if(nextZObject instanceof Slope) return;
-		
-		if (ObjectMap.drawableObjectHashMap.get( new ObjectVector(x, y, z+diffZ, "Player" + util.Constants.PLAYER1_ID)
-				) != null
-				|| ObjectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z+diffZ, "Player" + util.Constants.PLAYER2_ID)) != null)
+		if (z + diffZ < 0)
 			return;
-		
+		IDrawable nextZObject = ObjectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z + diffZ));
+		if (nextZObject instanceof Block)
+			return;
+		if (nextZObject instanceof Slope)
+			return;
+
+		if (ObjectMap.drawableObjectHashMap
+				.get(new ObjectVector(x, y, z + diffZ, "Player" + util.Constants.PLAYER1_ID)) != null
+				|| ObjectMap.drawableObjectHashMap
+						.get(new ObjectVector(x, y, z + diffZ, "Player" + util.Constants.PLAYER2_ID)) != null)
+			return;
+
 		ObjectMap.drawableObjectHashMap.remove(new ObjectVector(x, y, this.z));
 		this.z += diffZ;
 		ObjectMap.drawableObjectHashMap.put(new ObjectVector(x, y, this.z), this);
@@ -74,6 +79,8 @@ public class Block implements PushableObject, WalkThroughable {
 		this.nextZ = z;
 		this.weight = weight;
 		this.isWalkThroughable = isWalkThroughable;
+
+		this.drawPosition = new Vector3(x, y, z);
 	}
 
 	public boolean isPushable() {
@@ -147,7 +154,11 @@ public class Block implements PushableObject, WalkThroughable {
 	private static final float[][] cornerShifter = new float[][] { { -BLOCK_SIZE, -BLOCK_SIZE },
 			{ +BLOCK_SIZE, -BLOCK_SIZE }, { +BLOCK_SIZE, +BLOCK_SIZE }, { -BLOCK_SIZE, +BLOCK_SIZE } };
 
-	private static void drawBlock(Graphics2D g, Camera camera, float x, float y, float z, boolean isRawDrawPosition) {
+	private static void drawBlock(Graphics2D g, Camera camera,Vector3 pos, boolean isRawDrawPosition) {
+		
+		float x = pos.getX();
+		float y = pos.getY();
+		float z = pos.getZ();
 
 		Vector2[] basis = new Vector2[4];
 		for (int i = 0; i < 4; i++) {
@@ -214,7 +225,7 @@ public class Block implements PushableObject, WalkThroughable {
 			g.setTransform(AffineTransform.getTranslateInstance(cachedBoxImgSize / 2, cachedBoxImgSize / 2));
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-			drawBlock(g, camera, 0, 0, 0, true);
+			drawBlock(g, camera, Vector3.ZERO, true);
 
 			g.dispose();
 		}
@@ -223,12 +234,12 @@ public class Block implements PushableObject, WalkThroughable {
 	public void draw(Graphics2D g, Camera camera) {
 
 		if (Constants.CACHE_DRAWABLE) {
-			Vector2 drawPosition = camera.getDrawPosition(x, y, z);
+			Vector2 drawPosition2 = camera.getDrawPosition(drawPosition);
 
-			g.drawImage(cachedBoxImg, drawPosition.getIntX() - cachedBoxImgSize / 2,
-					drawPosition.getIntY() - cachedBoxImgSize / 2, null);
+			g.drawImage(cachedBoxImg, drawPosition2.getIntX() - cachedBoxImgSize / 2,
+					drawPosition2.getIntY() - cachedBoxImgSize / 2, null);
 		} else {
-			drawBlock(g, camera, x, y, z, false);
+			drawBlock(g, camera, drawPosition, false);
 		}
 
 	}
@@ -236,6 +247,11 @@ public class Block implements PushableObject, WalkThroughable {
 	@Override
 	public Vector3 getDrawPosition() {
 		return new Vector3(x, y, z);
+	}
+
+	public void update(int step) {
+		drawPosition.add(new Vector3(x, y, z).subtract(drawPosition)
+				.multiply((float) (1 / Math.pow(Math.pow(5, 1.0 / 100), step))));
 	}
 
 }

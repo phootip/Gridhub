@@ -120,5 +120,28 @@ public final class Constants {
 
 			}
 		}
+		
+		public static boolean isRotateCameraLeftPressing(int playerId) {
+			switch (playerId) {
+				case PLAYER1_ID:
+					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_Q);
+				case PLAYER2_ID:
+					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_O);
+				default:
+					throw new IllegalArgumentException("Invalid player id : " + playerId);
+			}
+		}
+		
+		public static boolean isRotateCameraRightPressing(int playerId) {
+			switch (playerId) {
+				case PLAYER1_ID:
+					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_E);
+				case PLAYER2_ID:
+					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_OPEN_BRACKET);
+				default:
+					throw new IllegalArgumentException("Invalid player id : " + playerId);
+			}
+		}
+		
 	}
 }

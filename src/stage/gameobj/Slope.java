@@ -92,29 +92,6 @@ public class Slope implements ILargeDrawable {
 		isAlignY = alignment == ALIGNMENT_DOWN || alignment == ALIGNMENT_UP;
 	}
 
-	public void update(int step, Camera camera) {
-		// Calculate drawX and drawY
-
-		float cameraAngle = camera.getRotationAngle();
-		if (cameraAngle < Math.PI * 1 / 2) {
-			// System.out.println("1");
-			drawX = Math.max(startX, endX);
-			drawY = Math.max(startY, endY);
-		} else if (cameraAngle < Math.PI * 2 / 2) {
-			// System.out.println("2");
-			drawX = Math.max(startX, endX);
-			drawY = Math.min(startY, endY);
-		} else if (cameraAngle < Math.PI * 3 / 2) {
-			// System.out.println("3");
-			drawX = Math.min(startX, endX);
-			drawY = Math.min(startY, endY);
-		} else {
-			// System.out.println("4");
-			drawX = Math.min(startX, endX);
-			drawY = Math.max(startY, endY);
-		}
-	}
-
 	/**
 	 * This method check the x alignment of the Slope
 	 * 

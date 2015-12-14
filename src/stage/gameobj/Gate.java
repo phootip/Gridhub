@@ -6,7 +6,7 @@ import core.geom.Vector3;
 import stage.Camera;
 import stage.ObjectMap;
 
-public class Gate implements IDrawable {
+public class Gate implements IDrawable , IControlable {
 	private boolean isAsserted;
 	private int x, y, z;
 
@@ -114,4 +114,16 @@ public class Gate implements IDrawable {
 		return new Vector3(x, y, z);
 	}
 
+	@Override
+	public void activate() {
+		this.isAsserted = true;
+		
+	}
+
+	@Override
+	public void deActivate() {
+		this.isAsserted = false;
+		
+	}
+	
 }

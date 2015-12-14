@@ -407,7 +407,13 @@ public class GameStage {
 		if (gameStageType == GameStageType.PLAY && levelNameShowTimer < levelNameShowDuration) {
 			Rectangle oldClip = g.getClipBounds();
 
-			final int boxWidth = 300;
+			Font chapterNameFont = Resource.getInstance().getDefaultFont(OVERLAY_CHAPTER_NAME_TEXT_SIZE);
+			Font levelNameFont = Resource.getInstance().getDefaultFont(OVERLAY_LEVEL_NAME_TEXT_SIZE,
+					Resource.FontWeight.BOLD);
+			String chapterName = levelData.getChapter().getChapterName();
+			String levelName = levelData.getMapName();
+
+			final int boxWidth = 100 + g.getFontMetrics(levelNameFont).stringWidth(levelName);
 			final int boxHeight = OVERLAY_BOX_VERTICAL_MARGIN * 2 + OVERLAY_LEVEL_NAME_TEXT_SIZE
 					+ OVERLAY_CHAPTER_NAME_TEXT_SIZE;
 			int boxLeft = x + (width - boxWidth) / 2;
@@ -426,15 +432,13 @@ public class GameStage {
 
 			g.setColor(ColorSwatch.SHADOW);
 			g.fillRect(boxLeft, boxTop, boxWidth, boxHeight);
-			
+
 			boxTop = clipperTop;
 
 			// Chapter Name
 
-			String chapterName = levelData.getChapter().getChapterName();
-			Font chapterNameFont = Resource.getInstance().getDefaultFont(OVERLAY_CHAPTER_NAME_TEXT_SIZE);
-			Vector2 chapterNameCenterPos = Helper.getCenteredTextPosition(chapterName, chapterNameFont, g, boxLeft,
-					0, boxWidth, 0);
+			Vector2 chapterNameCenterPos = Helper.getCenteredTextPosition(chapterName, chapterNameFont, g, boxLeft, 0,
+					boxWidth, 0);
 
 			g.setFont(chapterNameFont);
 			g.setColor(ColorSwatch.FOREGROUND);
@@ -443,9 +447,6 @@ public class GameStage {
 
 			// Level Name
 
-			String levelName = levelData.getMapName();
-			Font levelNameFont = Resource.getInstance().getDefaultFont(OVERLAY_LEVEL_NAME_TEXT_SIZE,
-					Resource.FontWeight.BOLD);
 			Vector2 levelNameCenterPos = Helper.getCenteredTextPosition(levelName, levelNameFont, g, boxLeft, 0,
 					boxWidth, 0);
 

@@ -70,6 +70,7 @@ final public class LevelFetcher {
 		for (int i = 0; i < singlePlayerChapters.length; i++) {
 			singlePlayerChapters[i].setChapterOrder(i + 1);
 			singlePlayerChapterList.add(singlePlayerChapters[i]);
+			singlePlayerChapters[i].loadLevels();
 		}
 
 		// Co-op mode
@@ -79,6 +80,7 @@ final public class LevelFetcher {
 		for (int i = 0; i < coopModeChapters.length; i++) {
 			coopModeChapters[i].setChapterOrder(i + 1);
 			coopModeChapterList.add(coopModeChapters[i]);
+			coopModeChapters[i].loadLevels();
 		}
 	}
 

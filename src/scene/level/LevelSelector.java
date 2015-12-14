@@ -125,12 +125,9 @@ public class LevelSelector {
 
 	private void populateLevelList(Chapter chapter) {
 		levelList.clear();
-		for (int i = 1; i <= 100; i++) {
-			LevelData levelData = LevelData.parse(chapter.getChapterName() + " " + i);
-			levelData.setChapter(chapter);
-			levelList.add(levelData);
-		}
+		levelList.addAll(chapter.getLevelDataList());
 		levelList.resetSelectedItemIndex();
+		LevelThumbnailRenderer.startRenderThumbnail(chapter);
 	}
 
 	public void draw(Graphics2D g, int x, int y, int width, int height) {

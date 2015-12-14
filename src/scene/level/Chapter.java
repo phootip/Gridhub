@@ -2,6 +2,8 @@ package scene.level;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
+import java.util.List;
 
 import core.IScrollableListItem;
 import core.geom.Vector2;
@@ -22,6 +24,29 @@ public class Chapter implements IScrollableListItem {
 	private String folderName;
 	private boolean userFolder;
 	private transient int chapterOrder;
+	private transient List<LevelData> levelDataList;
+	private transient boolean isRenderingJobStarted;
+
+	protected boolean isRenderingJobStarted() {
+		return isRenderingJobStarted;
+	}
+
+	protected void setRenderingJobStarted(boolean isRenderingJobStarted) {
+		this.isRenderingJobStarted = isRenderingJobStarted;
+	}
+
+	protected List<LevelData> getLevelDataList() {
+		return levelDataList;
+	}
+
+	protected void loadLevels() {
+		levelDataList = new ArrayList<>();
+		for (int i = 1; i <= 20; i++) {
+			LevelData levelData = LevelData.parse(this.getChapterName() + " " + i);
+			levelData.setChapter(this);
+			levelDataList.add(levelData);
+		}
+	}
 
 	/**
 	 * @return the chapterOrder

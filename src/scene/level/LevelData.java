@@ -10,6 +10,16 @@ import util.Helper;
 import util.Resource;
 
 public final class LevelData implements IScrollableListItem {
+	
+	private Chapter chapter;
+
+	public Chapter getChapter() {
+		return chapter;
+	}
+
+	public void setChapter(Chapter chapter) {
+		this.chapter = chapter;
+	}
 
 	private static final int MARGIN_LEFT = 50;
 	private int playerCount;

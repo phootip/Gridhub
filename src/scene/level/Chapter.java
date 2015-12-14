@@ -10,7 +10,7 @@ import util.Resource;
 import util.Constants.ColorSwatch;
 import util.Resource.FontWeight;
 
-class Chapter implements IScrollableListItem {
+public class Chapter implements IScrollableListItem {
 
 	private static final int BOTTOM_MARGIN = 10;
 	private static final int MAINTEXT_SIZE = 60;
@@ -43,7 +43,7 @@ class Chapter implements IScrollableListItem {
 	 * 
 	 * @return The chapter name.
 	 */
-	protected String getChapterName() {
+	public String getChapterName() {
 		return chapterName;
 	}
 

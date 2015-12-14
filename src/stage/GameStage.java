@@ -14,6 +14,7 @@ import com.google.gson.reflect.TypeToken;
 
 import stage.renderer.LevelRenderer;
 import scene.core.Scene;
+import scene.level.LevelData;
 import stage.gameobj.Block;
 
 import stage.gameobj.FloorPiece;
@@ -36,7 +37,7 @@ import util.Constants.ColorSwatch;
 import util.Helper;
 import util.Resource;
 
-public class GameStage extends Scene {
+public class GameStage {
 
 	private List<Camera> cameraList;
 	private Player player1 = null, player2 = null;
@@ -71,7 +72,7 @@ public class GameStage extends Scene {
 	private ArrayList<TeleportGateController> datasetTeleportGateController;
 	private ArrayList<Gate> dataSetsGate;
 
-	public GameStage(GameStageType gameStageType) {
+	public GameStage(LevelData levelData, GameStageType gameStageType) {
 		ObjectMap.drawableObjectHashMap = new HashMap<ObjectVector, IDrawable>();
 
 		floorLevelMap = new FloorLevel(25, 25);
@@ -276,7 +277,6 @@ public class GameStage extends Scene {
 
 	}
 
-	@Override
 	public void update(int step) {
 
 		for (Camera camera : cameraList) {
@@ -311,7 +311,6 @@ public class GameStage extends Scene {
 
 	}
 
-	@Override
 	public void draw(Graphics2D g, int sceneWidth, int sceneHeight) {
 
 		// Draw background

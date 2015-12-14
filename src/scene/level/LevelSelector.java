@@ -23,6 +23,12 @@ public class LevelSelector {
 	private ScrollableUIList levelList;
 	private ScrollableUIList focusingList;
 
+	public ILevelSelectCallback levelSelectCallbackObj = null;
+
+	public void setLevelSelectCallback(ILevelSelectCallback levelSelectCallbackObj) {
+		this.levelSelectCallbackObj = levelSelectCallbackObj;
+	}
+
 	public PlayMode getSelectedPlayMode() {
 		return selectedPlayMode;
 	}
@@ -46,7 +52,17 @@ public class LevelSelector {
 				chapterList.setFocusing(false);
 				levelList.setFocusing(false);
 			} else {
-				if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_RIGHT)
+				if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_ENTER)) {
+					if (focusingList == chapterList) {
+						chapterList.setFocusing(false);
+						levelList.setFocusing(true);
+						focusingList = levelList;
+					} else {
+						if (levelSelectCallbackObj != null) {
+							this.levelSelectCallbackObj.onLevelSelect((LevelData) levelList.getSelectedItem());
+						}
+					}
+				} else if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_RIGHT)
 						|| InputManager.getInstance().isKeyTriggering(KeyEvent.VK_LEFT)) {
 					if (focusingList == chapterList) {
 						chapterList.setFocusing(false);
@@ -110,7 +126,9 @@ public class LevelSelector {
 	private void populateLevelList(Chapter chapter) {
 		levelList.clear();
 		for (int i = 1; i <= 100; i++) {
-			levelList.add(LevelData.parse(chapter.getChapterName() + " " + i));
+			LevelData levelData = LevelData.parse(chapter.getChapterName() + " " + i);
+			levelData.setChapter(chapter);
+			levelList.add(levelData);
 		}
 		levelList.resetSelectedItemIndex();
 	}

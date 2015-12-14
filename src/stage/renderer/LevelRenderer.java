@@ -16,37 +16,6 @@ import stage.gameobj.ILargeDrawable;
 
 public class LevelRenderer {
 
-	static class RenderEntity implements Comparable<RenderEntity> {
-		private Vector3 position;
-		private IDrawable drawableObject;
-		private float drawYPosition;
-
-		public RenderEntity(Vector3 position, IDrawable drawableObject, Camera camera) {
-			this.position = position;
-			this.drawableObject = drawableObject;
-			this.drawYPosition = camera.getYPosition(-position.getX(), -position.getY(), position.getZ());
-		}
-
-		/**
-		 * @return the position
-		 */
-		protected Vector3 getPosition() {
-			return position;
-		}
-
-		/**
-		 * @return the drawableObject
-		 */
-		protected IDrawable getDrawableObject() {
-			return drawableObject;
-		}
-
-		@Override
-		public int compareTo(RenderEntity o) {
-			return (int) Math.signum(o.drawYPosition - this.drawYPosition);
-		}
-	}
-
 	private static <T> ArrayList<T> createListWithUniqueItem(Collection<T> objCollection) {
 		// Note: this would create new collection, not edit the old one.
 		Set<T> checker = new HashSet<>();

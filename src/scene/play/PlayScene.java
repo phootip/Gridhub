@@ -31,7 +31,7 @@ public final class PlayScene extends Scene {
 	private static final int MENU_ITEM_TEXT_HEIGHT = 60;
 	private static final int MENU_ITEM_HEIGHT = 80;
 	private static final int MENU_LEVEL_NAME_TEXT_SIZE = 100;
-	private static final int MENU_CHAPTER_TEXT_SIZE = 40;
+	private static final int MENU_CHAPTER_NAME_TEXT_SIZE = 40;
 	private static final int MENU_TOP_MARGIN = 50;
 	private LevelData levelData;
 	private GameStage gameStage;
@@ -182,7 +182,7 @@ public final class PlayScene extends Scene {
 		// Chapter Name
 
 		String chapterName = levelData.getChapter().getChapterName();
-		Font chapterNameFont = Resource.getInstance().getDefaultFont(MENU_CHAPTER_TEXT_SIZE);
+		Font chapterNameFont = Resource.getInstance().getDefaultFont(MENU_CHAPTER_NAME_TEXT_SIZE);
 		Vector2 chapterNameCenterPos = Helper.getCenteredTextPosition(chapterName, chapterNameFont, g,
 				(sceneWidth - menuWidth) / 2, 0, MAX_MENU_WIDTH, sceneHeight);
 
@@ -200,7 +200,7 @@ public final class PlayScene extends Scene {
 		g.setFont(levelNameFont);
 		g.setColor(ColorSwatch.BACKGROUND);
 		g.drawString(levelName, levelNameCenterPos.getX(),
-				MENU_TOP_MARGIN + MENU_CHAPTER_TEXT_SIZE + g.getFontMetrics().getAscent());
+				MENU_TOP_MARGIN + MENU_CHAPTER_NAME_TEXT_SIZE + g.getFontMetrics().getAscent());
 
 		// Line Separator
 

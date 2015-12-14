@@ -1,6 +1,7 @@
 package stage;
 
 import java.awt.BasicStroke;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
@@ -12,6 +13,7 @@ import java.lang.reflect.Type;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import core.geom.Vector2;
 import stage.renderer.LevelRenderer;
 import scene.core.Scene;
 import scene.level.LevelData;
@@ -35,6 +37,7 @@ import stage.gameobj.TeleportGateController;
 import stage.gameobj.TeleportToArea;
 import util.Constants.ColorSwatch;
 import util.Helper;
+import util.Resource;
 
 public class GameStage {
 
@@ -76,7 +79,17 @@ public class GameStage {
 
 	private ArrayList<int[]> dataSetLinkGate;
 
+	private GameStageType gameStageType;
+	private LevelData levelData;
+
 	public GameStage(LevelData levelData, GameStageType gameStageType) {
+		this(levelData, gameStageType, true);
+	}
+
+	public GameStage(LevelData levelData, GameStageType gameStageType, boolean showLevelName) {
+		this.gameStageType = gameStageType;
+		this.levelData = levelData;
+
 		ObjectMap.drawableObjectHashMap = new HashMap<ObjectVector, IDrawable>();
 
 		floorLevelMap = new FloorLevel(25, 25);
@@ -339,6 +352,10 @@ public class GameStage {
 			ObjectMap.drawableObjectHashMap.put(floor.getObjectVector(), floor);
 		}
 
+		if (!showLevelName) {
+			levelNameShowTimer = levelNameShowDuration;
+		}
+
 	}
 
 	public void update(int step) {
@@ -373,6 +390,72 @@ public class GameStage {
 			each.update(step);
 		}
 
+		levelNameShowTimer += step;
+		if (levelNameShowTimer > levelNameShowDuration) {
+			levelNameShowTimer = levelNameShowDuration;
+		}
+
+	}
+
+	private int levelNameShowTimer = 0;
+	private int levelNameShowDuration = 100 * 120;
+	private static final int OVERLAY_LEVEL_NAME_TEXT_SIZE = 50;
+	private static final int OVERLAY_CHAPTER_NAME_TEXT_SIZE = 30;
+	private static final int OVERLAY_BOX_VERTICAL_MARGIN = 20;
+
+	private void drawLevelName(Graphics2D g, int x, int y, int width, int height) {
+		if (gameStageType == GameStageType.PLAY && levelNameShowTimer < levelNameShowDuration) {
+			Rectangle oldClip = g.getClipBounds();
+
+			final int boxWidth = 300;
+			final int boxHeight = OVERLAY_BOX_VERTICAL_MARGIN * 2 + OVERLAY_LEVEL_NAME_TEXT_SIZE
+					+ OVERLAY_CHAPTER_NAME_TEXT_SIZE;
+			int boxLeft = x + (width - boxWidth) / 2;
+			int boxTop = y + 100;
+
+			int clipperHeight = boxHeight;
+			if (levelNameShowTimer < 100 * 20) {
+				clipperHeight = (int) Helper.sineInterpolate(0, clipperHeight, levelNameShowTimer / (100 * 20f), false,
+						true);
+			} else if (levelNameShowTimer > 100 * 100) {
+				clipperHeight = (int) Helper.sineInterpolate(clipperHeight, 0,
+						(levelNameShowTimer - 100 * 100) / (100 * 20f), true, false);
+			}
+			int clipperTop = boxTop + (boxHeight - clipperHeight) / 2;
+			g.setClip(boxLeft, clipperTop, boxWidth, clipperHeight);
+
+			g.setColor(ColorSwatch.SHADOW);
+			g.fillRect(boxLeft, boxTop, boxWidth, boxHeight);
+			
+			boxTop = clipperTop;
+
+			// Chapter Name
+
+			String chapterName = levelData.getChapter().getChapterName();
+			Font chapterNameFont = Resource.getInstance().getDefaultFont(OVERLAY_CHAPTER_NAME_TEXT_SIZE);
+			Vector2 chapterNameCenterPos = Helper.getCenteredTextPosition(chapterName, chapterNameFont, g, boxLeft,
+					0, boxWidth, 0);
+
+			g.setFont(chapterNameFont);
+			g.setColor(ColorSwatch.FOREGROUND);
+			g.drawString(chapterName, chapterNameCenterPos.getX(),
+					boxTop + OVERLAY_BOX_VERTICAL_MARGIN + g.getFontMetrics().getAscent());
+
+			// Level Name
+
+			String levelName = levelData.getMapName();
+			Font levelNameFont = Resource.getInstance().getDefaultFont(OVERLAY_LEVEL_NAME_TEXT_SIZE,
+					Resource.FontWeight.BOLD);
+			Vector2 levelNameCenterPos = Helper.getCenteredTextPosition(levelName, levelNameFont, g, boxLeft, 0,
+					boxWidth, 0);
+
+			g.setFont(levelNameFont);
+			g.setColor(ColorSwatch.FOREGROUND);
+			g.drawString(levelName, levelNameCenterPos.getX(), boxTop + OVERLAY_BOX_VERTICAL_MARGIN
+					+ OVERLAY_CHAPTER_NAME_TEXT_SIZE + g.getFontMetrics().getAscent());
+
+			g.setClip(oldClip);
+		}
 	}
 
 	public void draw(Graphics2D g, int sceneWidth, int sceneHeight) {
@@ -401,6 +484,8 @@ public class GameStage {
 
 			g.setTransform(oldTransform);
 			g.setClip(oldClip);
+
+			drawLevelName(g, sceneWidth * i / cameraCount, 0, sceneWidth / cameraCount, sceneHeight);
 
 			if (i > 0) {
 				g.setColor(Helper.getAlphaColorPercentage(ColorSwatch.BACKGROUND, 1));

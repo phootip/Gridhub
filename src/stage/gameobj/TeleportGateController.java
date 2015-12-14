@@ -11,6 +11,16 @@ public class TeleportGateController extends SwitchController {
 		this.teleportGate = teleportGate;
 		this.teleportGate.setAsserted(false);
 	}
+	
+	public TeleportGateController(ArrayList<FloorSwitch> floorSwitchesControllerSet, int[] logicLookUpArray) {
+		super(floorSwitchesControllerSet, logicLookUpArray);
+		this.teleportGate = null;
+		this.teleportGate.setAsserted(false);
+	}
+	
+	public void setControlGate(TeleportGate g) {
+		teleportGate = g;
+	}
 
 	@Override
 	public void performHitAction() {

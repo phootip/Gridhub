@@ -110,6 +110,7 @@ public class Block implements PushableObject, WalkThroughable {
 
 		IDrawable nextObjectObstacles = ObjectMap.drawableObjectHashMap
 				.get(new ObjectVector(x + diffX, y + diffY, z + diffZ));
+		if(nextObjectObstacles instanceof TeleportGate || nextObjectObstacles instanceof FinishArea) return false;
 		if (z != floorLevelMap.getZValueFromXY(x + diffX, y + diffY)) {
 			IDrawable nextObjectBelow = ObjectMap.drawableObjectHashMap
 					.get(new ObjectVector(x + diffX, y + diffY, z + diffZ - 1));
@@ -117,7 +118,7 @@ public class Block implements PushableObject, WalkThroughable {
 			if (!(nextObjectBelow instanceof Block))
 				return false;
 		}
-
+		
 		if (nextObjectObstacles == null || nextObjectObstacles instanceof IWalkOnAble) {
 			ObjectMap.drawableObjectHashMap.put(new ObjectVector(x + diffX, y + diffY, z + diffZ), this);
 			ObjectMap.drawableObjectHashMap.remove(new ObjectVector(x, y, z));

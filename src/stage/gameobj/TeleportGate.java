@@ -12,7 +12,7 @@ import stage.gameobj.IWalkOnAble;
  * @author Thanat
  *
  */
-public abstract class TeleportGate implements IDrawable, IWalkOnAble {
+public abstract class TeleportGate implements IDrawable, IWalkOnAble ,IControlable{
 	protected int x, y, z;
 	protected boolean isActive, isAsserted;
 
@@ -76,6 +76,19 @@ public abstract class TeleportGate implements IDrawable, IWalkOnAble {
 
 		return null;
 	}
+	
+	@Override
+	public void activate() {
+		this.isAsserted = true;
+		
+	}
+
+	@Override
+	public void deActivate() {
+		this.isAsserted = false;
+		
+	}
+	
 
 	public boolean isActive() {
 		return isActive;

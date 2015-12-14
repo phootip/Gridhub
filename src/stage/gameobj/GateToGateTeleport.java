@@ -39,5 +39,5 @@ public class GateToGateTeleport extends TeleportGate {
 	public void setDestinationTelelportGate(TeleportGate destination) {
 		this.destinationGate = destination;
 	}
-	
+
 }

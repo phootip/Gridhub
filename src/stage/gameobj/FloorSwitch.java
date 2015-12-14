@@ -54,6 +54,8 @@ public class FloorSwitch implements IDrawable, IWalkOnAble {
 	public boolean isAsserting() {
 		return isAsserting;
 	}
+	
+
 
 	public FloorSwitch(int x, int y, int z, boolean defaultAssertion, int minimumWeight) {
 		this.x = x;
@@ -81,10 +83,10 @@ public class FloorSwitch implements IDrawable, IWalkOnAble {
 
 		// This is just for testing. In production, link FloorSwitch with the
 		// HashMap instead.
-
+		
 		Player p = getPlayerAbove();
 		Block b = getBlockAbove();
-
+		
 		if (p != null) {
 			this.currentWeight = p.getWeight();
 		} else if (b != null) {

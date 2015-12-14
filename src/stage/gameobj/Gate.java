@@ -6,7 +6,7 @@ import core.geom.Vector3;
 import stage.Camera;
 import stage.ObjectMap;
 
-public class Gate implements IDrawable {
+public class Gate implements IDrawable , IControlable {
 	private boolean isAsserted;
 	private int x, y, z;
 
@@ -33,14 +33,17 @@ public class Gate implements IDrawable {
 		
 		if(gateActivationProgress >= gateProgressControl) {
 			// TODO take an action when gate is asserted
-			performActionToPlayer();
+			performAction();
 			gateActivationProgress = 0;
 		}
 	}
 	
-	public void performActionToPlayer() {
+	public void performAction() {
 		// do action
-		ObjectMap.drawableObjectHashMap.remove(new ObjectVector(x, y, z));
+		if(isObjectAbove()) {
+			return;
+		}
+		else ObjectMap.drawableObjectHashMap.remove(new ObjectVector(x, y, z));
 		
 	}
 	
@@ -68,12 +71,13 @@ public class Gate implements IDrawable {
 
 	
 	public boolean isObjectAbove() {
-		// teleportGate check only player above
-		if (getPlayerAbove() != null) {
+		if (getPlayerAbove() != null || getBlockAbove() != null) {
 			return true;
 		}
+
 		return false;
 	}
+	
 
 	public Player getPlayerAbove() {
 		if (ObjectMap.drawableObjectHashMap
@@ -90,6 +94,15 @@ public class Gate implements IDrawable {
 		return null;
 	}
 
+
+	private Block getBlockAbove() {
+		IDrawable objectAbove = ObjectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z));
+		if (objectAbove != null && objectAbove instanceof Block) {
+			return (Block) objectAbove;
+		} else
+			return null;
+	}
+
 	@Override
 	public void draw(Graphics2D g, Camera camera) {
 		// TODO Auto-generated method stub
@@ -101,4 +114,16 @@ public class Gate implements IDrawable {
 		return new Vector3(x, y, z);
 	}
 
+	@Override
+	public void activate() {
+		this.isAsserted = true;
+		
+	}
+
+	@Override
+	public void deActivate() {
+		this.isAsserted = false;
+		
+	}
+	
 }

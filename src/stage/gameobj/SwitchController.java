@@ -4,19 +4,44 @@ import java.util.ArrayList;
 
 import stage.gameobj.FloorSwitch;
 
+/**
+ * @author Thanat
+ *
+ */
 public abstract class SwitchController {
 	private ArrayList<FloorSwitch> floorSwitchesControllerSet = new ArrayList<>();
 	private int [] logicLookUpArray;
 	private boolean isLogicCombinationHit;
+	private IControlable controlObject;
 
 	public SwitchController(ArrayList<FloorSwitch> floorSwitchesControllerSet , int [] logicLookUpArray) {
 		super();
 		this.floorSwitchesControllerSet = floorSwitchesControllerSet;
 		isLogicCombinationHit = false;
 		this.logicLookUpArray = logicLookUpArray;
+		this.controlObject = null;
 		
 	}
 	
+	public SwitchController(ArrayList<FloorSwitch> floorSwitchesControllerSet , int [] logicLookUpArray, IControlable controlObject) {
+		super();
+		this.floorSwitchesControllerSet = floorSwitchesControllerSet;
+		isLogicCombinationHit = false;
+		this.logicLookUpArray = logicLookUpArray;
+		this.controlObject = controlObject;
+		
+	}
+	
+	
+	public void setFloorSwitchesControllerSet(ArrayList<FloorSwitch> floorSwitchesControllerSet) {
+		this.floorSwitchesControllerSet = floorSwitchesControllerSet;
+	}
+
+
+	public ArrayList<FloorSwitch> getFloorSwitchesControllerSet() {
+		return floorSwitchesControllerSet; 
+	}
+
 	public void update() {
 		
 		int rowLookUp = 0;
@@ -28,6 +53,7 @@ public abstract class SwitchController {
 		
 		//System.out.println(rowLookUp);
 		if(rowLookUp < 0) return;
+		//System.out.println(isLogicCombinationHit);
 		try {
 			isLogicCombinationHit = logicLookUpArray[rowLookUp] == 1;
 		} catch (IndexOutOfBoundsException e) {
@@ -49,8 +75,24 @@ public abstract class SwitchController {
 		}
 	}
 	
-	public abstract void performHitAction();
-	public abstract void reverseAction();
+	
+	public IControlable getControlObject() {
+		return controlObject;
+	}
+
+
+	public void setControlObject(IControlable controlObject) {
+		this.controlObject = controlObject;
+		this.controlObject.deActivate();
+	}
+
+	
+	public void performHitAction() {
+		controlObject.activate();
+	}
+	public void reverseAction(){
+		controlObject.deActivate();
+	}
 	
 	
 	

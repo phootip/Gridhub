@@ -79,7 +79,8 @@ public final class Constants {
 		public static boolean isLeftKeyPressing(int playerId) {
 			switch (playerId) {
 				case PLAYER1_ID:
-					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_A);
+					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_A)
+							|| InputManager.getInstance().isKeyPressing(KeyEvent.VK_LEFT);
 				case PLAYER2_ID:
 					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_L);
 				default:
@@ -91,7 +92,8 @@ public final class Constants {
 		public static boolean isRightKeyPressing(int playerId) {
 			switch (playerId) {
 				case PLAYER1_ID:
-					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_D);
+					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_D)
+							|| InputManager.getInstance().isKeyPressing(KeyEvent.VK_RIGHT);
 				case PLAYER2_ID:
 					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_QUOTE)
 							|| InputManager.getInstance().isKeyPressing(16780807);
@@ -104,7 +106,8 @@ public final class Constants {
 		public static boolean isDownKeyPressing(int playerId) {
 			switch (playerId) {
 				case PLAYER1_ID:
-					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_S);
+					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_S)
+							|| InputManager.getInstance().isKeyPressing(KeyEvent.VK_DOWN);
 				case PLAYER2_ID:
 					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_SEMICOLON)
 							|| InputManager.getInstance().isKeyPressing(16780839);
@@ -117,7 +120,8 @@ public final class Constants {
 		public static boolean isUpKeyPressing(int playerId) {
 			switch (playerId) {
 				case PLAYER1_ID:
-					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_W);
+					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_W)
+							|| InputManager.getInstance().isKeyPressing(KeyEvent.VK_UP);
 				case PLAYER2_ID:
 					return InputManager.getInstance().isKeyPressing(KeyEvent.VK_P);
 				default:
@@ -125,7 +129,7 @@ public final class Constants {
 
 			}
 		}
-		
+
 		public static boolean isRotateCameraLeftPressing(int playerId) {
 			switch (playerId) {
 				case PLAYER1_ID:
@@ -136,7 +140,7 @@ public final class Constants {
 					throw new IllegalArgumentException("Invalid player id : " + playerId);
 			}
 		}
-		
+
 		public static boolean isRotateCameraRightPressing(int playerId) {
 			switch (playerId) {
 				case PLAYER1_ID:
@@ -147,9 +151,9 @@ public final class Constants {
 					throw new IllegalArgumentException("Invalid player id : " + playerId);
 			}
 		}
-		
+
 	}
-	
+
 	public enum PlayMode {
 		SINGLE_PLAYER("Single Player", "singleplayer"), COOP_MODE("Co-op mode", "coop");
 
@@ -167,7 +171,7 @@ public final class Constants {
 			this.folderName = folderName;
 			this.fullModeName = fullModeName;
 		}
-		
+
 		public String getFullModeName() {
 			return fullModeName;
 		}

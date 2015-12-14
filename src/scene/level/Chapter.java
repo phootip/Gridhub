@@ -76,12 +76,12 @@ class Chapter implements IScrollableListItem {
 	}
 
 	@Override
-	public int getHeight() {
+	public int getListItemHeight() {
 		return (int) Math.ceil(TOP_MARGIN + SUBTEXT_SIZE + MIDDLE_MARGIN + MAINTEXT_SIZE + BOTTOM_MARGIN);
 	}
 
 	@Override
-	public void drawContent(Graphics2D g, int x, int y, int width, boolean isSelected) {
+	public void drawListItemContent(Graphics2D g, int x, int y, int width, boolean isSelected) {
 		String subText = "Chapter " + chapterOrder;
 		Font subTextFont = Resource.getInstance().getDefaultFont(SUBTEXT_SIZE, FontWeight.BOLD);
 		g.setColor(Helper.blendColor(ColorSwatch.FOREGROUND, ColorSwatch.BACKGROUND, isSelected ? 0.6f : 0.4f));

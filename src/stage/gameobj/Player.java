@@ -57,8 +57,7 @@ public class Player implements IDrawable {
 	private ArrayList<ArrayList<Vector3>> shiftedTrailPosition;
 
 	private FloorLevel floorLevelMap;
-	
-	
+
 	public int getWeight() {
 		return weight;
 	}
@@ -171,8 +170,8 @@ public class Player implements IDrawable {
 	private boolean isMoving = false;
 	private int walkStep = 0;
 	private boolean isMoveFast = false;
-	final int walkDurationSlow = 100 * 10;
-	final int walkDurationFast = 100 * 5;
+	private final int walkDurationSlow = 100 * 10;
+	private final int walkDurationFast = 100 * 5;
 
 	private void updateTrail(float diffX, float diffY) {
 
@@ -196,7 +195,13 @@ public class Player implements IDrawable {
 		}
 	}
 
-	public void update(int step, int cameraDirection) {
+	private Camera assignedCamera;
+
+	public void assignCamera(Camera camera) {
+		this.assignedCamera = camera;
+	}
+
+	public void update(int step) {
 		float ballDiffX = 0;
 		float ballDiffY = 0;
 		float ballDiffZ = 0;
@@ -222,23 +227,25 @@ public class Player implements IDrawable {
 			if (xDir != 0 || yDir != 0) {
 				isMoving = true;
 				isMoveFast = InputManager.getInstance().isKeyPressing(KeyEvent.VK_SHIFT);
-				switch (cameraDirection) {
-					case 0:
-						nextCellX += xDir;
-						nextCellY += yDir;
-						break;
-					case 1:
-						nextCellX += yDir;
-						nextCellY -= xDir;
-						break;
-					case 2:
-						nextCellX -= xDir;
-						nextCellY -= yDir;
-						break;
-					case 3:
-						nextCellX -= yDir;
-						nextCellY += xDir;
-						break;
+				if (assignedCamera != null) {
+					switch (assignedCamera.getRotation()) {
+						case 0:
+							nextCellX += xDir;
+							nextCellY += yDir;
+							break;
+						case 1:
+							nextCellX += yDir;
+							nextCellY -= xDir;
+							break;
+						case 2:
+							nextCellX -= xDir;
+							nextCellY -= yDir;
+							break;
+						case 3:
+							nextCellX -= yDir;
+							nextCellY += xDir;
+							break;
+					}
 				}
 			}
 
@@ -533,7 +540,7 @@ public class Player implements IDrawable {
 					}
 
 				} else if (nextCellObstacle != null && !(nextCellObstacle instanceof IWalkOnAble)) {
-					
+
 					if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
 						// in case of moving in both y and x if there is an
 						// obstacles and it's pushable object
@@ -604,7 +611,7 @@ public class Player implements IDrawable {
 							} else {
 								standStill();
 							}
-						} else if(nextCellObstacle instanceof Gate) {
+						} else if (nextCellObstacle instanceof Gate) {
 							standStill();
 						}
 

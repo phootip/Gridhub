@@ -1,12 +1,10 @@
 package core;
 
-import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import util.Constants.ColorSwatch;
-import util.Helper;
 import util.Resource;
 
 public class ScrollableUIList extends ArrayList<IScrollableListItem> {
@@ -19,7 +17,7 @@ public class ScrollableUIList extends ArrayList<IScrollableListItem> {
 	private int getTotalHeight() {
 		int totalHeight = 0;
 		for (IScrollableListItem item : this) {
-			totalHeight += item.getHeight();
+			totalHeight += item.getListItemHeight();
 		}
 		return totalHeight;
 	}
@@ -29,25 +27,40 @@ public class ScrollableUIList extends ArrayList<IScrollableListItem> {
 	private float preferredPosition = 0;
 
 	public IScrollableListItem getSelectedItem() {
+		if (this.size() == 0) {
+			return null;
+		}
 		return this.get(selectedItemIndex);
 	}
 
 	/**
 	 * Select next item in list if exists.
+	 * 
+	 * @return Whether there is a next item to select.
 	 */
-	public void selectNextItem() {
+	public boolean selectNextItem() {
 		if (selectedItemIndex + 1 < this.size()) {
 			selectedItemIndex++;
+			return true;
 		}
+		return false;
 	}
 
 	/**
 	 * Select previous item in list if exists.
+	 * 
+	 * @return Whether there is a previous item to select.
 	 */
-	public void selectPreviousItem() {
+	public boolean selectPreviousItem() {
 		if (selectedItemIndex > 0) {
 			selectedItemIndex--;
+			return true;
 		}
+		return false;
+	}
+	
+	public void resetSelectedItemIndex() {
+		this.selectedItemIndex = 0;
 	}
 
 	private boolean focusing = false;
@@ -75,13 +88,18 @@ public class ScrollableUIList extends ArrayList<IScrollableListItem> {
 
 	private void calculatePreferredPosition(int height) {
 
+		if (this.size() == 0) {
+			preferredPosition = 0;
+			return;
+		}
+
 		preferredPosition = currentScrollPosition;
 		float upperY = 0, lowerY = 0;
 
 		for (int i = 0; i < selectedItemIndex; i++) {
-			upperY += this.get(i).getHeight();
+			upperY += this.get(i).getListItemHeight();
 		}
-		lowerY = upperY + this.get(selectedItemIndex).getHeight();
+		lowerY = upperY + this.get(selectedItemIndex).getListItemHeight();
 
 		if (upperY - currentScrollPosition < 100) {
 			preferredPosition = upperY - 100;
@@ -90,7 +108,7 @@ public class ScrollableUIList extends ArrayList<IScrollableListItem> {
 			preferredPosition = lowerY + 100 - height;
 		}
 		preferredPosition = Math.max(0, Math.min(getTotalHeight() - height, preferredPosition));
-		
+
 	}
 
 	public void draw(Graphics2D g, int x, int y, int width, int height) {
@@ -105,18 +123,20 @@ public class ScrollableUIList extends ArrayList<IScrollableListItem> {
 
 			if (i == selectedItemIndex) {
 				g.setColor(ColorSwatch.FOREGROUND);
-				g.fillRect(x, y + cumulativeY, width, item.getHeight());
+				g.fillRect(x, y + cumulativeY, width, item.getListItemHeight());
 			}
 
-			item.drawContent(g, x, y + cumulativeY, width, i == selectedItemIndex);
-			cumulativeY += item.getHeight();
+			item.drawListItemContent(g, x, y + cumulativeY, width, i == selectedItemIndex);
+			cumulativeY += item.getListItemHeight();
 		}
 
 		g.setClip(oldClipBound);
 
-		g.setStroke(Resource.getGameObjectThinStroke());
-		g.setColor(ColorSwatch.FOREGROUND);
-		// g.drawRect(x, y, width, height);
+		if (focusing) {
+			g.setStroke(Resource.getGameObjectThickStroke());
+			g.setColor(ColorSwatch.FOREGROUND);
+			g.drawRect(x, y, width, height);
+		}
 	}
 
 }

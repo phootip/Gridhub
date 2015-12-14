@@ -1,13 +1,11 @@
 package stage;
 
-import java.awt.event.KeyEvent;
-
 import core.geom.Vector2;
 import core.geom.Vector3;
+import stage.gameobj.IDrawable;
 import stage.gameobj.Player;
 import util.Constants;
 import util.Helper;
-import util.InputManager;
 
 public class Camera {
 	private float zoomFactor = 50;
@@ -17,19 +15,22 @@ public class Camera {
 	private int sceneWidth;
 	private int sceneHeight;
 
-	private Player player;
+	private IDrawable followObj;
 
 	public float getZoomFactor() {
 		return zoomFactor;
 	}
 
-	public Camera(Player player) {
-		this.player = player;
+	public Camera(IDrawable followObj) {
+		this.followObj = followObj;
 		this.centerPos = getPreferredCenterPos();
+		if (this.followObj instanceof Player) {
+			((Player) this.followObj).assignCamera(this);
+		}
 	}
 
 	private Vector3 getPreferredCenterPos() {
-		return this.player.getDrawPosition();
+		return this.followObj.getDrawPosition();
 	}
 
 	private final float FOLLOW_SPEED = 30;
@@ -43,7 +44,7 @@ public class Camera {
 	private int rotationFrame = 0;
 	private final int rotationDuration = 100 * 30;
 
-	protected int getRotation() {
+	public int getRotation() {
 		return rotation;
 	}
 
@@ -70,9 +71,14 @@ public class Camera {
 		if (!isRotating) {
 			int direction = 0;
 
-			if (Constants.PlayerHelper.isRotateCameraLeftPressing(player.getPlayerId())) {
+			int playerId = Constants.PLAYER1_ID;
+			if (followObj instanceof Player) {
+				playerId = ((Player) followObj).getPlayerId();
+			}
+
+			if (Constants.PlayerHelper.isRotateCameraLeftPressing(playerId)) {
 				direction += 3;
-			} else if (Constants.PlayerHelper.isRotateCameraRightPressing(player.getPlayerId())) {
+			} else if (Constants.PlayerHelper.isRotateCameraRightPressing(playerId)) {
 				direction += 1;
 			}
 
@@ -82,7 +88,9 @@ public class Camera {
 				rotation = (rotation + direction) % 4;
 			}
 		}
-		if (isRotating) {
+		if (isRotating)
+
+		{
 			rotationFrame += step;
 			if (rotationFrame >= rotationDuration) {
 				oldRotation = rotation;

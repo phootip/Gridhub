@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 
+import core.IScrollableListItem;
 import core.ScrollableUIList;
 import core.geom.Vector2;
 import util.Helper;
@@ -19,6 +20,7 @@ public class LevelSelector {
 	private PlayMode selectedPlayMode;
 	private boolean playModeSelected = false;
 	private ScrollableUIList chapterList;
+	private ScrollableUIList levelList;
 	private ScrollableUIList focusingList;
 
 	public PlayMode getSelectedPlayMode() {
@@ -42,24 +44,34 @@ public class LevelSelector {
 			if (isEscapeKeyHandled()) { // ESC key is triggered
 				playModeSelected = false;
 				chapterList.setFocusing(false);
+				levelList.setFocusing(false);
 			} else {
 				if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_RIGHT)
 						|| InputManager.getInstance().isKeyTriggering(KeyEvent.VK_LEFT)) {
 					if (focusingList == chapterList) {
-						focusingList = null;
+						chapterList.setFocusing(false);
+						levelList.setFocusing(true);
+						focusingList = levelList;
 					} else {
+						chapterList.setFocusing(true);
+						levelList.setFocusing(false);
 						focusingList = chapterList;
 					}
 				} else {
 					if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_DOWN)) {
-						focusingList.selectNextItem();
+						if (focusingList.selectNextItem() && focusingList == chapterList) {
+							populateLevelList((Chapter) chapterList.getSelectedItem());
+						}
 					}
 					if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_UP)) {
-						focusingList.selectPreviousItem();
+						if (focusingList.selectPreviousItem() && focusingList == chapterList) {
+							populateLevelList((Chapter) chapterList.getSelectedItem());
+						}
 					}
 				}
 			}
 			chapterList.update(step);
+			levelList.update(step);
 		} else {
 			if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_RIGHT)
 					|| InputManager.getInstance().isKeyTriggering(KeyEvent.VK_LEFT)) {
@@ -84,11 +96,23 @@ public class LevelSelector {
 				chapterList = new ScrollableUIList();
 				chapterList.addAll(LevelFetcher.getInstance().getChapterList(selectedPlayMode));
 				chapterList.setFocusing(true);
+
+				levelList = new ScrollableUIList();
+				populateLevelList((Chapter) chapterList.getSelectedItem());
+
 				focusingList = chapterList;
 				playModeSelected = true;
 
 			}
 		}
+	}
+
+	private void populateLevelList(Chapter chapter) {
+		levelList.clear();
+		for (int i = 1; i <= 100; i++) {
+			levelList.add(LevelData.parse(chapter.getChapterName() + " " + i));
+		}
+		levelList.resetSelectedItemIndex();
 	}
 
 	public void draw(Graphics2D g, int x, int y, int width, int height) {
@@ -98,6 +122,8 @@ public class LevelSelector {
 			int marginSize = 50;
 			int chapterSelectSize = 500;
 			chapterList.draw(g, x, y, chapterSelectSize, height);
+			int levelSelectSize = width - chapterSelectSize - marginSize;
+			levelList.draw(g, x + width - levelSelectSize, y, levelSelectSize, height);
 		}
 	}
 

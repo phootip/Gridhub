@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,8 +29,20 @@ final public class LevelFetcher {
 		return this.getClass().getClassLoader();
 	}
 
-	private URI getLevelFileURI(String levelFilePath, PlayMode playMode) throws URISyntaxException {
-		return getClassLoader().getResource("leveldata/" + playMode.getLevelFolderName() + "/" + levelFilePath).toURI();
+	private URI getLevelFileURIIfExists(String levelFileName, Chapter chapter) throws URISyntaxException {
+		System.out.println("leveldata/" + chapter.getPlayMode().getLevelFolderName() + "/" + chapter.getFolderName()
+				+ "/" + levelFileName);
+
+		URL resourceURL = getClassLoader().getResource("leveldata/" + chapter.getPlayMode().getLevelFolderName() + "/"
+				+ chapter.getFolderName() + "/" + levelFileName);
+		if (resourceURL == null)
+			return null;
+		return resourceURL.toURI();
+	}
+
+	private URI getChapterFileURI(String chapterFilePath, PlayMode playMode) throws URISyntaxException {
+		return getClassLoader().getResource("leveldata/" + playMode.getLevelFolderName() + "/" + chapterFilePath)
+				.toURI();
 	}
 
 	private String getFileContent(File file) throws IOException {
@@ -43,7 +56,7 @@ final public class LevelFetcher {
 
 	private String getFileContentFromPath(String levelFilePath, PlayMode playMode)
 			throws IOException, URISyntaxException {
-		return getFileContent(new File(getLevelFileURI(levelFilePath, playMode)));
+		return getFileContent(new File(getChapterFileURI(levelFilePath, playMode)));
 	}
 
 	private LevelFetcher() {
@@ -69,8 +82,9 @@ final public class LevelFetcher {
 
 		for (int i = 0; i < singlePlayerChapters.length; i++) {
 			singlePlayerChapters[i].setChapterOrder(i + 1);
+			singlePlayerChapters[i].setPlayMode(PlayMode.SINGLE_PLAYER);
 			singlePlayerChapterList.add(singlePlayerChapters[i]);
-			singlePlayerChapters[i].loadLevels();
+			populateLevelInChapter(singlePlayerChapters[i]);
 		}
 
 		// Co-op mode
@@ -79,8 +93,27 @@ final public class LevelFetcher {
 
 		for (int i = 0; i < coopModeChapters.length; i++) {
 			coopModeChapters[i].setChapterOrder(i + 1);
+			coopModeChapters[i].setPlayMode(PlayMode.COOP_MODE);
 			coopModeChapterList.add(coopModeChapters[i]);
-			coopModeChapters[i].loadLevels();
+			populateLevelInChapter(coopModeChapters[i]);
+		}
+	}
+
+	private void populateLevelInChapter(Chapter chapter) throws URISyntaxException, IOException {
+
+		PlayMode playMode = chapter.getPlayMode();
+
+		int currentFileCounter = 0;
+		final String fileNameSuffix = ".lev";
+
+		while (true) {
+			URI fileURI = getLevelFileURIIfExists(currentFileCounter + fileNameSuffix, chapter);
+			if (fileURI == null) {
+				break;
+			}
+
+			chapter.addLevel(getFileContent(new File(fileURI)));
+			currentFileCounter++;
 		}
 	}
 

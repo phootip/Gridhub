@@ -5,9 +5,12 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import util.Constants.ColorSwatch;
+import util.Helper;
 import util.Resource;
 
 public class ScrollableUIList extends ArrayList<IScrollableListItem> {
+	private static final int INITIAL_SCROLL_POSITION = 20;
+	private static final int VERTICAL_GAP = 20;
 	private static final int SCROLL_LEFT_AREA = 100;
 	private static final long serialVersionUID = 1L;
 
@@ -23,7 +26,7 @@ public class ScrollableUIList extends ArrayList<IScrollableListItem> {
 	}
 
 	private int selectedItemIndex = 0;
-	private float currentScrollPosition = 0;
+	private float currentScrollPosition = INITIAL_SCROLL_POSITION;
 	private float preferredPosition = 0;
 
 	public IScrollableListItem getSelectedItem() {
@@ -58,9 +61,10 @@ public class ScrollableUIList extends ArrayList<IScrollableListItem> {
 		}
 		return false;
 	}
-	
+
 	public void resetSelectedItemIndex() {
 		this.selectedItemIndex = 0;
+		this.currentScrollPosition = INITIAL_SCROLL_POSITION;
 	}
 
 	private boolean focusing = false;
@@ -84,6 +88,18 @@ public class ScrollableUIList extends ArrayList<IScrollableListItem> {
 
 	public void update(int step) {
 		currentScrollPosition += (preferredPosition - currentScrollPosition) / Math.pow(4, 100f / step);
+
+		if (focusing) {
+			focusingAnimStep += step;
+			if (focusingAnimStep > focusingAnimLength) {
+				focusingAnimStep = focusingAnimLength;
+			}
+		} else {
+			focusingAnimStep -= step;
+			if (focusingAnimStep < 0) {
+				focusingAnimStep = 0;
+			}
+		}
 	}
 
 	private void calculatePreferredPosition(int height) {
@@ -107,9 +123,12 @@ public class ScrollableUIList extends ArrayList<IScrollableListItem> {
 		if (lowerY - currentScrollPosition > height - SCROLL_LEFT_AREA) {
 			preferredPosition = lowerY + 100 - height;
 		}
-		preferredPosition = Math.max(0, Math.min(getTotalHeight() - height, preferredPosition));
-
+		preferredPosition = Math.max(-VERTICAL_GAP,
+				Math.min(getTotalHeight() - height + VERTICAL_GAP, preferredPosition));
 	}
+
+	private int focusingAnimStep = 0;
+	private final int focusingAnimLength = 100 * 5;
 
 	public void draw(Graphics2D g, int x, int y, int width, int height) {
 		calculatePreferredPosition(height);
@@ -132,11 +151,10 @@ public class ScrollableUIList extends ArrayList<IScrollableListItem> {
 
 		g.setClip(oldClipBound);
 
-		if (focusing) {
-			g.setStroke(Resource.getGameObjectThickStroke());
-			g.setColor(ColorSwatch.FOREGROUND);
-			g.drawRect(x, y, width, height);
-		}
+		g.setColor(Helper.blendColor(ColorSwatch.SHADOW, ColorSwatch.FOREGROUND,
+				(float) focusingAnimStep / focusingAnimLength));
+		g.setStroke(Resource.getGameObjectThickStroke());
+		g.drawRect(x, y, width, height);
 	}
 
 }

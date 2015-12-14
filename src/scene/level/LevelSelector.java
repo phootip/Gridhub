@@ -59,7 +59,9 @@ public class LevelSelector {
 						focusingList = levelList;
 					} else {
 						if (levelSelectCallbackObj != null) {
-							this.levelSelectCallbackObj.onLevelSelect((LevelData) levelList.getSelectedItem());
+							if (levelList.getSelectedItem() != null) {
+								this.levelSelectCallbackObj.onLevelSelect((LevelData) levelList.getSelectedItem());
+							}
 						}
 					}
 				} else if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_RIGHT)

@@ -244,7 +244,7 @@ public class GameStage {
 		}.getType();
 
 		HashMap<String, String> a = gson.fromJson(hashmapJson, hashType);
-		System.out.println(a.get("block"));
+//		System.out.println(a.get("block"));
 
 		Type blockType = new TypeToken<ArrayList<Block>>() {
 		}.getType();

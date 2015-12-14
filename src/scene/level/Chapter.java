@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import core.IScrollableListItem;
-import core.geom.Vector2;
 import util.Helper;
 import util.Resource;
 import util.Constants.ColorSwatch;
+import util.Constants.PlayMode;
 import util.Resource.FontWeight;
 
 public class Chapter implements IScrollableListItem {
@@ -26,6 +26,15 @@ public class Chapter implements IScrollableListItem {
 	private transient int chapterOrder;
 	private transient List<LevelData> levelDataList;
 	private transient boolean isRenderingJobStarted;
+	private transient PlayMode playMode;
+	
+	protected PlayMode getPlayMode() {
+		return playMode;
+	}
+
+	protected void setPlayMode(PlayMode playMode) {
+		this.playMode = playMode;
+	}
 
 	protected boolean isRenderingJobStarted() {
 		return isRenderingJobStarted;
@@ -39,13 +48,16 @@ public class Chapter implements IScrollableListItem {
 		return levelDataList;
 	}
 
-	protected void loadLevels() {
-		levelDataList = new ArrayList<>();
-		for (int i = 1; i <= 20; i++) {
-			LevelData levelData = LevelData.parse(this.getChapterName() + " " + i);
-			levelData.setChapter(this);
-			levelDataList.add(levelData);
-		}
+	/**
+	 * Add new level to this chapter.
+	 * 
+	 * @param levelFileContent
+	 *            String representing content of the level file.
+	 */
+	protected void addLevel(String levelFileContent) {
+		LevelData levelData = LevelData.parse(levelFileContent);
+		levelData.setChapter(this);
+		levelDataList.add(levelData);
 	}
 
 	/**
@@ -93,6 +105,7 @@ public class Chapter implements IScrollableListItem {
 	}
 
 	private Chapter() {
+		levelDataList = new ArrayList<>();
 	}
 
 	@Override

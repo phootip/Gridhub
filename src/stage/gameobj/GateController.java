@@ -11,6 +11,22 @@ public class GateController extends SwitchController {
 		this.gate = gate;
 		
 	}
+	
+	public GateController(ArrayList<FloorSwitch> floorSwitchesControllerSet, int[] logicLookUpArray ) {
+		super(floorSwitchesControllerSet, logicLookUpArray);
+		this.gate = null;
+		
+	}
+	
+	
+	
+	public void setControlGate(Gate g) {
+		gate = g;
+	}
+	
+	public Gate getControlGate() {
+		return gate;
+	}
 
 	@Override
 	public void performHitAction() {

@@ -19,10 +19,23 @@ public class BlockController extends SwitchController {
 		this.hasPerfomrmHit = false;
 		this.hasPerformReverse = true;
 	}
+	
+	public BlockController(ArrayList<FloorSwitch> floorSwitchesControllerSet, int[] logicLookUpArray,
+			int controlType, int moveStep) {
+		super(floorSwitchesControllerSet, logicLookUpArray);
+		this.block = null;
+		this.controllType = controlType;
+		this.moveStep = moveStep;
+		this.hasPerfomrmHit = false;
+		this.hasPerformReverse = true;
+	}
 
 	public static final int MOVE_UP_TYPE = 1;
 	public static final int MOVE_DOWN_TYPE = 2;
-
+	
+	public void setControlBlock(Block b) {
+		block = b;
+	}
 	@Override
 	public void performHitAction() {
 		// TODO Auto-generated method stub

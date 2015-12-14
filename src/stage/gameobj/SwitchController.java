@@ -17,6 +17,16 @@ public abstract class SwitchController {
 		
 	}
 	
+	
+	public void setFloorSwitchesControllerSet(ArrayList<FloorSwitch> floorSwitchesControllerSet) {
+		this.floorSwitchesControllerSet = floorSwitchesControllerSet;
+	}
+
+
+	public ArrayList<FloorSwitch> getFloorSwitchesControllerSet() {
+		return floorSwitchesControllerSet; 
+	}
+
 	public void update() {
 		
 		int rowLookUp = 0;
@@ -28,6 +38,7 @@ public abstract class SwitchController {
 		
 		//System.out.println(rowLookUp);
 		if(rowLookUp < 0) return;
+		//System.out.println(isLogicCombinationHit);
 		try {
 			isLogicCombinationHit = logicLookUpArray[rowLookUp] == 1;
 		} catch (IndexOutOfBoundsException e) {

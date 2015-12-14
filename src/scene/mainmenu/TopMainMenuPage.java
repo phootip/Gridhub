@@ -15,7 +15,7 @@ import util.InputManager;
 import util.Resource;
 import util.Constants.ColorSwatch;
 
-public class TopMainMenuPage extends MainMenuPage {
+final public class TopMainMenuPage extends MainMenuPage {
 
 	Font logoTextFont;
 	Font menuTextFont;
@@ -45,40 +45,13 @@ public class TopMainMenuPage extends MainMenuPage {
 		if (cumulativeStep > 100 * 120) {
 			if (cumulativeStep > 100 * 165) {
 				cumulativeStep = 100 * 165;
-				if (this.isVisible && InputManager.getInstance().isKeyTriggering(KeyEvent.VK_ENTER)) {
-					switch (selectingMenu) {
-					case 0:
-						this.parent.setPage(MainMenuScene.PageName.ONE_PLAYER);
-						break;
-					case 1:
-						this.parent.setPage(MainMenuScene.PageName.TWO_PLAYER);
-						break;
-					case 2:
-						this.parent.setPage(MainMenuScene.PageName.LEVEL_EDITOR);
-						break;
-					case 3:
-						this.parent.setPage(MainMenuScene.PageName.OPTION);
-						break;
-					case 4:
-						this.parent.setPage(MainMenuScene.PageName.ABOUT);
-						break;
-					}
-				}
 			}
 
-			if (this.isVisible) {
-				if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_UP)) {
-					selectingMenu--;
-				}
-				if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_DOWN)) {
-					selectingMenu++;
-				}
-			}
-			selectingMenu = (selectingMenu + menuItem.length) % menuItem.length;
+			detectKey();
 
-			currentMenuPosition += (selectingMenu - currentMenuPosition) / Math.pow(Math.pow(5, 1.0 / 100), step);
+			currentMenuPosition += (selectingMenu - currentMenuPosition) / Math.pow(4, 100f / step);
 			currentMenuHighlighterWidth += (currentMenuItemWidth - currentMenuHighlighterWidth)
-					/ Math.pow(Math.pow(3, 1.0 / 100), step);
+					/ Math.pow(3, 100f / step);
 
 			menuFadeInProgress += step / (100f * 45);
 			if (menuFadeInProgress > 1) {
@@ -97,10 +70,43 @@ public class TopMainMenuPage extends MainMenuPage {
 				hiddenShifterStep = 0;
 			}
 		}
+
 	}
 
-	private final String[] menuItem = new String[] { "Single Player", "Co-op Mode", "Level Editor", "Option",
-			"About Us" };
+	private void detectKey() {
+		if (hiddenShifterStep < hiddenShifterDuration) {
+			if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_UP)) {
+				selectingMenu--;
+			}
+			if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_DOWN)) {
+				selectingMenu++;
+			}
+		}
+
+		selectingMenu = (selectingMenu + menuItem.length) % menuItem.length;
+
+		if (hiddenShifterStep == 0 && InputManager.getInstance().checkKeyTriggeringWithRemoval(KeyEvent.VK_ENTER)) {
+			switch (selectingMenu) {
+				case 0:
+					this.parent.setPage(MainMenuScene.PageName.PLAY);
+					break;
+				case 1:
+					this.parent.setPage(MainMenuScene.PageName.LEVEL_EDITOR);
+					break;
+				case 2:
+					this.parent.setPage(MainMenuScene.PageName.OPTION);
+					break;
+				case 3:
+					this.parent.setPage(MainMenuScene.PageName.ABOUT);
+					break;
+				case 4:
+					System.exit(0);
+					break;
+			}
+		}
+	}
+
+	private final String[] menuItem = new String[] { "Play", "Level Editor", "Option", "About Us", "Exit" };
 	private final float menuItemSpacing = 30f;
 	private int selectingMenu = 0;
 	private float currentMenuPosition = 0f;

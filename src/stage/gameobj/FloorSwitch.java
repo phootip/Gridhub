@@ -1,4 +1,4 @@
-package scene.test;
+package stage.gameobj;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -7,9 +7,17 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 
 import core.geom.Vector2;
+import core.geom.Vector3;
+import stage.Camera;
+import stage.ObjectMap;
+import stage.gameobj.Block;
+import stage.gameobj.IDrawable;
+import stage.gameobj.IWalkOnAble;
+import stage.gameobj.Player;
+import stage.gameobj.ObjectVector;
 import util.Helper;
 
-public class FloorSwitch {
+public class FloorSwitch implements IDrawable, IWalkOnAble {
 
 	private final float EPS = 1e-3f;
 
@@ -31,6 +39,10 @@ public class FloorSwitch {
 		return z;
 	}
 
+	public ObjectVector getObjectVectorWithName() {
+		return new ObjectVector(x, y, z, "Switch");
+	}
+
 	protected boolean isDefaultAssertion() {
 		return defaultAssertion;
 	}
@@ -38,6 +50,12 @@ public class FloorSwitch {
 	protected int getMinimumWeight() {
 		return minimumWeight;
 	}
+
+	public boolean isAsserting() {
+		return isAsserting;
+	}
+	
+
 
 	public FloorSwitch(int x, int y, int z, boolean defaultAssertion, int minimumWeight) {
 		this.x = x;
@@ -61,13 +79,18 @@ public class FloorSwitch {
 	private float currentCenterAlpha;
 	private final float centerAlphaSpeedFactor = 100 * 10.0f;
 
-	public void update(int step, Player p) {
+	public void update(int step) {
 
 		// This is just for testing. In production, link FloorSwitch with the
 		// HashMap instead.
-
-		if (p.getCellX() == this.x && p.getCellY() == this.y && p.getCellZ() == this.z) {
-			this.currentWeight = 10;
+		
+		Player p = getPlayerAbove();
+		Block b = getBlockAbove();
+		
+		if (p != null) {
+			this.currentWeight = p.getWeight();
+		} else if (b != null) {
+			this.currentWeight = b.getWeight();
 		} else {
 			this.currentWeight = 0;
 		}
@@ -138,6 +161,44 @@ public class FloorSwitch {
 			g.draw(new Line2D.Float(cornerC.getX(), cornerC.getY(), toC.getX(), toC.getY()));
 			g.draw(new Line2D.Float(cornerD.getX(), cornerD.getY(), toD.getX(), toD.getY()));
 		}
+	}
+
+	@Override
+	public boolean isObjectAbove() {
+		// teleportGate check only player above
+		if (getPlayerAbove() != null || getBlockAbove() != null) {
+			return true;
+		}
+
+		return false;
+	}
+
+	private Player getPlayerAbove() {
+		if (ObjectMap.drawableObjectHashMap
+				.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER1_ID)) != null) {
+			return (Player) (ObjectMap.drawableObjectHashMap
+					.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER1_ID)));
+
+		} else if (ObjectMap.drawableObjectHashMap
+				.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER2_ID)) != null) {
+			return (Player) (ObjectMap.drawableObjectHashMap
+					.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER2_ID)));
+		}
+
+		return null;
+	}
+
+	private Block getBlockAbove() {
+		IDrawable objectAbove = ObjectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z));
+		if (objectAbove != null && objectAbove instanceof Block) {
+			return (Block) objectAbove;
+		} else
+			return null;
+	}
+
+	@Override
+	public Vector3 getDrawPosition() {
+		return new Vector3(x, y, z);
 	}
 
 }

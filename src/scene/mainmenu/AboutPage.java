@@ -10,7 +10,7 @@ import util.Resource.FontWeight;
 import util.InputManager;
 import util.Resource;
 
-class AboutPage extends MainMenuPage {
+final class AboutPage extends MainMenuPage {
 
 	private Font nameFont = Resource.getInstance().getDefaultFont(60, FontWeight.REGULAR);
 	private Font idFont = Resource.getInstance().getDefaultFont(40, FontWeight.BOOK);

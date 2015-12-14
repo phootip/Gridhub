@@ -1,0 +1,34 @@
+[
+
+	{
+		"chapterName": "Tutorial",
+		"folderName": "000",
+		"userFolder": false
+	},
+	{
+		"chapterName": "The Prog Meth",
+		"folderName": "001",
+		"userFolder": false
+	},
+	{
+		"chapterName": "The Digital Logic",
+		"folderName": "002",
+		"userFolder": false
+	},
+	{
+		"chapterName": "The Discrete Maths",
+		"folderName": "003",
+		"userFolder": false
+	},
+	{
+		"chapterName": "The General Physics",
+		"folderName": "004",
+		"userFolder": false
+	},
+	{
+		"chapterName": "Custom Level",
+		"folderName": "user",
+		"userFolder": true
+	}
+
+]

@@ -1,6 +1,6 @@
 package scene.mainmenu;
 
-public class OptionPage extends MainMenuPage {
+final public class OptionPage extends MainMenuPage {
 
 	protected OptionPage(MainMenuScene parent) {
 		super(parent);

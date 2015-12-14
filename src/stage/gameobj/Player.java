@@ -57,8 +57,7 @@ public class Player implements IDrawable {
 	private ArrayList<ArrayList<Vector3>> shiftedTrailPosition;
 
 	private FloorLevel floorLevelMap;
-	
-	
+
 	public int getWeight() {
 		return weight;
 	}
@@ -250,7 +249,8 @@ public class Player implements IDrawable {
 		int floorLevelNextCellX = nextCellX;
 		int floorLevelNextCellY = nextCellY;
 		// System.out.println(isOnSlope);
-		if (floorLevelMap.isOutOfMap(nextCellX, nextCellY)) {
+
+		if (floorLevelMap.isOutOfMap(nextCellX, nextCellY) || isNextCellPlayer(nextCellX, nextCellY, nextCellZ)) {
 			if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
 				// if move diagonal then it can move either y or x
 				boolean isNextX_OutOfMap = floorLevelMap.isOutOfMap(nextCellX, cellY);
@@ -275,6 +275,7 @@ public class Player implements IDrawable {
 		} else if (!(floorLevelMap.isOutOfMap(nextCellX, nextCellY))) {
 			// not out of Map
 			// In case floor is not equals
+
 			if (cellZ != floorLevelMap.getZValueFromXY(floorLevelNextCellX, floorLevelNextCellY)) {
 				// if floor is not equal to current Z
 				if (cellZ > floorLevelMap.getZValueFromXY(floorLevelNextCellX, floorLevelNextCellY)) {
@@ -315,8 +316,9 @@ public class Player implements IDrawable {
 								standStill();
 							}
 						}
-					} else if ((nextCellBelow == null || nextCellBelow instanceof Block
-							|| nextCellBelow instanceof Slope) && isOnSlope) {
+					} else
+						if ((nextCellBelow == null || nextCellBelow instanceof Block || nextCellBelow instanceof Slope)
+								&& isOnSlope) {
 						// exit the slope from both direction when there is the box waiting
 						Slope slopeBelow = (Slope) ObjectMap.drawableObjectHashMap
 								.get(new ObjectVector(cellX, cellY, cellZ - 1));
@@ -330,20 +332,26 @@ public class Player implements IDrawable {
 									// moveOnlyXandZ();
 									// isOnSlope = false;
 								} else {
+									
 									tryMoveAndPushXDirection();
 									isOnSlope = false;
 								}
 
 							} else {
-								setCellZ(cellZ - 1);
-								boolean isLeavingSlope = tryMoveAndPushXDirection();
-								if (isLeavingSlope) {
-									isOnSlope = false;
+								if(isNextCellPlayer(nextCellX, nextCellY, nextCellZ-1)) {
+									standStill();
 								} else {
-									setCellZ(cellZ + 1);
-									setCellX(cellX);
-									setCellY(cellY);
+									setCellZ(cellZ - 1);
+									boolean isLeavingSlope = tryMoveAndPushXDirection();
+									if (isLeavingSlope) {
+										isOnSlope = false;
+									} else {
+										setCellZ(cellZ + 1);
+										setCellX(cellX);
+										setCellY(cellY);
+									}
 								}
+								
 							}
 
 						} else if (nextCellX - cellX == 0 && slopeBelow.isAlignY() && nextCellY - cellY != 0) {
@@ -356,7 +364,10 @@ public class Player implements IDrawable {
 								}
 
 							} else {
-								setCellZ(cellZ - 1);
+								if(isNextCellPlayer(nextCellX, nextCellY, nextCellZ-1)) {
+									standStill();
+								} else {
+									setCellZ(cellZ - 1);
 								boolean isLeavingSlope = tryMoveAndPushYDirection();
 								if (isLeavingSlope) {
 									isOnSlope = false;
@@ -365,6 +376,8 @@ public class Player implements IDrawable {
 									setCellX(cellX);
 									setCellY(cellY);
 								}
+								}
+								
 							}
 
 						}
@@ -477,7 +490,7 @@ public class Player implements IDrawable {
 				IDrawable nextCellObstacle = ObjectMap.drawableObjectHashMap
 						.get(new ObjectVector(nextCellX, nextCellY, nextCellZ));
 
-				if (nextCellObstacle == null || nextCellObstacle instanceof IWalkOnAble) {
+				if ((nextCellObstacle == null || nextCellObstacle instanceof IWalkOnAble)) {
 					// Action when player move diagonal
 					if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
 						// for Z there might not cause any problem
@@ -533,7 +546,6 @@ public class Player implements IDrawable {
 					}
 
 				} else if (nextCellObstacle != null && !(nextCellObstacle instanceof IWalkOnAble)) {
-					
 					if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
 						// in case of moving in both y and x if there is an
 						// obstacles and it's pushable object
@@ -590,21 +602,21 @@ public class Player implements IDrawable {
 							Slope nextCellSlope = (Slope) nextCellObstacle;
 
 							boolean isNextCellEntranceOfSlope = nextCellSlope.isSlopeEntrance(nextCellX, nextCellY);
-
-							if (isNextCellEntranceOfSlope && nextCellSlope.isAlignX() && nextCellX - cellX != 0) {
+							
+							if (isNextCellEntranceOfSlope && nextCellSlope.isAlignX() && nextCellX - cellX != 0 && !isNextCellPlayer(nextCellX, nextCellY, nextCellZ+1)) {
 
 								setCellZ(cellZ + 1);
 								moveOnlyXandZ();
 								isOnSlope = true;
-							} else if (isNextCellEntranceOfSlope && nextCellSlope.isAlignY()
-									&& nextCellY - cellY != 0) {
+							} else
+								if (isNextCellEntranceOfSlope && nextCellSlope.isAlignY() && nextCellY - cellY != 0 && !isNextCellPlayer(nextCellX, nextCellY, nextCellZ+1)) {
 								setCellZ(cellZ + 1);
 								moveOnlyYandZ();
 								isOnSlope = true;
 							} else {
 								standStill();
 							}
-						} else if(nextCellObstacle instanceof Gate) {
+						} else if (nextCellObstacle instanceof Gate) {
 							standStill();
 						}
 
@@ -814,6 +826,7 @@ public class Player implements IDrawable {
 	}
 
 	private void moveOnlyYandZ() {
+
 		ObjectMap.drawableObjectHashMap.remove(new ObjectVector(cellX, cellY, cellZ, this.name));
 		ObjectMap.drawableObjectHashMap.put(new ObjectVector(cellX, nextCellY, nextCellZ, this.name), this);
 		nextCellX = cellX;
@@ -822,6 +835,7 @@ public class Player implements IDrawable {
 	}
 
 	private void moveOnlyXandZ() {
+
 		ObjectMap.drawableObjectHashMap.remove(new ObjectVector(cellX, cellY, cellZ, this.name));
 		ObjectMap.drawableObjectHashMap.put(new ObjectVector(nextCellX, cellY, nextCellZ, this.name), this);
 		cellX = nextCellX;
@@ -830,6 +844,7 @@ public class Player implements IDrawable {
 	}
 
 	private void moveAllDir() {
+
 		ObjectMap.drawableObjectHashMap.remove(new ObjectVector(cellX, cellY, cellZ, this.name));
 		ObjectMap.drawableObjectHashMap.put(new ObjectVector(nextCellX, nextCellY, nextCellZ, this.name), this);
 		cellX = nextCellX;
@@ -923,6 +938,17 @@ public class Player implements IDrawable {
 			// nothing
 			moveOnlyXandZ();
 		}
+	}
+
+	private boolean isNextCellPlayer(int x, int y, int z) {
+		if (this.playerId == 1) {
+			return ObjectMap.drawableObjectHashMap
+					.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER2_ID)) != null;
+		} else {
+			return ObjectMap.drawableObjectHashMap
+					.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER1_ID)) != null;
+		}
+
 	}
 
 	@Override

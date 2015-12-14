@@ -9,9 +9,8 @@ import java.util.Set;
 // TODO: Implement MouseListener and MouseMoveListener
 
 /**
- * This manages the input of the game, e.g. keyboard. It also support inputing
- * in the triggering way, in the similar manner to monostable multivibrator,
- * i.e. the input that is asserted true for only one frame.
+ * This manages the input of the game, e.g. keyboard. It also support inputing in the triggering way, in the similar
+ * manner to monostable multivibrator, i.e. the input that is asserted true for only one frame.
  * 
  * @author Kasidit Iamthong
  *
@@ -40,6 +39,7 @@ public class InputManager implements KeyListener {
 
 	private Set<Integer> keyPressHasher = new HashSet<>();
 	private Set<Integer> keyTriggerHasher = new HashSet<>();
+	private Set<Integer> keyRepeatedTriggerHasher = new HashSet<>();
 
 	private Set<Integer> keyPressBuffer = new HashSet<>();
 	private Set<Integer> keyReleaseBuffer = new HashSet<>();
@@ -61,18 +61,38 @@ public class InputManager implements KeyListener {
 	}
 
 	/**
-	 * Determines whether specified key is triggering or not.
+	 * Determines whether specified key is triggering or not. This filter out repeated key fires.
 	 * 
 	 * @param keyCode
 	 *            an integer representing key code to check.
 	 * @return Whether or not the specified key is being triggered.
+	 * @see InputManager#isKeyTriggering(int, boolean)
 	 */
 	public boolean isKeyTriggering(int keyCode) {
-		return keyTriggerHasher.contains(keyCode);
+		return isKeyTriggering(keyCode, true);
 	}
 
 	/**
-	 * Determines whether specified key is triggering or not, and, if triggering, set the key as "not triggered".
+	 * Determines whether specified key is triggering or not. Can be specified whether or not it should filter out
+	 * repeated key fires.
+	 * 
+	 * @param keyCode
+	 *            an integer representing key code to check.
+	 * @param filterRepeatedFire
+	 *            whether of not return value should filter out repeated key fires.
+	 * @return Whether or not the specified key is being triggered.
+	 * @see InputManager#isKeyTriggering(int)
+	 */
+	public boolean isKeyTriggering(int keyCode, boolean filterRepeatedFire) {
+		if (filterRepeatedFire) {
+		return keyTriggerHasher.contains(keyCode);
+		}else {
+			return keyRepeatedTriggerHasher.contains(keyCode);
+		}
+	}
+
+	/**
+	 * Determines whether specified key is triggering or not, and, if triggering, set the key state as "not triggered".
 	 * 
 	 * @param keyCode
 	 *            an integer representing key code to check.
@@ -82,24 +102,23 @@ public class InputManager implements KeyListener {
 		if (keyTriggerHasher.contains(keyCode)) {
 			keyTriggerHasher.remove(keyCode);
 			return true;
-		} else return false;
+		} else
+			return false;
 	}
 
 	/**
-	 * This should be called from only from listener, and should not be called
-	 * explicitly by user.
+	 * This should be called from only from listener, and should not be called explicitly by user.
 	 */
 	@Override
 	public synchronized void keyPressed(KeyEvent e) {
 		int keyCode = (e.getKeyCode() != 0) ? e.getKeyCode() : e.getExtendedKeyCode();
-		if (!keyPressHasher.contains(keyCode)) {
-			keyPressBuffer.add(keyCode);
-		}
+		// if (!keyPressHasher.contains(keyCode)) {
+		keyPressBuffer.add(keyCode);
+		// }
 	}
 
 	/**
-	 * This should be called from only from listener, and should not be called
-	 * explicitly by user.
+	 * This should be called from only from listener, and should not be called explicitly by user.
 	 */
 	@Override
 	public synchronized void keyReleased(KeyEvent e) {
@@ -108,29 +127,32 @@ public class InputManager implements KeyListener {
 	}
 
 	/**
-	 * This should be called from only from listener, and should not be called
-	 * explicitly by user.
+	 * This should be called from only from listener, and should not be called explicitly by user.
 	 */
 	@Override
 	public void keyTyped(KeyEvent e) {
 	}
 
 	/**
-	 * Update the InputManager, such as clear triggered value. This should be
-	 * called every frame before doing any operation.
+	 * Update the InputManager, such as clear triggered value. This should be called every frame before doing any
+	 * operation.
 	 */
 	public synchronized void update() {
 		keyTriggerHasher.clear();
+		keyRepeatedTriggerHasher.clear();
 
 		for (Integer i : keyPressBuffer) {
-			keyPressHasher.add(i);
-			keyTriggerHasher.add(i);
+			keyRepeatedTriggerHasher.add(i);
+			if (!keyPressHasher.contains(i)) {
+				keyPressHasher.add(i);
+				keyTriggerHasher.add(i);
+			}
 		}
 
 		for (Integer i : keyReleaseBuffer) {
 			keyPressHasher.remove(i);
 		}
-		
+
 		keyPressBuffer.clear();
 		keyReleaseBuffer.clear();
 	}

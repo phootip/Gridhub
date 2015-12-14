@@ -74,12 +74,12 @@ public class LevelSelector {
 						focusingList = chapterList;
 					}
 				} else {
-					if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_DOWN)) {
+					if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_DOWN, false)) {
 						if (focusingList.selectNextItem() && focusingList == chapterList) {
 							populateLevelList((Chapter) chapterList.getSelectedItem());
 						}
 					}
-					if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_UP)) {
+					if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_UP, false)) {
 						if (focusingList.selectPreviousItem() && focusingList == chapterList) {
 							populateLevelList((Chapter) chapterList.getSelectedItem());
 						}

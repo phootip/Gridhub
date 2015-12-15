@@ -234,6 +234,9 @@ public class GameStage {
 		Gate gate1 = new Gate(1, 3, 0);
 		Gate gate2 = new Gate(1, 4, 0);
 		Gate gate3 = new Gate(1, 5, 0);
+		gates.add(gate1);
+		gates.add(gate2);
+		gates.add(gate3);
 		
 		ArrayList<FloorSwitch> fsArray = new ArrayList<>();
 		fsArray.add(floorSwitches.get(0));
@@ -245,6 +248,10 @@ public class GameStage {
 		fsArray.add(floorSwitches.get(2));
 		SwitchController swControl2 = new SwitchController(fsArray, new int[] { 0, 0, 1, 0 }, gate3);
 		SwitchController swControl3 = new SwitchController(fsArray, new int[] { 0, 0, 0, 1 }, gateTele2);
+		swControllers.add(swControl0);
+		swControllers.add(swControl1);
+		swControllers.add(swControl2);
+		swControllers.add(swControl3);
 		
 		String levelName = "Chenlong Test 01";
 		finishX.add(0);
@@ -273,13 +280,13 @@ public class GameStage {
 		//System.out.println("FuckYou");
 		String outPutJSON = lvlBuilder.createLevelDataAsJSONString();
 		System.out.println(outPutJSON);
-//		try{
-//			FileWriter writer = new FileWriter("E:\\0.json");
-//			writer.write(outPutJSON);
-//			writer.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		try{
+			FileWriter writer = new FileWriter("E:\\0.json");
+			writer.write(outPutJSON);
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		///////////////////////// End of File Creating ///////////////////////////////////
 		
 		/////////////////////////Begin to Deserialize ///////////////////////////////////
@@ -358,7 +365,7 @@ public class GameStage {
 			objectMap.drawableObjectHashMap.put(new ObjectVector(eachGate.getX(), eachGate.getY(), eachGate.getZ()),
 					eachGate);
 		}
-
+		
 		for (int i = 0 ; i < dataSetSWControllers.size() ; i++) {
 			SwitchController switchCtrl = dataSetSWControllers.get(i);
 			int[] switchIndex = dataSetSwitchSetIndex.get(i);
@@ -372,7 +379,7 @@ public class GameStage {
 			SwitchController switchCtrl = dataSetSWControllers.get(i);
 			int[] controlObjectIndex = dataSetControlObjectIndex.get(i);
 			for(int j = 0 ; j < controlObjectIndex.length ; j++) {
-				if(controlObjectIndex[j] > 0) {
+				if(controlObjectIndex[j] >= 0) {
 					if(j == 0) {
 						//Gate Type
 						switchCtrl.setControlObject(dataSetsGate.get(controlObjectIndex[j]));

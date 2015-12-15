@@ -88,9 +88,11 @@ public class SwitchController {
 
 	
 	public void performHitAction() {
-		controlObject.activate();
+		if(controlObject == null) return;
+ 		controlObject.activate();
 	}
 	public void reverseAction(){
+		if(controlObject == null) return;
 		controlObject.deActivate();
 	}
 	

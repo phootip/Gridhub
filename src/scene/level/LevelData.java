@@ -99,7 +99,13 @@ public final class LevelData implements IScrollableListItem {
 	// public static void createBlank(PlayerMode playerMode ,int sizeX , int sizeY) {
 	//
 	// }
-
+	public LevelData(int playerCount , String levelName , int floorWidth , int floorHeight , Chapter chapter) {
+		this.playerCount = playerCount;
+		this.levelName = levelName;
+		this.chapter = chapter;
+		floorLevel = new FloorLevel(floorWidth, floorHeight);
+	}
+	
 	@Override
 	public int getListItemHeight() {
 		return 100;
@@ -283,7 +289,7 @@ public final class LevelData implements IScrollableListItem {
 			ArrayList<FloorSwitch> floorSwitchInController = swControllers.get(i).getFloorSwitchesControllerSet();
 			switchSetIndex = new int[floorSwitchInController.size()];
 			for (int j = 0; j < switchSetIndex.length; j++) {
-				switchSetIndex[i] = -1;
+				switchSetIndex[j] = -1;
 			}
 			// if no switch is match then switchSetIndex[i] = -1
 			for (int j = 0; j < floorSwitchInController.size(); j++) {

@@ -1,6 +1,10 @@
 package stage.gameobj;
 
 
+/**
+ * @author Thanat
+ *
+ */
 public class GateToGateTeleport extends TeleportGate {
 	
 	private TeleportGate destinationGate;
@@ -39,5 +43,17 @@ public class GateToGateTeleport extends TeleportGate {
 	public void setDestinationTelelportGate(TeleportGate destination) {
 		this.destinationGate = destination;
 	}
+
+	public TeleportGate getDestinationGate() {
+		return destinationGate;
+	}
+
+	public void setDestinationGate(TeleportGate destinationGate) {
+		this.destinationGate = destinationGate;
+	}
+	
+	
+	
+	
 
 }

@@ -8,7 +8,7 @@ import stage.gameobj.FloorSwitch;
  * @author Thanat
  *
  */
-public abstract class SwitchController {
+public class SwitchController {
 	private ArrayList<FloorSwitch> floorSwitchesControllerSet = new ArrayList<>();
 	private int [] logicLookUpArray;
 	private boolean isLogicCombinationHit;

@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.lang.reflect.Type;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
 
 import core.geom.Vector2;
 import core.geom.Vector3;
@@ -264,11 +267,17 @@ public class GameStage {
 		//System.out.println("FuckYou");
 		String outPutJSON = lvlBuilder.createLevelDataAsJSONString();
 		System.out.println(outPutJSON);
-		
+//		try{
+//			FileWriter writer = new FileWriter("E:\\0.json");
+//			writer.write(outPutJSON);
+//			writer.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		///////////////////////// End of File Creating ///////////////////////////////////
 		
 		/////////////////////////Begin to Deserialize ///////////////////////////////////
-		levelData = LevelData.parse(1,outPutJSON);
+		//levelData = LevelData.parse(1,outPutJSON);
 		dataSetBlock = levelData.getBlocks();
 		dataSetSlopes = levelData.getSlopes();
 		dataSetFloorSwitches = levelData.getFloorSwitches();
@@ -287,7 +296,7 @@ public class GameStage {
 		dataSetStartX = levelData.getStartX();
 		dataSetStartY = levelData.getStartY();
 		playerCount = levelData.getPlayerCount();
-		
+		System.out.println("FuckYeah"+dataLevelName);
 		for (Block eachBlock : dataSetBlock) {
 			eachBlock.setObjectMap(objectMap);
 			eachBlock.setFloorLevelMap(dataSetFloorLevel);

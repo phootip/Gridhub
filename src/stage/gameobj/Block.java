@@ -27,10 +27,15 @@ public class Block implements PushableObject, WalkThroughable {
 	private Vector3 drawPosition;
 	private boolean isWalkThroughable;
 	private FloorLevel floorLevelMap;
+	private transient ObjectMap objectMap;
 	// private boolean isObjectAbove;
-
+	
 	public int getX() {
 		return x;
+	}
+
+	public void setObjectMap(ObjectMap objectMap) {
+		this.objectMap = objectMap;
 	}
 
 	public int getY() {
@@ -52,21 +57,21 @@ public class Block implements PushableObject, WalkThroughable {
 	public void setZ(int diffZ) {
 		if (z + diffZ < 0)
 			return;
-		IDrawable nextZObject = ObjectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z + diffZ));
+		IDrawable nextZObject = objectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z + diffZ));
 		if (nextZObject instanceof Block)
 			return;
 		if (nextZObject instanceof Slope)
 			return;
 
-		if (ObjectMap.drawableObjectHashMap
+		if (objectMap.drawableObjectHashMap
 				.get(new ObjectVector(x, y, z + diffZ, "Player" + util.Constants.PLAYER1_ID)) != null
-				|| ObjectMap.drawableObjectHashMap
+				|| objectMap.drawableObjectHashMap
 						.get(new ObjectVector(x, y, z + diffZ, "Player" + util.Constants.PLAYER2_ID)) != null)
 			return;
 
-		ObjectMap.drawableObjectHashMap.remove(new ObjectVector(x, y, this.z));
+		objectMap.drawableObjectHashMap.remove(new ObjectVector(x, y, this.z));
 		this.z += diffZ;
-		ObjectMap.drawableObjectHashMap.put(new ObjectVector(x, y, this.z), this);
+		objectMap.drawableObjectHashMap.put(new ObjectVector(x, y, this.z), this);
 	}
 
 	public Block(int x, int y, int z, int weight, boolean isWalkThroughable, FloorLevel floorLevelMap) {
@@ -85,11 +90,11 @@ public class Block implements PushableObject, WalkThroughable {
 
 	public boolean isPushable() {
 
-		if (weight >= 100 || ObjectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z + 1)) != null)
+		if (weight >= 100 || objectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z + 1)) != null)
 			return false;
-		if (ObjectMap.drawableObjectHashMap
+		if (objectMap.drawableObjectHashMap
 				.get(new ObjectVector(x, y, z + 1, "Player" + util.Constants.PLAYER1_ID)) != null
-				|| ObjectMap.drawableObjectHashMap
+				|| objectMap.drawableObjectHashMap
 						.get(new ObjectVector(x, y, z + 1, "Player" + util.Constants.PLAYER2_ID)) != null)
 			return false;
 		return true;
@@ -102,19 +107,19 @@ public class Block implements PushableObject, WalkThroughable {
 			return false;
 		if (this.weight + previousWeight > 100 || !isPushable())
 			return false;
-		if (ObjectMap.drawableObjectHashMap
+		if (objectMap.drawableObjectHashMap
 				.get(new ObjectVector(x + diffX, y + diffY, z + diffZ, "Player" + util.Constants.PLAYER1_ID)) != null
-				|| ObjectMap.drawableObjectHashMap.get(new ObjectVector(x + diffX, y + diffY, z + diffZ,
+				|| objectMap.drawableObjectHashMap.get(new ObjectVector(x + diffX, y + diffY, z + diffZ,
 						"Player" + util.Constants.PLAYER2_ID)) != null)
 			return false;
 
-		IDrawable nextObjectObstacles = ObjectMap.drawableObjectHashMap
+		IDrawable nextObjectObstacles = objectMap.drawableObjectHashMap
 				.get(new ObjectVector(x + diffX, y + diffY, z + diffZ));
 		if (nextObjectObstacles instanceof TeleportGate || nextObjectObstacles instanceof FinishArea
 				|| nextObjectObstacles instanceof TeleportDestionation)
 			return false;
 		if (z != floorLevelMap.getZValueFromXY(x + diffX, y + diffY)) {
-			IDrawable nextObjectBelow = ObjectMap.drawableObjectHashMap
+			IDrawable nextObjectBelow = objectMap.drawableObjectHashMap
 					.get(new ObjectVector(x + diffX, y + diffY, z + diffZ - 1));
 
 			if (!(nextObjectBelow instanceof Block))
@@ -122,8 +127,8 @@ public class Block implements PushableObject, WalkThroughable {
 		}
 
 		if (nextObjectObstacles == null || nextObjectObstacles instanceof IWalkOnAble) {
-			ObjectMap.drawableObjectHashMap.put(new ObjectVector(x + diffX, y + diffY, z + diffZ), this);
-			ObjectMap.drawableObjectHashMap.remove(new ObjectVector(x, y, z));
+			objectMap.drawableObjectHashMap.put(new ObjectVector(x + diffX, y + diffY, z + diffZ), this);
+			objectMap.drawableObjectHashMap.remove(new ObjectVector(x, y, z));
 			this.x += diffX;
 			this.y += diffY;
 			this.z += diffZ;
@@ -134,8 +139,8 @@ public class Block implements PushableObject, WalkThroughable {
 				boolean isPushed = ((PushableObject) nextObjectObstacles).push(previousWeight + this.weight, diffX,
 						diffY, diffZ);
 				if (isPushed) {
-					ObjectMap.drawableObjectHashMap.put(new ObjectVector(x + diffX, y + diffY, z + diffZ), this);
-					ObjectMap.drawableObjectHashMap.remove(new ObjectVector(x, y, z));
+					objectMap.drawableObjectHashMap.put(new ObjectVector(x + diffX, y + diffY, z + diffZ), this);
+					objectMap.drawableObjectHashMap.remove(new ObjectVector(x, y, z));
 					this.x += diffX;
 					this.y += diffY;
 					this.z += diffZ;

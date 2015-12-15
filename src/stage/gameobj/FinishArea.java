@@ -9,6 +9,8 @@ import stage.ObjectMap;
 public class FinishArea implements IDrawable, IWalkOnAble {
 	private int x, y, z;
 	private boolean isPlayerAbove;
+	private transient ObjectMap objectMap;
+	
 
 	public FinishArea(int x, int y, int z) {
 		super();
@@ -24,6 +26,12 @@ public class FinishArea implements IDrawable, IWalkOnAble {
 		} else {
 			isPlayerAbove = false;
 		}
+	}
+	
+	
+
+	public void setObjectMap(ObjectMap objectMap) {
+		this.objectMap = objectMap;
 	}
 
 	public boolean isPlayerAbove() {
@@ -44,14 +52,14 @@ public class FinishArea implements IDrawable, IWalkOnAble {
 	}
 
 	public Player getPlayerAbove() {
-		if (ObjectMap.drawableObjectHashMap
+		if (objectMap.drawableObjectHashMap
 				.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER1_ID)) != null) {
-			return (Player) (ObjectMap.drawableObjectHashMap
+			return (Player) (objectMap.drawableObjectHashMap
 					.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER1_ID)));
 
-		} else if (ObjectMap.drawableObjectHashMap
+		} else if (objectMap.drawableObjectHashMap
 				.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER2_ID)) != null) {
-			return (Player) (ObjectMap.drawableObjectHashMap
+			return (Player) (objectMap.drawableObjectHashMap
 					.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER2_ID)));
 		}
 

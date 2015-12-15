@@ -88,7 +88,8 @@ public class GameStage {
 	private GameStageType gameStageType;
 	private LevelData levelData;
 	private LevelEditorManager editorManager = null;
-
+	
+	private ObjectMap objectMap  = new ObjectMap();
 	public GameStage(LevelData levelData, GameStageType gameStageType) {
 		this(levelData, gameStageType, true);
 	}
@@ -97,7 +98,7 @@ public class GameStage {
 		this.gameStageType = gameStageType;
 		this.levelData = levelData;
 
-		ObjectMap.drawableObjectHashMap = new HashMap<ObjectVector, IDrawable>();
+		objectMap.drawableObjectHashMap = new HashMap<ObjectVector, IDrawable>();
 
 		floorLevelMap = new FloorLevel(25, 25);
 		int floorMapXSize = floorLevelMap.getSizeX();
@@ -166,6 +167,7 @@ public class GameStage {
 		slopes.add(new Slope(19, 4, 2, Slope.ALIGNMENT_LEFT));
 
 		blocks.add(new Block(16, 4, 2, 20, true, floorLevelMap));
+		blocks.add(new Block(9, 6, 1, 20, true, floorLevelMap));
 		blocks.add(new Block(2, 3, 0, 20, true, floorLevelMap));
 		blocks.add(new Block(2, 4, 0, 20, true, floorLevelMap));
 		blocks.add(new Block(2, 5, 0, 20, true, floorLevelMap));
@@ -327,57 +329,67 @@ public class GameStage {
 			int slopeEndY = eachSlope.getEndY();
 			int xBar = (slopeStartX + slopeEndX) / 2;
 			int yBar = (slopeStartY + slopeEndY) / 2;
-
-			ObjectMap.drawableObjectHashMap.put(new ObjectVector(slopeStartX, slopeStartY, slopeStartZ), eachSlope);
-			ObjectMap.drawableObjectHashMap.put(new ObjectVector(xBar, yBar, slopeStartZ), eachSlope);
-			ObjectMap.drawableObjectHashMap.put(new ObjectVector(slopeEndX, slopeEndY, slopeStartZ), eachSlope);
+			
+			objectMap.drawableObjectHashMap.put(new ObjectVector(slopeStartX, slopeStartY, slopeStartZ), eachSlope);
+			objectMap.drawableObjectHashMap.put(new ObjectVector(xBar, yBar, slopeStartZ), eachSlope);
+			objectMap.drawableObjectHashMap.put(new ObjectVector(slopeEndX, slopeEndY, slopeStartZ), eachSlope);
 
 		}
 
 		for (GateToGateTeleport eachTeleport : dataSetTeleportToGates) {
-			ObjectMap.drawableObjectHashMap
+			eachTeleport.setObjectMap(objectMap);
+			objectMap.drawableObjectHashMap
 					.put(new ObjectVector(eachTeleport.getX(), eachTeleport.getY(), eachTeleport.getZ()), eachTeleport);
 		}
 
 		for (TeleportToArea eachTeleport : dataSetTeleportToArea) {
-			ObjectMap.drawableObjectHashMap
+			eachTeleport.setObjectMap(objectMap);
+			objectMap.drawableObjectHashMap
 					.put(new ObjectVector(eachTeleport.getX(), eachTeleport.getY(), eachTeleport.getZ()), eachTeleport);
 		}
 
 		for (Block eachBlock : datasetGsonBlock) {
-			ObjectMap.drawableObjectHashMap.put(new ObjectVector(eachBlock.getX(), eachBlock.getY(), eachBlock.getZ()),
+			eachBlock.setObjectMap(objectMap);
+			objectMap.drawableObjectHashMap.put(new ObjectVector(eachBlock.getX(), eachBlock.getY(), eachBlock.getZ()),
 					eachBlock);
 		}
 
 		for (FloorSwitch eachSwitch : dataSetFloorSwitches) {
-			ObjectMap.drawableObjectHashMap.put(eachSwitch.getObjectVectorWithName(), eachSwitch);
+			eachSwitch.setObjectMap(objectMap);
+			objectMap.drawableObjectHashMap.put(eachSwitch.getObjectVectorWithName(), eachSwitch);
 		}
 
 		for (Gate eachGate : dataSetsGate) {
-			ObjectMap.drawableObjectHashMap.put(new ObjectVector(eachGate.getX(), eachGate.getY(), eachGate.getZ()),
+			eachGate.setObjectMap(objectMap);
+			objectMap.drawableObjectHashMap.put(new ObjectVector(eachGate.getX(), eachGate.getY(), eachGate.getZ()),
 					eachGate);
 		}
 
 		if (player1 != null) {
-			ObjectMap.drawableObjectHashMap.put(
+			player1.setObjectMap(objectMap);
+			objectMap.drawableObjectHashMap.put(
 					new ObjectVector(player1.getCellX(), player1.getCellY(), player1.getCellZ(), player1.getName()),
 					player1);
-			ObjectMap.drawableObjectHashMap.put(new ObjectVector(-1, -1, -1, "PlayerTrail : " + player1.getName()),
+			objectMap.drawableObjectHashMap.put(new ObjectVector(-1, -1, -1, "PlayerTrail : " + player1.getName()),
 					player1.getPlayerTrail());
 		}
 		if (player2 != null) {
-			ObjectMap.drawableObjectHashMap.put(new ObjectVector(-1, -1, -1, "PlayerTrail : " + player2.getName()),
+			player2.setObjectMap(objectMap);
+			objectMap.drawableObjectHashMap.put(
+					new ObjectVector(player2.getCellX(), player2.getCellY(), player2.getCellZ(), player2.getName()),
+					player2);
+			objectMap.drawableObjectHashMap.put(new ObjectVector(-1, -1, -1, "PlayerTrail : " + player2.getName()),
 					player2.getPlayerTrail());
 		}
 		if (cursor != null) {
-			ObjectMap.drawableObjectHashMap.put(new ObjectVector(-1, -1, -1, "EditorCursor"), cursor);
+			objectMap.drawableObjectHashMap.put(new ObjectVector(-1, -1, -1, "EditorCursor"), cursor);
 		}
 		// ObjectMap.drawableObjectHashMap.put(
 		// player1.getCellX() + " " + player1.getCellY() + " " + player1.getCellZ() + " " + player1.getName(),
 		// player1);
 
 		for (FloorPiece floor : floorLevelMap.getFloorPieces()) {
-			ObjectMap.drawableObjectHashMap.put(floor.getObjectVector(), floor);
+			objectMap.drawableObjectHashMap.put(floor.getObjectVector(), floor);
 		}
 
 		if (!showLevelName) {
@@ -527,7 +539,7 @@ public class GameStage {
 			g.setClip(shifter + totalViewportWidth * i / cameraCount, 0, totalViewportWidth / cameraCount, sceneHeight);
 			g.translate(shifter + totalViewportWidth * i / cameraCount, 0);
 
-			LevelRenderer.draw(ObjectMap.drawableObjectHashMap.values(), g, camera);
+			LevelRenderer.draw(objectMap.drawableObjectHashMap.values(), g, camera);
 			// Cursor and player(s) overlay is exception; it is on everything
 			drawOverlays(g, camera);
 

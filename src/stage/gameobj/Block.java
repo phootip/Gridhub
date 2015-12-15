@@ -57,7 +57,7 @@ public class Block implements PushableObject, WalkThroughable {
 	}
 
 	public Block(int x, int y, int z, FloorLevel floorLevelMap) {
-		this(x, y, z, 100, false, floorLevelMap);
+		this(x, y, z, 50, false, floorLevelMap);
 	}
 
 	public void setZ(int diffZ) {

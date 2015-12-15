@@ -782,7 +782,7 @@ public class GameStage {
 		int slopeEndY = slope.getEndY();
 		int xBar = (slopeStartX + slopeEndX) / 2;
 		int yBar = (slopeStartY + slopeEndY) / 2;
-
+		dataSetSlopes.add(slope);
 		objectMap.drawableObjectHashMap.put(new ObjectVector(slopeStartX, slopeStartY, slopeStartZ), slope);
 		objectMap.drawableObjectHashMap.put(new ObjectVector(xBar, yBar, slopeStartZ), slope);
 		objectMap.drawableObjectHashMap.put(new ObjectVector(slopeEndX, slopeEndY, slopeStartZ), slope);

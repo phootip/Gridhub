@@ -42,6 +42,8 @@ public final class LevelEditorPageLevelSelector {
 				return "Edit";
 			case 2:
 				return "Import";
+			case 3:
+				return "Export";
 			default:
 				return null;
 		}
@@ -75,7 +77,9 @@ public final class LevelEditorPageLevelSelector {
 					levelList.setFocusing(false);
 				} else {
 					if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_ENTER)) {
-						if (selectedOptionChoice == 1) { // Edit
+						if (selectedOptionChoice == 3) { // Export
+							// TODO : Export level file
+						} else if (selectedOptionChoice == 1) { // Edit
 							if (levelSelectCallbackObj != null && levelList.getSelectedItem() != null) {
 								this.levelSelectCallbackObj.onLevelSelect((LevelData) levelList.getSelectedItem());
 							}

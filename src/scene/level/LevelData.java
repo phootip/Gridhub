@@ -5,10 +5,12 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import core.IScrollableListItem;
 import core.geom.Vector2;
@@ -16,6 +18,7 @@ import jdk.nashorn.internal.runtime.regexp.joni.SearchAlgorithm.SLOW_IC;
 import stage.gameobj.Block;
 import stage.gameobj.FloorSwitch;
 import stage.gameobj.Gate;
+import stage.gameobj.GateController;
 import stage.gameobj.GateToGateTeleport;
 import stage.gameobj.IControlable;
 import stage.gameobj.Slope;
@@ -75,14 +78,6 @@ public final class LevelData implements IScrollableListItem {
 		return mapName;
 	}
 
-	private LevelData(int playerCount, String mapName) {
-		this.playerCount = playerCount;
-		this.mapName = mapName;
-	}
-
-	public static LevelData parse(String jsonContent) {
-		return new LevelData(1, jsonContent);
-	}
 
 	// public static void createBlank(PlayerMode playerMode ,int sizeX , int sizeY) {
 	//
@@ -128,27 +123,27 @@ public final class LevelData implements IScrollableListItem {
 		g.drawString(mapName, x + IMAGE_WIDTH + CONTENT_MARGIN_LEFT + TEXT_MARGIN, levelNameTextPos.getY());
 
 	}
-	
+
 	private LevelDataBuilder levelDataBuilder;
 	private String levelDataJSON;
-	
+
 	public static LevelData createLevelDataAsJSON(LevelDataBuilder builder) {
 		return new LevelData(builder);
 	}
-	
-	private LevelData (LevelDataBuilder builder) {
+
+	private LevelData(LevelDataBuilder builder) {
 		this.levelDataBuilder = builder;
 		levelDataJSON = createLevelData(builder.getBlocks(), builder.getSlopes(), builder.getFloorSwitches(),
 				builder.getGateTogateTeles(), builder.getTeleportToArea(), builder.getTelportDests(),
 				builder.getGates(), builder.getSwControllers(), builder.getFloorLevel(), builder.getLevelName(),
-				builder.getFinishX(), builder.getFinishY() ,builder.getStartX() , builder.getStartY());
+				builder.getFinishX(), builder.getFinishY(), builder.getStartX(), builder.getStartY(),builder.getPlayerCount());
 	}
-	
+
 	private String createLevelData(ArrayList<Block> blocks, ArrayList<Slope> slopes,
 			ArrayList<FloorSwitch> floorSwitches, ArrayList<GateToGateTeleport> gateTogateTeles,
 			ArrayList<TeleportToArea> teleportToArea, ArrayList<TeleportDestionation> telportDests,
-			ArrayList<Gate> gates, ArrayList<SwitchController> swControllers, int[][] floorLevel, String LevelName,
-			ArrayList<Integer> finishX, ArrayList<Integer> finishY , int[] startX , int[] startY) {
+			ArrayList<Gate> gates, ArrayList<SwitchController> swControllers, int[][] floorLevel, String levelName,
+			ArrayList<Integer> finishX, ArrayList<Integer> finishY, int[] startX, int[] startY , int playerCount) {
 
 		String blockJSON = getBlockArrayAsJSON(blocks);
 		String slopeJSON = getSlopeArrayAsJSON(slopes);
@@ -160,19 +155,24 @@ public final class LevelData implements IScrollableListItem {
 		String gateJSON = getGateArrayAsJSON(gates);
 		String swControllerJSON = getControllerArrayAsJSON(swControllers);
 		String controllerSwitchSetIndexJSON = getControllSwitchesSetIndexList(swControllers, floorSwitches);
-		String controllerObjectIndexJSON = getControlObjectSetIndexList(swControllers, gates, gateTogateTeles, teleportToArea);
+		String controllerObjectIndexJSON = getControlObjectSetIndexList(swControllers, gates, gateTogateTeles,
+				teleportToArea);
 		String floorLevelJSON = getFloorLevelAsString(floorLevel);
 		String finishXJSON = getFinishAreaAsJSON(finishX);
 		String finishYJSON = getFinishAreaAsJSON(finishY);
 		String startXJSON = getStartPositionASJSON(startX);
-		String startYJSON =  getStartPositionASJSON(startY);
-		
+		String startYJSON = getStartPositionASJSON(startY);
+		String levelNameJSON = getLevelNameAsJSON(levelName);
+		String playerCounJSON = getPlayerCountAsJSON(playerCount);
+
 		HashMap<String, String> levelDataMap = new HashMap<>();
+		levelDataMap.put("LevelName", levelNameJSON);
+		levelDataMap.put("PlayerCount", playerCounJSON);
 		levelDataMap.put("Block", blockJSON);
 		levelDataMap.put("Slope", slopeJSON);
 		levelDataMap.put("FloorSwitch", fsJSON);
 		levelDataMap.put("GateToGateTeleport", gateToGateJSON);
-		levelDataMap.put("GateLink",gateLinkJSON);
+		levelDataMap.put("GateLink", gateLinkJSON);
 		levelDataMap.put("TeleportToArea", teleToAreaJSON);
 		levelDataMap.put("TeleportDestination", teleportDestination);
 		levelDataMap.put("Gate", gateJSON);
@@ -180,47 +180,45 @@ public final class LevelData implements IScrollableListItem {
 		levelDataMap.put("ControllerSwitchSet", controllerSwitchSetIndexJSON);
 		levelDataMap.put("ControlObject", controllerObjectIndexJSON);
 		levelDataMap.put("FloorLevel", floorLevelJSON);
-		levelDataMap.put("FinishX",finishXJSON);
+		levelDataMap.put("FinishX", finishXJSON);
 		levelDataMap.put("FinishY", finishYJSON);
 		levelDataMap.put("StartX", startXJSON);
 		levelDataMap.put("StartY", startYJSON);
-		
+
 		Gson gson = new Gson();
 		return gson.toJson(levelDataMap);
 
 	}
-	
-	
 
 	public String getLevelDataJSON() {
 		return levelDataJSON;
 	}
 
-	public String getBlockArrayAsJSON(ArrayList<Block> a) {
+	private String getBlockArrayAsJSON(ArrayList<Block> a) {
 		Gson gson = new Gson();
 		return gson.toJson(a);
 
 	}
 
-	public String getSlopeArrayAsJSON(ArrayList<Slope> s) {
+	private String getSlopeArrayAsJSON(ArrayList<Slope> s) {
 		Gson gson = new Gson();
 		return gson.toJson(s);
 
 	}
 
-	public String getFloorSwitchesArrayAsJSON(ArrayList<FloorSwitch> fs) {
+	private String getFloorSwitchesArrayAsJSON(ArrayList<FloorSwitch> fs) {
 		Gson gson = new Gson();
 		return gson.toJson(fs);
 
 	}
 
-	public String getGateToGateTeleportAsJSON(ArrayList<GateToGateTeleport> gateTele) {
+	private String getGateToGateTeleportAsJSON(ArrayList<GateToGateTeleport> gateTele) {
 		Gson gson = new Gson();
 		return gson.toJson(gateTele);
 
 	}
 
-	public String getPortalLinkIndexAsJSON(ArrayList<GateToGateTeleport> gateTeleport) {
+	private String getPortalLinkIndexAsJSON(ArrayList<GateToGateTeleport> gateTeleport) {
 		Gson gson = new Gson();
 		int[] index = new int[gateTeleport.size()];
 		ArrayList<TeleportGate> linkGates = new ArrayList<>();
@@ -238,27 +236,27 @@ public final class LevelData implements IScrollableListItem {
 		return json;
 	}
 
-	public String getTeleportToAreaAsJSON(ArrayList<TeleportToArea> gateTele) {
+	private String getTeleportToAreaAsJSON(ArrayList<TeleportToArea> gateTele) {
 		Gson gson = new Gson();
 		return gson.toJson(gateTele);
 	}
 
-	public String getTeleportDestinationAsJSON(ArrayList<TeleportDestionation> destinations) {
+	private String getTeleportDestinationAsJSON(ArrayList<TeleportDestionation> destinations) {
 		Gson gson = new Gson();
 		return gson.toJson(destinations);
 	}
 
-	public String getGateArrayAsJSON(ArrayList<Gate> gates) {
+	private String getGateArrayAsJSON(ArrayList<Gate> gates) {
 		Gson gson = new Gson();
 		return gson.toJson(gates);
 	}
 
-	public String getControllerArrayAsJSON(ArrayList<SwitchController> swControllers) {
+	private String getControllerArrayAsJSON(ArrayList<SwitchController> swControllers) {
 		Gson gson = new Gson();
 		return gson.toJson(swControllers);
 	}
 
-	public String getControllSwitchesSetIndexList(ArrayList<SwitchController> swControllers,
+	private String getControllSwitchesSetIndexList(ArrayList<SwitchController> swControllers,
 			ArrayList<FloorSwitch> fs) {
 		Gson gson = new Gson();
 		ArrayList<int[]> SwitchIndexList = new ArrayList<>();
@@ -283,7 +281,7 @@ public final class LevelData implements IScrollableListItem {
 		return gson.toJson(SwitchIndexList);
 	}
 
-	public String getControlObjectSetIndexList(ArrayList<SwitchController> swController, ArrayList<Gate> gates,
+	private String getControlObjectSetIndexList(ArrayList<SwitchController> swController, ArrayList<Gate> gates,
 			ArrayList<GateToGateTeleport> gtogTele, ArrayList<TeleportToArea> toAreaTele) {
 		Gson gson = new Gson();
 		ArrayList<int[]> indexList = new ArrayList<>();
@@ -319,29 +317,227 @@ public final class LevelData implements IScrollableListItem {
 		return gson.toJson(indexList);
 	}
 
-	public String getFloorLevelAsString(int[][] floorLevel) {
+	private String getFloorLevelAsString(int[][] floorLevel) {
 		Gson gson = new Gson();
 		return gson.toJson(floorLevel);
 	}
 
-	public String getFinishAreaAsJSON(ArrayList<Integer> finish) {
+	private String getFinishAreaAsJSON(ArrayList<Integer> finish) {
 		Gson gson = new Gson();
 		return gson.toJson(finish);
 	}
 
-	public String getLevelNameAsJSON(String levelName) {
+	private String getLevelNameAsJSON(String levelName) {
 		Gson gson = new Gson();
 		return gson.toJson(levelName);
 	}
 
-	public String getLevelNameAsJSON(int playerCount) {
+	private String getPlayerCountAsJSON(int playerCount) {
 		Gson gson = new Gson();
 		return gson.toJson(playerCount);
 	}
 
-	public String getStartPositionASJSON(int[] start) {
+	private String getStartPositionASJSON(int[] start) {
 		Gson gson = new Gson();
 		return gson.toJson(start);
 	}
+
+	private final Type blockType = new TypeToken<ArrayList<Block>>() {}.getType();
+	private final Type slopeType = new TypeToken<ArrayList<Slope>>() {}.getType();
+	private final Type floorSwitchType = new TypeToken<ArrayList<FloorSwitch>>() {}.getType();
+	private final Type teleportToGateType = new TypeToken<ArrayList<GateToGateTeleport>>() {}.getType();
+	//private final Type gateLinkType = new TypeToken<ArrayList<int[]>>() {}.getType();
+	private final Type teleportToAreaType = new TypeToken<ArrayList<TeleportToArea>>() {}.getType();
+	private final Type teleportDestinationType = new TypeToken<ArrayList<TeleportDestionation>>(){}.getType();
+	private final Type gateType = new TypeToken<ArrayList<Gate>>() {}.getType();
+	private final Type switchControllerType = new TypeToken<ArrayList<SwitchController>>(){}.getType();
+	private final Type controlObjectIndexType = new TypeToken<ArrayList<int[]>>(){}.getType();
+	private final Type switchSetIndexType = new TypeToken<ArrayList<int[]>>(){}.getType();
+	private final Type hashType = new TypeToken<HashMap<String, String>>() {}.getType();
+	private final Type integerType = new TypeToken<ArrayList<Integer>>(){}.getType();
+	
+	private HashMap<String, String> levelContents;
+	private ArrayList<Block> blocks;
+	private ArrayList<Slope> slopes;
+	private ArrayList<FloorSwitch> floorSwitches;
+	private ArrayList<GateToGateTeleport> gateTogateTeles;
+	private int [] gateLink;
+	private ArrayList<TeleportToArea> teleportToArea;
+	private ArrayList<TeleportDestionation> teleportDests;
+	private ArrayList<Gate> gates;
+	private ArrayList<SwitchController> swControllers;
+	private ArrayList<int[]> controlObjectIndex;
+	private ArrayList<int[]> switchSetIndex;
+	private int[][] floorLevel;
+	private String levelName;
+	private ArrayList<Integer> finishX;
+	private ArrayList<Integer> finishY;
+	private int [] startX;
+	private int [] startY;
+	
+	private LevelData(int pCount ,String jsonContent) {
+		levelContents = getContentList(jsonContent);
+		blocks = getBlocks(levelContents.get("Block"));
+		slopes = getSlopes(levelContents.get("Slope"));
+		floorSwitches = getFloorSwitches(levelContents.get("FloorSwitch"));
+		gateTogateTeles = getGateToGateTeleport(levelContents.get("GateToGateTeleport"));
+		gateLink = getGateLink(levelContents.get("GateLink"));
+		teleportToArea = getTeleportToArea(levelContents.get("TeleportToArea"));
+		teleportDests = getTeleportDestination(levelContents.get("TeleportDestination"));
+		gates = getGates(levelContents.get("Gate"));
+		swControllers = getController(levelContents.get("SwitchController"));
+		switchSetIndex = getSwitchSetIndex(levelContents.get("ControllerSwitchSet"));
+		controlObjectIndex = getControlObject(levelContents.get("ControlObject"));
+		floorLevel = getFloorLevel(levelContents.get("FloorLevel"));
+		this.mapName = getLevelNameFromGson(levelContents.get("LevelName"));
+		this.playerCount = getPlayerCountFromGson(levelContents.get("PlayerCount"));
+		finishX = getFisnishArea(levelContents.get("FinishX"));
+		finishY = getFisnishArea(levelContents.get("FinishY"));
+		startX = getPositionArray(levelContents.get("StartX"));
+		startY = getPositionArray(levelContents.get("StartY"));
+				
+	}
+	
+	public HashMap<String , String> getContentList(String json) {
+		Gson gson = new Gson();
+		return gson.fromJson(json, hashType);
+	}
+	public ArrayList<Block> getBlocks(String json) {
+		Gson gson = new Gson();
+		return gson.fromJson(json, blockType);
+	}
+	public ArrayList<Slope> getSlopes(String json) {
+		Gson gson = new Gson();
+		return gson.fromJson(json, slopeType);
+	}
+	public ArrayList<FloorSwitch> getFloorSwitches(String json) {
+		Gson gson = new Gson();
+		return gson.fromJson(json, floorSwitchType);
+	}
+	public ArrayList<GateToGateTeleport> getGateToGateTeleport(String json) {
+		Gson gson = new Gson();
+		return gson.fromJson(json, teleportToGateType);
+	}
+	public int[] getGateLink(String json) {
+		Gson gson = new Gson();
+		return gson.fromJson(json, int[].class);
+	}
+	public ArrayList<TeleportToArea> getTeleportToArea(String json) {
+		Gson gson = new Gson();
+		return gson.fromJson(json, teleportToAreaType);
+	}
+	public ArrayList<TeleportDestionation> getTeleportDestination(String json) {
+		Gson gson = new Gson();
+		return gson.fromJson(json, teleportDestinationType);
+	}
+	public ArrayList<Gate> getGates(String json) {
+		Gson gson = new Gson();
+		return gson.fromJson(json, gateType);
+	}
+	public ArrayList<SwitchController> getController(String json) {
+		Gson gson = new Gson();
+		return gson.fromJson(json,switchControllerType);
+	}
+	public ArrayList<int[]> getSwitchSetIndex(String json) {
+		Gson gson = new Gson();
+		return gson.fromJson(json, switchSetIndexType);
+	}
+	public ArrayList<int[]> getControlObject(String json) {
+		Gson gson = new Gson();
+		return gson.fromJson(json, controlObjectIndexType);
+	}
+	public int[][] getFloorLevel(String json) {
+		Gson gson = new Gson();
+		return gson.fromJson(json, int[][].class);
+	}
+	public int[] getPositionArray(String json) {
+		Gson gson = new Gson();
+		return gson.fromJson(json, int[].class);
+	}
+	public ArrayList<Integer> getFisnishArea(String json) {
+		Gson gson = new Gson();
+		return gson.fromJson(json, integerType);
+	}
+	public String getLevelNameFromGson(String json){
+		Gson gson = new Gson();
+		return gson.fromJson(json,String.class);
+	}
+	public int getPlayerCountFromGson(String json){
+		Gson gson = new Gson();
+		return gson.fromJson(json,int.class);
+	}
+	
+	public ArrayList<int[]> getControlObjectIndex() {
+		return controlObjectIndex;
+	}
+
+	public static LevelData parse(int pCount ,String jsonContent) {
+		return new LevelData(pCount ,jsonContent);
+	}
+
+	public ArrayList<Block> getBlocks() {
+		return blocks;
+	}
+
+	public ArrayList<Slope> getSlopes() {
+		return slopes;
+	}
+
+	public ArrayList<FloorSwitch> getFloorSwitches() {
+		return floorSwitches;
+	}
+
+	public ArrayList<GateToGateTeleport> getGateTogateTeles() {
+		return gateTogateTeles;
+	}
+
+	public int[] getGateLink() {
+		return gateLink;
+	}
+
+	public ArrayList<TeleportToArea> getTeleportToArea() {
+		return teleportToArea;
+	}
+
+	public ArrayList<TeleportDestionation> getTeleportDests() {
+		return teleportDests;
+	}
+
+	public ArrayList<Gate> getGates() {
+		return gates;
+	}
+
+	public ArrayList<SwitchController> getSwControllers() {
+		return swControllers;
+	}
+
+	public ArrayList<int[]> getSwitchSetIndex() {
+		return switchSetIndex;
+	}
+
+	public int[][] getFloorLevel() {
+		return floorLevel;
+	}
+
+	public ArrayList<Integer> getFinishX() {
+		return finishX;
+	}
+
+	public ArrayList<Integer> getFinishY() {
+		return finishY;
+	}
+
+	public int[] getStartX() {
+		return startX;
+	}
+
+	public int[] getStartY() {
+		return startY;
+	}
+	
+	
+	
+	
+	
 
 }

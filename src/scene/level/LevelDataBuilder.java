@@ -21,17 +21,22 @@ public class LevelDataBuilder {
 	private ArrayList<Gate> gates;
 	private ArrayList<SwitchController> swControllers;
 	private int[][] floorLevel;
-	private String LevelName;
+	private String levelName;
 	private ArrayList<Integer> finishX;
 	private ArrayList<Integer> finishY;
 	private int [] startX;
 	private int [] startY;
+	private int playerCount;
 	
 	
 	public LevelDataBuilder() {
 		
 	}
 	
+	public int getPlayerCount() {
+		return playerCount;
+	}
+
 	public String createLevelDataAsJSONString() {
 		LevelData levelData = LevelData.createLevelDataAsJSON(this);
 		return levelData.getLevelDataJSON();
@@ -100,10 +105,10 @@ public class LevelDataBuilder {
 		this.floorLevel = floorLevel;
 	}
 	public String getLevelName() {
-		return LevelName;
+		return levelName;
 	}
 	public void addLevelName(String levelName) {
-		LevelName = levelName;
+		this.levelName = levelName;
 	}
 	public ArrayList<Integer> getFinishX() {
 		return finishX;

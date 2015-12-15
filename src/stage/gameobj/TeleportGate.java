@@ -1,25 +1,32 @@
 package stage.gameobj;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 
+import core.geom.Vector2;
 import core.geom.Vector3;
 import stage.Camera;
 import stage.ObjectMap;
 import stage.gameobj.IDrawable;
 import stage.gameobj.IWalkOnAble;
+import util.Constants.ColorSwatch;
+import util.Helper;
 
 /**
  * @author Thanat
  *
  */
-public abstract class TeleportGate implements IDrawable, IWalkOnAble ,IControlable{
+public abstract class TeleportGate implements IDrawable, IWalkOnAble, IControlable {
 	protected int x, y, z;
 	protected boolean isActive, isAsserted;
 	protected transient ObjectMap objectMap;
 
+	private static final float TELEPORT_RADIUS = 0.4f;
+
 	public TeleportGate(int x, int y, int z) {
 		this.x = x;
-		this.y = y; 
+		this.y = y;
 		this.z = z;
 		isAsserted = true;
 	}
@@ -29,13 +36,15 @@ public abstract class TeleportGate implements IDrawable, IWalkOnAble ,IControlab
 	// the progress checking is just a mock up. It should be set up later
 	protected final int teleportProgressControl = 100 * 50;
 	protected int teleportProgress = 0;
-	
+	protected int teleportSpinSpeed = 0;
+	protected float teleportSpinPhase = 0;
+
 	public void setObjectMap(ObjectMap objectMap) {
 		this.objectMap = objectMap;
 	}
 
 	public void update(int step) {
-		
+
 		if (!isObjectAbove()) {
 			isActive = true;
 		}
@@ -50,12 +59,50 @@ public abstract class TeleportGate implements IDrawable, IWalkOnAble ,IControlab
 			teleport(getPlayerAbove());
 		}
 
+		if (teleportSpinSpeed < teleportProgress) {
+			teleportSpinSpeed = teleportProgress;
+		} else if (teleportSpinSpeed > teleportProgress) {
+			teleportSpinSpeed -= 100 * 1;
+			if (teleportSpinSpeed < teleportProgress) {
+				teleportSpinSpeed = teleportProgress;
+			}
+		}
+
+		teleportSpinPhase = (teleportSpinPhase + (float) teleportSpinSpeed / teleportProgressControl / 4) % 1;
+
 	}
+
+	private final int spinPointCount = 3;
 
 	@Override
 	public void draw(Graphics2D g, Camera camera) {
-		// TODO Auto-generated method stub
+		float spinPointAngle = 360.0f / spinPointCount;
 
+		Vector2 centerPos = camera.getDrawPosition(x, y, z);
+		int width = (int) camera.getDrawSizeX(TELEPORT_RADIUS * 2);
+		int height = (int) camera.getDrawSizeY(TELEPORT_RADIUS * 2);
+		int x = (int) (centerPos.getX() - camera.getDrawSizeX(TELEPORT_RADIUS));
+		int y = (int) (centerPos.getY() - camera.getDrawSizeY(TELEPORT_RADIUS));
+
+		g.setColor(new Color(0, 150, 255, 150));
+		g.setStroke(new BasicStroke(10, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		for (int i = 0; i < spinPointCount; i++) {
+			g.drawArc(x, y, width, height, Math.round(spinPointAngle * i + teleportSpinPhase * spinPointAngle),
+					Math.round(teleportSpinSpeed * spinPointAngle / teleportProgressControl));
+		}
+		for (int i = 0; i < spinPointCount; i++) {
+			g.setColor(new Color(255, 255, 255, 200));
+			g.setStroke(new BasicStroke(5, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+			g.drawArc(x, y, width, height, Math.round(spinPointAngle * i + teleportSpinPhase * spinPointAngle),
+					Math.round(teleportSpinSpeed * spinPointAngle / teleportProgressControl));
+		}
+
+		g.setColor(ColorSwatch.FOREGROUND);
+		g.setStroke(new BasicStroke(2));
+		g.drawOval(x, y, width, height);
+		g.setColor(Helper.getAlphaColorPercentage(ColorSwatch.FOREGROUND, Helper.sineInterpolate(
+				Helper.clamp(0, 1, ((float) teleportSpinSpeed / teleportProgressControl - 0.5f) * 2), true, false)));
+		g.fillOval(x, y, width, height);
 	}
 
 	@Override
@@ -81,19 +128,18 @@ public abstract class TeleportGate implements IDrawable, IWalkOnAble ,IControlab
 
 		return null;
 	}
-	
+
 	@Override
 	public void activate() {
 		this.isAsserted = true;
-		
+
 	}
 
 	@Override
 	public void deActivate() {
 		this.isAsserted = false;
-		
+
 	}
-	
 
 	public boolean isActive() {
 		return isActive;
@@ -113,7 +159,7 @@ public abstract class TeleportGate implements IDrawable, IWalkOnAble ,IControlab
 
 	@Override
 	public Vector3 getDrawPosition() {
-		return new Vector3(this.x, this.y, this.z);
+		return new Vector3(this.x, this.y, this.z - 0.48f);
 	}
 
 	public int getX() {

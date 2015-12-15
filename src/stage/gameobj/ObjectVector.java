@@ -78,6 +78,11 @@ public final class ObjectVector {
 	}
 
 	@Override
+	public String toString() {
+		return "(" + this.x + ", " + this.y + ", " + this.z + ")";
+	}
+
+	@Override
 	public int hashCode() {
 		// This hashCode Function is a reasonable good implementation (for random pattern of data) proposed
 		// by Josh Bloch's Effective Java in item 8.

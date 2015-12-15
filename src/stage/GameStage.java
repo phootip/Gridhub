@@ -7,6 +7,7 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.lang.reflect.Type;
 
@@ -19,8 +20,8 @@ import stage.renderer.LevelRenderer;
 import scene.core.Scene;
 import scene.level.LevelData;
 import scene.level.LevelDataBuilder;
-import stage.editor.AddPane.AddableObject;
 import stage.editor.EditorCursor.EditorCursorState;
+import stage.editor.AddableObject;
 import stage.editor.EditorCursor;
 import stage.LevelEditorManager;
 import stage.gameobj.Block;
@@ -51,6 +52,11 @@ public class GameStage {
 	private Player player1 = null, player2 = null;
 	private EditorCursor cursor = null;
 	private FloorLevel floorLevelMap;
+
+	protected FloorLevel getFloorLevelMap() {
+		return floorLevelMap;
+	}
+
 	private ArrayList<Block> blocks = new ArrayList<>();
 	private ArrayList<FloorSwitch> floorSwitches = new ArrayList<>();
 	private ArrayList<Slope> slopes = new ArrayList<>();
@@ -389,9 +395,7 @@ public class GameStage {
 		// player1.getCellX() + " " + player1.getCellY() + " " + player1.getCellZ() + " " + player1.getName(),
 		// player1);
 
-		for (FloorPiece floor : floorLevelMap.getFloorPieces()) {
-			objectMap.drawableObjectHashMap.put(floor.getObjectVector(), floor);
-		}
+		constructFloorPieces(false);
 
 		if (!showLevelName) {
 			levelNameShowTimer = levelNameShowDuration;
@@ -437,6 +441,12 @@ public class GameStage {
 
 		if (this.editorManager != null) {
 			this.editorManager.update(step);
+		}
+
+		if (floorPieceList != null) {
+			for (FloorPiece piece : floorPieceList) {
+				piece.update(step);
+			}
 		}
 
 		levelNameShowTimer += step;
@@ -589,6 +599,9 @@ public class GameStage {
 	}
 
 	private void drawOverlays(Graphics2D g, Camera camera) {
+		for (FloorSwitch fs : dataSetFloorSwitches) {
+			fs.drawOverlay(g, camera);
+		}
 		if (cursor != null) {
 			cursor.drawOverlay(g, camera);
 		}
@@ -603,7 +616,7 @@ public class GameStage {
 		}
 	}
 
-	public ObjectVector getPlacingObjectPositionAtCursor() {
+	protected ObjectVector getPlacingObjectPositionAtCursor() {
 		int x = cursor.getCurrentX();
 		int y = cursor.getCurrentY();
 		ObjectVector ans = new ObjectVector(x, y, floorLevelMap.getZValueFromXY(x, y));
@@ -613,7 +626,7 @@ public class GameStage {
 		return ans;
 	}
 
-	public boolean isAbleToPlaceObjectAtCursor(AddableObject objectType) {
+	protected boolean isAbleToPlaceObjectAtCursor(AddableObject objectType) {
 		int x = cursor.getCurrentX();
 		int y = cursor.getCurrentY();
 		if (objectType == AddableObject.BOX) {
@@ -624,14 +637,75 @@ public class GameStage {
 		return false;
 	}
 
-	public void addObjectAtCursor(AddableObject objectType) {
-		ObjectVector placePosition = getPlacingObjectPositionAtCursor();
+	protected boolean isAbleToPlaceSlopeAtCursor(int alignment) {
+		ObjectVector middlePos = getPlacingObjectPositionAtCursor();
+		ObjectVector startPos = Slope.getSlopeStartPosition(middlePos, alignment);
+		ObjectVector endPos = Slope.getSlopeEndPosition(middlePos, alignment);
 
-		if (objectType == AddableObject.BOX) {
-			Block obj = new Block(placePosition.getX(), placePosition.getY(), placePosition.getZ(), floorLevelMap);
+		// Check level
+		if (floorLevelMap.getZValueFromXY(startPos.getX(), startPos.getY()) != startPos.getZ())
+			return false;
+		if (floorLevelMap.getZValueFromXY(middlePos.getX(), middlePos.getY()) != middlePos.getZ())
+			return false;
+		if (floorLevelMap.getZValueFromXY(endPos.getX(), endPos.getY()) != endPos.getZ() - 1)
+			return false;
+
+		endPos.addVector(0, 0, -1);
+
+		return (objectMap.drawableObjectHashMap.get(startPos) == null)
+				&& (objectMap.drawableObjectHashMap.get(middlePos) == null)
+				&& (objectMap.drawableObjectHashMap.get(endPos) == null);
+	}
+
+	protected void addObjectAtCursor(Object object) {
+		// ObjectVector placePosition = getPlacingObjectPositionAtCursor();
+		if (object instanceof Block) {
+			Block obj = (Block) object;
 			obj.setObjectMap(objectMap);
 			objectMap.drawableObjectHashMap.put(obj.getObjectVector(), obj);
 		}
+	}
+
+	private List<FloorPiece> floorPieceList;
+
+	protected List<FloorPiece> getFloorPieceList() {
+		return floorPieceList;
+	}
+
+	protected void constructFloorPieces(boolean checkForExistingFloorPiece) {
+		if (checkForExistingFloorPiece) {
+			Iterator<ObjectVector> it = objectMap.drawableObjectHashMap.keySet().iterator();
+			while (it.hasNext()) {
+				ObjectVector ov = it.next();
+				if (ov.getName().equals("FloorPiece")) {
+					it.remove();
+				}
+			}
+		}
+
+		floorPieceList = floorLevelMap.getFloorPieces();
+		for (FloorPiece floor : floorPieceList) {
+			objectMap.drawableObjectHashMap.put(floor.getObjectVector(), floor);
+		}
+	}
+
+	protected void addSlopeAtCursor(int alignment) {
+		ObjectVector middlePos = getPlacingObjectPositionAtCursor();
+		ObjectVector startPos = Slope.getSlopeStartPosition(middlePos, alignment);
+
+		Slope slope = new Slope(startPos.getX(), startPos.getY(), startPos.getZ(), alignment);
+
+		int slopeStartX = slope.getStartX();
+		int slopeStartY = slope.getStartY();
+		int slopeStartZ = slope.getStartZ();
+		int slopeEndX = slope.getEndX();
+		int slopeEndY = slope.getEndY();
+		int xBar = (slopeStartX + slopeEndX) / 2;
+		int yBar = (slopeStartY + slopeEndY) / 2;
+
+		objectMap.drawableObjectHashMap.put(new ObjectVector(slopeStartX, slopeStartY, slopeStartZ), slope);
+		objectMap.drawableObjectHashMap.put(new ObjectVector(xBar, yBar, slopeStartZ), slope);
+		objectMap.drawableObjectHashMap.put(new ObjectVector(slopeEndX, slopeEndY, slopeStartZ), slope);
 	}
 
 }

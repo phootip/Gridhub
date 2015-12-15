@@ -1,9 +1,11 @@
 package stage.editor;
 
+import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 import util.Helper;
+import util.Resource;
 import util.Constants.ColorSwatch;
 
 public abstract class Pane {
@@ -38,8 +40,7 @@ public abstract class Pane {
 	protected abstract int getMaxPaneWidth();
 
 	protected int getCurrentPaneWidth() {
-		return (int) Helper.sineInterpolate(0, getMaxPaneWidth(), (float) paneShowAnimTimer / paneShowAnimDuration,
-				false, true);
+		return (int) Helper.sineInterpolate(0, getMaxPaneWidth(), (float) paneShowAnimTimer / paneShowAnimDuration);
 	}
 
 	protected abstract void drawPaneContent(Graphics2D g, int x, int y, int height);
@@ -50,20 +51,28 @@ public abstract class Pane {
 			Rectangle oldClip = g.getClipBounds();
 			g.setClip(x, y, paneWidth, height);
 
-			g.setColor(ColorSwatch.FOREGROUND);
+			g.setColor(ColorSwatch.BACKGROUND);
 			g.fillRect(x, y, paneWidth, height);
 
 			drawPaneContent(g, x + paneWidth - getMaxPaneWidth(), y, height);
 
-			g.setColor(Helper.getAlphaColorPercentage(ColorSwatch.FOREGROUND,
+			g.setColor(Helper.getAlphaColorPercentage(ColorSwatch.BACKGROUND,
 					1 - (float) paneShowAnimTimer / paneShowAnimDuration));
 			g.fillRect(x, y, paneWidth, height);
 
 			g.setClip(oldClip);
+
+			g.setStroke(new BasicStroke(7));
+			g.setColor(ColorSwatch.BACKGROUND);
+			g.drawLine(x + paneWidth, y, x + paneWidth, y + height);
+
+			g.setStroke(new BasicStroke(5));
+			g.setColor(ColorSwatch.SHADOW);
+			g.drawLine(x + paneWidth, y, x + paneWidth, y + height);
 		}
 		return paneWidth;
 	}
-	
+
 	public final boolean shouldRemovePane() {
 		return !visible && (paneShowAnimTimer == 0);
 	}

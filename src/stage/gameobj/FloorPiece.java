@@ -21,6 +21,7 @@ import util.Constants.ColorSwatch;
 
 public class FloorPiece implements IDrawable {
 
+	private static final float FLOOR_PIECE_HEIGHT = 0.08f;
 	private static final float BOUNDARY_BORDER_PADDING = 0.5f;
 	private static final float BOUNDARY_BORDER_SHIFTER = 0.55f;
 	private int x, y, z;
@@ -48,7 +49,7 @@ public class FloorPiece implements IDrawable {
 
 	private static HashMap<Camera, BufferedImage[]> cachedFloorImg = new HashMap<>();
 	private static int cachedFloorImgWidth = 64;
-	private static int cachedFloorImgHeight = 46;
+	private static int cachedFloorImgHeight = 50;
 	private static final float OUTER_PADDING = 0.5f;
 	private static final float INNER_PADDING = 0.4f;
 
@@ -105,7 +106,7 @@ public class FloorPiece implements IDrawable {
 			g.drawPolygon(innerPolygonX, innerPolygonY, 4);
 
 			g.setStroke(new java.awt.BasicStroke(7));
-			g.setColor(Helper.getAlphaColorPercentage(ColorSwatch.SHADOW, 0.2));
+			g.setColor(Helper.getAlphaColorPercentage(ColorSwatch.SHADOW, FLOOR_PIECE_HEIGHT));
 			g.drawPolygon(innerPolygonX, innerPolygonY, 4);
 
 		}
@@ -203,14 +204,38 @@ public class FloorPiece implements IDrawable {
 		return ans;
 	}
 
+	public void update(int step) {
+		if (zAnimationProgress < zAnimationDuration) {
+			zAnimationProgress += step;
+			if (zAnimationProgress > zAnimationDuration) {
+				zAnimationProgress = zAnimationDuration;
+			}
+			zAnimationShifter = Helper.sineInterpolate(orderedDelta, 0, (float) zAnimationProgress / zAnimationDuration,
+					false, true);
+			System.out.println(zAnimationShifter);
+		}
+	}
+
+	private float orderedDelta;
+	private int zAnimationProgress = 100 * 8;
+	private int zAnimationDuration = 100 * 8;
+	private float zAnimationShifter = 0;
+
+	public void setZAnimation(int zDelta) {
+		zAnimationProgress = 0;
+		orderedDelta = zDelta;
+		zAnimationShifter = zDelta;
+	}
+
 	@Override
 	public void draw(Graphics2D g, Camera camera) {
 		if (Constants.CACHE_DRAWABLE) {
-			Vector2 drawPosition = camera.getDrawPosition(x, y, z);
+			Vector2 drawPosition = camera.getDrawPosition(x, y, z + zAnimationShifter);
 
 			// g.drawImage(cachedFloorImg[getBorderHashing()], drawPosition.getIntX() - cachedFloorImgWidth / 2,
 			// drawPosition.getIntY() - cachedFloorImgHeight / 2, null);
-			g.drawImage(cachedFloorImg.get(camera)[getBorderHashing()], null, drawPosition.getIntX() - cachedFloorImgWidth / 2,
+			g.drawImage(cachedFloorImg.get(camera)[getBorderHashing()], null,
+					drawPosition.getIntX() - cachedFloorImgWidth / 2,
 					drawPosition.getIntY() - cachedFloorImgHeight / 2);
 		} else {
 			drawFloor(g, camera, x, y, z, false, decodeBorderHashing(getBorderHashing()));
@@ -220,7 +245,7 @@ public class FloorPiece implements IDrawable {
 
 	@Override
 	public Vector3 getDrawPosition() {
-		return new Vector3(x, y, z - 0.5f);
+		return new Vector3(x, y, z - 0.5f + zAnimationShifter);
 	}
 
 }

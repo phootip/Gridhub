@@ -283,7 +283,16 @@ public class Slope implements ILargeDrawable {
 		return positionList;
 	}
 
-	private void drawStartPiece(Graphics2D g, Camera camera) {
+	public static void drawStartPiece(Graphics2D g, Camera camera, ObjectVector startPos, ObjectVector endPos) {
+		int startX = startPos.getX();
+		int startY = startPos.getY();
+		int startZ = startPos.getZ();
+		int endX = endPos.getX();
+		int endY = endPos.getY();
+		int endZ = endPos.getZ();
+		boolean isAlignY = startX == endX;
+		boolean isAlignX = startY == endY;
+
 		Vector3 startP1 = new Vector3(startX, startY, startZ);
 		Vector3 endP1 = new Vector3(startX, startY, (startZ * 2 + endZ) / 3f);
 		Vector3 midP1 = new Vector3(startX, startY, startZ);
@@ -387,7 +396,15 @@ public class Slope implements ILargeDrawable {
 		g.drawLine(endV1.getIntX(), endV1.getIntY(), startV1.getIntX(), startV1.getIntY());
 	}
 
-	private void drawMiddlePiece(Graphics2D g, Camera camera) {
+	public static void drawMiddlePiece(Graphics2D g, Camera camera, ObjectVector startPos, ObjectVector endPos) {
+		int startX = startPos.getX();
+		int startY = startPos.getY();
+		int startZ = startPos.getZ();
+		int endX = endPos.getX();
+		int endY = endPos.getY();
+		int endZ = endPos.getZ();
+		boolean isAlignY = startX == endX;
+		boolean isAlignX = startY == endY;
 
 		int x = (startX + endX) / 2;
 		int y = (startY + endY) / 2;
@@ -460,7 +477,15 @@ public class Slope implements ILargeDrawable {
 		}
 	}
 
-	private void drawEndPiece(Graphics2D g, Camera camera) {
+	public static void drawEndPiece(Graphics2D g, Camera camera, ObjectVector startPos, ObjectVector endPos) {
+		int startX = startPos.getX();
+		int startY = startPos.getY();
+		int startZ = startPos.getZ();
+		int endX = endPos.getX();
+		int endY = endPos.getY();
+		int endZ = endPos.getZ();
+		boolean isAlignY = startX == endX;
+		boolean isAlignX = startY == endY;
 
 		int x = endX;
 		int y = endY;
@@ -660,18 +685,51 @@ public class Slope implements ILargeDrawable {
 
 	@Override
 	public void draw(Graphics2D g, Camera camera, Vector3 position) {
+		ObjectVector startPos = new ObjectVector(startX, startY, startZ);
+		ObjectVector endPos = new ObjectVector(endX, endY, endZ);
+
 		if (position.equals(new Vector3(startX, startY, startZ - START_Z_SHIFTER))) {
-			 drawStartPiece(g, camera);
+			drawStartPiece(g, camera, startPos, endPos);
 		} else if (position.equals(new Vector3(endX, endY, startZ))) {
-			drawEndPiece(g, camera);
+			drawEndPiece(g, camera, startPos, endPos);
 		} else {
-			 drawMiddlePiece(g, camera);
+			drawMiddlePiece(g, camera, startPos, endPos);
 		}
 	}
 
 	@Override
 	public Vector3 getDrawPosition() {
 		throw new UnsupportedOperationException("Please call getDrawPositionList() method instead.");
+	}
+	
+	public static ObjectVector getSlopeStartPosition(ObjectVector middlePos, int alignment) {
+		switch (alignment) {
+			case Slope.ALIGNMENT_RIGHT:
+				return new ObjectVector(middlePos.getX() - 1, middlePos.getY(), middlePos.getZ());
+			case Slope.ALIGNMENT_DOWN:
+				return new ObjectVector(middlePos.getX(), middlePos.getY() - 1, middlePos.getZ());
+			case Slope.ALIGNMENT_LEFT:
+				return new ObjectVector(middlePos.getX() + 1, middlePos.getY(), middlePos.getZ());
+			case Slope.ALIGNMENT_UP:
+				return new ObjectVector(middlePos.getX(), middlePos.getY() + 1, middlePos.getZ());
+			default:
+				return null;
+		}
+	}
+
+	public static ObjectVector getSlopeEndPosition(ObjectVector middlePos, int alignment) {
+		switch (alignment) {
+			case Slope.ALIGNMENT_RIGHT:
+				return new ObjectVector(middlePos.getX() + 1, middlePos.getY(), middlePos.getZ() + 1);
+			case Slope.ALIGNMENT_DOWN:
+				return new ObjectVector(middlePos.getX(), middlePos.getY() + 1, middlePos.getZ() + 1);
+			case Slope.ALIGNMENT_LEFT:
+				return new ObjectVector(middlePos.getX() - 1, middlePos.getY(), middlePos.getZ() + 1);
+			case Slope.ALIGNMENT_UP:
+				return new ObjectVector(middlePos.getX(), middlePos.getY() - 1, middlePos.getZ() + 1);
+			default:
+				return null;
+		}
 	}
 
 }

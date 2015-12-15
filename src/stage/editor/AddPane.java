@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 
 import core.geom.Vector2;
+import stage.gameobj.Slope;
 import util.Resource;
 import util.Constants.ColorSwatch;
 import util.Helper;
@@ -13,27 +14,12 @@ import util.Resource.FontWeight;
 
 public class AddPane extends Pane {
 
-	public enum AddableObject {
-		BOX("1", "Box");
-
-		private String objectName;
-		private String keyName;
-
-		private AddableObject(String keyName, String objectName) {
-			this.objectName = objectName;
-			this.keyName = keyName;
-		}
-
-		protected String getKeyName() {
-			return keyName;
-		}
-
-		protected String getObjectName() {
-			return objectName;
-		}
-	}
-
 	private AddableObject selectedAddableObject = null;
+	private int slopeAlignment;
+
+	public int getSlopeAlignment() {
+		return slopeAlignment;
+	}
 
 	public AddableObject getSelectedAddableObject() {
 		return selectedAddableObject;
@@ -46,12 +32,33 @@ public class AddPane extends Pane {
 			if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_1)) {
 				selectedAddableObject = AddableObject.BOX;
 			}
+			if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_2)) {
+				if (selectedAddableObject != AddableObject.SLOPE) {
+					selectedAddableObject = AddableObject.SLOPE;
+					slopeAlignment = Slope.ALIGNMENT_RIGHT;
+				} else {
+					switch (slopeAlignment) {
+						case Slope.ALIGNMENT_RIGHT:
+							slopeAlignment = Slope.ALIGNMENT_DOWN;
+							break;
+						case Slope.ALIGNMENT_DOWN:
+							slopeAlignment = Slope.ALIGNMENT_LEFT;
+							break;
+						case Slope.ALIGNMENT_LEFT:
+							slopeAlignment = Slope.ALIGNMENT_UP;
+							break;
+						case Slope.ALIGNMENT_UP:
+							slopeAlignment = Slope.ALIGNMENT_RIGHT;
+							break;
+					}
+				}
+			}
 		}
 	}
 
 	@Override
 	protected int getMaxPaneWidth() {
-		return 300;
+		return 400;
 	}
 
 	private void drawAddableObjectList(Graphics2D g, int x, int y) {
@@ -65,20 +72,19 @@ public class AddPane extends Pane {
 
 		for (AddableObject obj : AddableObject.values()) {
 			if (obj == selectedAddableObject) {
-				g.setColor(ColorSwatch.BACKGROUND);
+				g.setColor(ColorSwatch.FOREGROUND);
 				g.fillRect(left, top, width, height);
 
-				g.setColor(ColorSwatch.FOREGROUND);
+				g.setColor(ColorSwatch.BACKGROUND);
 				g.setFont(selectedItemFont);
 			} else {
-				g.setColor(ColorSwatch.BACKGROUND);
+				g.setColor(ColorSwatch.FOREGROUND);
 				g.setFont(normalItemFont);
 			}
 
 			String text = "[" + obj.getKeyName() + "] " + obj.getObjectName();
 
-			Vector2 textPos = Helper.getCenteredTextPosition(text, g.getFont(), g, left, top, width,
-					height);
+			Vector2 textPos = Helper.getCenteredTextPosition(text, g.getFont(), g, left, top, width, height);
 			g.drawString(text, left + 30, textPos.getY());
 
 			top += height;
@@ -88,7 +94,7 @@ public class AddPane extends Pane {
 	@Override
 	protected void drawPaneContent(Graphics2D g, int x, int y, int height) {
 		Font headerFont = Resource.getInstance().getDefaultFont(80, FontWeight.REGULAR);
-		g.setColor(ColorSwatch.BACKGROUND);
+		g.setColor(ColorSwatch.FOREGROUND);
 		g.setFont(headerFont);
 		g.drawString("Add", x + 50, y + 40 + g.getFontMetrics().getAscent());
 

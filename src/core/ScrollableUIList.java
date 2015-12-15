@@ -64,7 +64,7 @@ public class ScrollableUIList extends ArrayList<IScrollableListItem> {
 
 	public void resetSelectedItemIndex() {
 		this.selectedItemIndex = 0;
-		this.currentScrollPosition = INITIAL_SCROLL_POSITION;
+//		this.currentScrollPosition = INITIAL_SCROLL_POSITION;
 	}
 
 	private boolean focusing = false;

@@ -29,6 +29,16 @@ public class Camera {
 		}
 	}
 
+	private boolean deformationChanged = true;
+
+	public boolean isDeformationChanged() {
+		return deformationChanged;
+	}
+
+	protected void resetDeformationChanged() {
+		this.deformationChanged = false;
+	}
+
 	private Vector3 getPreferredCenterPos() {
 		return this.followObj.getDrawPosition();
 	}
@@ -88,9 +98,7 @@ public class Camera {
 				rotation = (rotation + direction) % 4;
 			}
 		}
-		if (isRotating)
-
-		{
+		if (isRotating) {
 			rotationFrame += step;
 			if (rotationFrame >= rotationDuration) {
 				oldRotation = rotation;
@@ -107,6 +115,7 @@ public class Camera {
 							(float) rotationFrame / rotationDuration) + shiftedAngle;
 				}
 			}
+			deformationChanged = true;
 		}
 	}
 

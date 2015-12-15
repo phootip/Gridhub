@@ -8,6 +8,7 @@ import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 
 import core.DrawManager;
 import core.geom.Vector2;
@@ -110,7 +111,8 @@ public class Block implements PushableObject, WalkThroughable {
 
 		IDrawable nextObjectObstacles = ObjectMap.drawableObjectHashMap
 				.get(new ObjectVector(x + diffX, y + diffY, z + diffZ));
-		if(nextObjectObstacles instanceof TeleportGate || nextObjectObstacles instanceof FinishArea) return false;
+		if (nextObjectObstacles instanceof TeleportGate || nextObjectObstacles instanceof FinishArea)
+			return false;
 		if (z != floorLevelMap.getZValueFromXY(x + diffX, y + diffY)) {
 			IDrawable nextObjectBelow = ObjectMap.drawableObjectHashMap
 					.get(new ObjectVector(x + diffX, y + diffY, z + diffZ - 1));
@@ -118,7 +120,7 @@ public class Block implements PushableObject, WalkThroughable {
 			if (!(nextObjectBelow instanceof Block))
 				return false;
 		}
-		
+
 		if (nextObjectObstacles == null || nextObjectObstacles instanceof IWalkOnAble) {
 			ObjectMap.drawableObjectHashMap.put(new ObjectVector(x + diffX, y + diffY, z + diffZ), this);
 			ObjectMap.drawableObjectHashMap.remove(new ObjectVector(x, y, z));
@@ -150,13 +152,13 @@ public class Block implements PushableObject, WalkThroughable {
 		return isWalkThroughable;
 	}
 
-	private static BufferedImage cachedBoxImg;
+	private static HashMap<Camera, BufferedImage> cachedBoxImg = new HashMap<>();
 	private static int cachedBoxImgSize = 150;
 	private static final float[][] cornerShifter = new float[][] { { -BLOCK_SIZE, -BLOCK_SIZE },
 			{ +BLOCK_SIZE, -BLOCK_SIZE }, { +BLOCK_SIZE, +BLOCK_SIZE }, { -BLOCK_SIZE, +BLOCK_SIZE } };
 
-	private static void drawBlock(Graphics2D g, Camera camera,Vector3 pos, boolean isRawDrawPosition) {
-		
+	private static void drawBlock(Graphics2D g, Camera camera, Vector3 pos, boolean isRawDrawPosition) {
+
 		float x = pos.getX();
 		float y = pos.getY();
 		float z = pos.getZ();
@@ -214,21 +216,29 @@ public class Block implements PushableObject, WalkThroughable {
 
 	public static void refreshDrawCache(Camera camera) {
 		if (Constants.CACHE_DRAWABLE) {
-			cachedBoxImg = DrawManager.getInstance().createBlankBufferedImage(cachedBoxImgSize, cachedBoxImgSize,
-					Transparency.BITMASK);
-			Graphics2D g = cachedBoxImg.createGraphics();
+			boolean requireRedraw = camera.isDeformationChanged();
 
-			g.setComposite(AlphaComposite.Src);
-			g.setColor(new Color(0, 0, 0, 0));
-			g.fillRect(0, 0, cachedBoxImgSize, cachedBoxImgSize); // Clears the image.
-			g.setComposite(AlphaComposite.SrcOver);
+			if (!cachedBoxImg.containsKey(camera)) {
+				cachedBoxImg.put(camera, DrawManager.getInstance().createBlankBufferedImage(cachedBoxImgSize,
+						cachedBoxImgSize, Transparency.BITMASK));
+				requireRedraw = true;
+			}
 
-			g.setTransform(AffineTransform.getTranslateInstance(cachedBoxImgSize / 2, cachedBoxImgSize / 2));
-			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			if (requireRedraw) {
+				Graphics2D g = cachedBoxImg.get(camera).createGraphics();
 
-			drawBlock(g, camera, Vector3.ZERO, true);
+				g.setComposite(AlphaComposite.Src);
+				g.setColor(new Color(0, 0, 0, 0));
+				g.fillRect(0, 0, cachedBoxImgSize, cachedBoxImgSize); // Clears the image.
+				g.setComposite(AlphaComposite.SrcOver);
 
-			g.dispose();
+				g.setTransform(AffineTransform.getTranslateInstance(cachedBoxImgSize / 2, cachedBoxImgSize / 2));
+				g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+				drawBlock(g, camera, Vector3.ZERO, true);
+
+				g.dispose();
+			}
 		}
 	}
 
@@ -237,8 +247,10 @@ public class Block implements PushableObject, WalkThroughable {
 		if (Constants.CACHE_DRAWABLE) {
 			Vector2 drawPosition2 = camera.getDrawPosition(drawPosition);
 
-			g.drawImage(cachedBoxImg, drawPosition2.getIntX() - cachedBoxImgSize / 2,
-					drawPosition2.getIntY() - cachedBoxImgSize / 2, null);
+			// g.drawImage(cachedBoxImg, drawPosition2.getIntX() - cachedBoxImgSize / 2,
+			// drawPosition2.getIntY() - cachedBoxImgSize / 2, null);
+			g.drawImage(cachedBoxImg.get(camera), null, drawPosition2.getIntX() - cachedBoxImgSize / 2,
+					drawPosition2.getIntY() - cachedBoxImgSize / 2);
 		} else {
 			drawBlock(g, camera, drawPosition, false);
 		}

@@ -53,10 +53,9 @@ public class SceneManager {
 
 		if (this.currentScene != null) {
 			this.currentScene.update(Constants.GAME_SPEED);
+			InputManager.getInstance().update();
 
-			do {
-				InputManager.getInstance().update();
-				
+			do {	
 				Graphics2D graphic = DrawManager.getInstance().getGraphic();
 				this.currentScene.draw(graphic, DrawManager.getInstance().getCanvasWidth(),
 						DrawManager.getInstance().getCanvasHeight());

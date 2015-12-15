@@ -497,6 +497,8 @@ public class GameStage {
 				g.setStroke(new BasicStroke(5));
 				g.drawLine(sceneWidth * i / cameraCount, 0, sceneWidth * i / cameraCount, sceneHeight);
 			}
+			
+			camera.resetDeformationChanged();
 
 		}
 

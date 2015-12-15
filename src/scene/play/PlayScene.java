@@ -25,16 +25,16 @@ import util.Helper;
 import util.InputManager;
 import util.Resource;
 
-public final class PlayScene extends Scene {
+public class PlayScene extends Scene {
 
-	private static final int MAX_MENU_WIDTH = 800;
+	private static final int MAX_MENU_WIDTH = 1000;
 	private static final int MENU_ITEM_TEXT_HEIGHT = 60;
 	private static final int MENU_ITEM_HEIGHT = 80;
-	private static final int MENU_LEVEL_NAME_TEXT_SIZE = 100;
+	private static final int MENU_LEVEL_NAME_TEXT_SIZE = 80;
 	private static final int MENU_CHAPTER_NAME_TEXT_SIZE = 40;
 	private static final int MENU_TOP_MARGIN = 50;
-	private LevelData levelData;
-	private GameStage gameStage;
+	protected LevelData levelData;
+	protected GameStage gameStage;
 
 	private boolean isPause = false;
 	private boolean isGameRunning = true;
@@ -45,12 +45,16 @@ public final class PlayScene extends Scene {
 
 	public PlayScene(LevelData levelData) {
 		this.levelData = levelData;
+		createGameStage();
+	}
+
+	protected void createGameStage() {
 		this.gameStage = new GameStage(this.levelData, GameStageType.PLAY);
 	}
 
 	@Override
 	public void update(int step) {
-		if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_ESCAPE)) {
+		if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_ESCAPE) && !this.gameStage.isEscapeKeyHandled()) {
 			isPause = !isPause;
 			if (isPause && pauseDelayTimer == 0)
 				selectedMenuItemIndex = 0;
@@ -204,7 +208,7 @@ public final class PlayScene extends Scene {
 
 		// Line Separator
 
-		int lineY = 215;
+		int lineY = 200;
 		g.setStroke(new BasicStroke(5, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
 		g.setColor(ColorSwatch.BACKGROUND);
 		int lineWidth = (int) (menuWidth * 0.8);

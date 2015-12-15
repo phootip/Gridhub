@@ -6,6 +6,11 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import core.geom.Vector2;
+import util.Helper;
+import util.Resource;
+import util.Resource.FontWeight;
+
 /**
  * A helper class for collecting FPS data, record only last constant data.
  * 
@@ -18,6 +23,8 @@ class FPSCollector {
 	 * The maximum data size of the list.
 	 */
 	protected static final int MAX_DATA_SIZE = 100;
+
+	private static final int AVERAGE_DATA_SIZE = 20;
 
 	/**
 	 * The height of the drawn FPS monitor.
@@ -69,7 +76,20 @@ class FPSCollector {
 					canvasWidth - MAX_DATA_SIZE + i,
 					MONITOR_HEIGHT - framePerSeconds.get(i) * MONITOR_HEIGHT / util.Constants.MAX_FRAME_PER_SECOND);
 		}
+
+		int dataSum = 0;
+		for (int i = 0; i < AVERAGE_DATA_SIZE && i < framePerSeconds.size(); i++) {
+			dataSum += framePerSeconds.get(framePerSeconds.size() - i - 1);
+		}
 		
+		String drawText = Integer.toString(dataSum / AVERAGE_DATA_SIZE);
+		
+		g.setFont(Resource.getInstance().getDefaultFont(30, FontWeight.BOLD));
+		g.setColor(Helper.getAlphaColorPercentage(Color.WHITE, 0.7));
+		Vector2 fpsPos = Helper.getCenteredTextPosition(drawText, g.getFont(), g, canvasWidth - MAX_DATA_SIZE, 0,
+				MAX_DATA_SIZE, MONITOR_HEIGHT);
+		g.drawString(drawText, fpsPos.getX(), fpsPos.getY());
+
 	}
 
 }

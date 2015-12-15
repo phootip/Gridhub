@@ -97,6 +97,7 @@ public class Main {
 				try {
 					Thread.sleep((maximumWaitTime - updateTime) / 1000000);
 				} catch (InterruptedException e) {
+					Thread.interrupted();
 					e.printStackTrace();
 				}
 			}

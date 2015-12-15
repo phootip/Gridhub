@@ -2,6 +2,7 @@ package stage;
 
 import core.geom.Vector2;
 import core.geom.Vector3;
+import stage.gameobj.ICameraAssignable;
 import stage.gameobj.IDrawable;
 import stage.gameobj.Player;
 import util.Constants;
@@ -24,9 +25,19 @@ public class Camera {
 	public Camera(IDrawable followObj) {
 		this.followObj = followObj;
 		this.centerPos = getPreferredCenterPos();
-		if (this.followObj instanceof Player) {
-			((Player) this.followObj).assignCamera(this);
+		if (this.followObj instanceof ICameraAssignable) {
+			((ICameraAssignable) this.followObj).assignCamera(this);
 		}
+	}
+
+	private boolean deformationChanged = true;
+
+	public boolean isDeformationChanged() {
+		return deformationChanged;
+	}
+
+	protected void resetDeformationChanged() {
+		this.deformationChanged = false;
 	}
 
 	private Vector3 getPreferredCenterPos() {
@@ -88,9 +99,7 @@ public class Camera {
 				rotation = (rotation + direction) % 4;
 			}
 		}
-		if (isRotating)
-
-		{
+		if (isRotating) {
 			rotationFrame += step;
 			if (rotationFrame >= rotationDuration) {
 				oldRotation = rotation;
@@ -107,6 +116,7 @@ public class Camera {
 							(float) rotationFrame / rotationDuration) + shiftedAngle;
 				}
 			}
+			deformationChanged = true;
 		}
 	}
 

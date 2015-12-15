@@ -6,21 +6,21 @@ import java.awt.Graphics2D;
 import core.SceneManager;
 import scene.level.ILevelSelectCallback;
 import scene.level.LevelData;
-import scene.level.LevelSelector;
+import scene.level.PlayPageLevelSelector;
 import scene.play.PlayScene;
 import util.Helper;
 
-public class PlayPage extends MainMenuPage implements ILevelSelectCallback {
+class PlayPage extends MainMenuPage implements ILevelSelectCallback {
 
 	protected PlayPage(MainMenuScene parent) {
 		super(parent);
 		resetVariables();
 	}
 
-	private LevelSelector levelSelector;
+	private PlayPageLevelSelector levelSelector;
 
 	private void resetVariables() {
-		this.levelSelector = new LevelSelector();
+		this.levelSelector = new PlayPageLevelSelector();
 		this.levelSelector.setLevelSelectCallback(this);
 	}
 

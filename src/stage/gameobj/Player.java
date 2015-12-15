@@ -18,14 +18,14 @@ import util.Constants.PlayerHelper;
 import util.Helper;
 import util.InputManager;
 
-public class Player implements IDrawable {
+public class Player implements IDrawable, ICameraAssignable {
 
 	protected static float BALL_RADIUS = 0.4f;
 	private static float BALL_TRAIL_RADIUS = 0.4f;
 	private static int MAX_TRAIL_LENGTH = 50;
 
-	private static final BasicStroke BALL_GLOW_STROKE = new BasicStroke(3);
-	private static final BasicStroke BALL_MAIN_STROKE = new BasicStroke(9);
+	private static final BasicStroke BALL_MAIN_STROKE = new BasicStroke(3);
+	private static final BasicStroke BALL_GLOW_STROKE = new BasicStroke(9);
 
 	private Color baseColor;
 	private Stroke mainTrailStroke;
@@ -197,6 +197,7 @@ public class Player implements IDrawable {
 
 	private Camera assignedCamera;
 
+	@Override
 	public void assignCamera(Camera camera) {
 		this.assignedCamera = camera;
 	}
@@ -324,9 +325,8 @@ public class Player implements IDrawable {
 								standStill();
 							}
 						}
-					} else
-						if ((nextCellBelow == null || nextCellBelow instanceof Block || nextCellBelow instanceof Slope)
-								&& isOnSlope) {
+					} else if ((nextCellBelow == null || nextCellBelow instanceof Block
+							|| nextCellBelow instanceof Slope) && isOnSlope) {
 						// exit the slope from both direction when there is the box waiting
 						Slope slopeBelow = (Slope) ObjectMap.drawableObjectHashMap
 								.get(new ObjectVector(cellX, cellY, cellZ - 1));
@@ -340,12 +340,13 @@ public class Player implements IDrawable {
 									// moveOnlyXandZ();
 									// isOnSlope = false;
 								} else {
+
 									tryMoveAndPushXDirection();
 									isOnSlope = false;
 								}
 
 							} else {
-								if(isNextCellPlayer(nextCellX, nextCellY, nextCellZ-1)) {
+								if (isNextCellPlayer(nextCellX, nextCellY, nextCellZ - 1)) {
 									standStill();
 								} else {
 									setCellZ(cellZ - 1);
@@ -359,7 +360,7 @@ public class Player implements IDrawable {
 										setCellY(cellY);
 									}
 								}
-								
+
 							}
 
 						} else if (nextCellX - cellX == 0 && slopeBelow.isAlignY() && nextCellY - cellY != 0) {
@@ -372,7 +373,7 @@ public class Player implements IDrawable {
 								}
 
 							} else {
-								if(isNextCellPlayer(nextCellX, nextCellY, nextCellZ-1)) {
+								if (isNextCellPlayer(nextCellX, nextCellY, nextCellZ - 1)) {
 									standStill();
 								} else {
 									setCellZ(cellZ - 1);
@@ -385,8 +386,9 @@ public class Player implements IDrawable {
 									setCellX(cellX);
 									setCellY(cellY);
 								}
+
 								}
-								
+
 							}
 
 						}
@@ -614,14 +616,15 @@ public class Player implements IDrawable {
 							Slope nextCellSlope = (Slope) nextCellObstacle;
 
 							boolean isNextCellEntranceOfSlope = nextCellSlope.isSlopeEntrance(nextCellX, nextCellY);
-							
-							if (isNextCellEntranceOfSlope && nextCellSlope.isAlignX() && nextCellX - cellX != 0 && !isNextCellPlayer(nextCellX, nextCellY, nextCellZ+1)) {
+
+							if (isNextCellEntranceOfSlope && nextCellSlope.isAlignX() && nextCellX - cellX != 0
+									&& !isNextCellPlayer(nextCellX, nextCellY, nextCellZ + 1)) {
 
 								setCellZ(cellZ + 1);
 								moveOnlyXandZ();
 								isOnSlope = true;
-							} else
-								if (isNextCellEntranceOfSlope && nextCellSlope.isAlignY() && nextCellY - cellY != 0 && !isNextCellPlayer(nextCellX, nextCellY, nextCellZ+1)) {
+							} else if (isNextCellEntranceOfSlope && nextCellSlope.isAlignY() && nextCellY - cellY != 0
+									&& !isNextCellPlayer(nextCellX, nextCellY, nextCellZ + 1)) {
 								setCellZ(cellZ + 1);
 								moveOnlyYandZ();
 								isOnSlope = true;
@@ -715,6 +718,19 @@ public class Player implements IDrawable {
 				(float) Math.hypot(ballDiffY, ballDiffZ) * Math.signum(ballDiffY));
 	}
 
+	public void drawOverlay(Graphics2D g, Camera camera) {
+		float ballRadius = camera.getDrawSizeZ(BALL_RADIUS);
+		Vector2 ballCenter = camera.getDrawPosition(drawX, drawY, drawZ).subtract(0, ballRadius);
+
+		g.setColor(ColorSwatch.FOREGROUND);
+		BasicStroke dashedStroke = new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10,
+				new float[] { 2f, 2f }, 0);
+		g.setStroke(dashedStroke);
+		g.drawOval(ballCenter.getIntX() - (int) ballRadius, ballCenter.getIntY() - (int) ballRadius,
+				(int) (ballRadius * 2), (int) (ballRadius * 2));
+	}
+
+	@Override
 	public void draw(Graphics2D g, Camera camera) {
 
 		float ballRadius = camera.getDrawSizeZ(BALL_RADIUS);
@@ -758,11 +774,11 @@ public class Player implements IDrawable {
 
 		// Draw a ball
 
-		g.setStroke(BALL_MAIN_STROKE);
+		g.setStroke(BALL_GLOW_STROKE);
 		g.setColor(Helper.getAlphaColor(baseColor, 128));
 		g.drawOval(ballCenter.getIntX() - (int) ballRadius, ballCenter.getIntY() - (int) ballRadius,
 				(int) (ballRadius * 2), (int) (ballRadius * 2));
-		g.setStroke(BALL_GLOW_STROKE);
+		g.setStroke(BALL_MAIN_STROKE);
 		g.setColor(new Color(0xFF, 0xFF, 0xFF));
 		g.drawOval(ballCenter.getIntX() - (int) ballRadius, ballCenter.getIntY() - (int) ballRadius,
 				(int) (ballRadius * 2), (int) (ballRadius * 2));

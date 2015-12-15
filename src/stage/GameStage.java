@@ -14,9 +14,14 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import core.geom.Vector2;
+import core.geom.Vector3;
 import stage.renderer.LevelRenderer;
 import scene.core.Scene;
 import scene.level.LevelData;
+import stage.editor.AddPane.AddableObject;
+import stage.editor.EditorCursor.EditorCursorState;
+import stage.editor.EditorCursor;
+import stage.LevelEditorManager;
 import stage.gameobj.Block;
 
 import stage.gameobj.FloorPiece;
@@ -43,6 +48,7 @@ public class GameStage {
 
 	private List<Camera> cameraList = new ArrayList<>();
 	private Player player1 = null, player2 = null;
+	private EditorCursor cursor = null;
 	private FloorLevel floorLevelMap;
 	private ArrayList<Block> blocks = new ArrayList<>();
 	private ArrayList<FloorSwitch> floorSwitches = new ArrayList<>();
@@ -81,6 +87,7 @@ public class GameStage {
 
 	private GameStageType gameStageType;
 	private LevelData levelData;
+	private LevelEditorManager editorManager = null;
 
 	public GameStage(LevelData levelData, GameStageType gameStageType) {
 		this(levelData, gameStageType, true);
@@ -109,21 +116,34 @@ public class GameStage {
 		}
 
 		if (gameStageType == GameStageType.PLAY) {
-			/*if (gameStageType == GameStageType.ONE_PLAYER || gameStageType == GameStageType.TWO_PLAYER) {
-				player1 = new Player(util.Constants.PLAYER1_ID, floorLevelMap, 9, 4, 1);
-				this.cameraList.add(new Camera(player1));
-			
-				if (gameStageType == GameStageType.TWO_PLAYER) {
-					player2 = new Player(util.Constants.PLAYER2_ID, floorLevelMap, 0, 0, 0);
-					this.cameraList.add(new Camera(player2));
-				}
-			}*/
-		}
+			player1 = new Player(util.Constants.PLAYER1_ID, floorLevelMap, 9, 4, 1);
+			this.cameraList.add(new Camera(player1));
 
-		player1 = new Player(util.Constants.PLAYER1_ID, floorLevelMap, 9, 4, 1);
-		this.cameraList.add(new Camera(player1));
-		player2 = new Player(util.Constants.PLAYER2_ID, floorLevelMap, 0, 0, 0);
-		this.cameraList.add(new Camera(player2));
+			if (levelData.getPlayerCount() == 2) {
+				player2 = new Player(util.Constants.PLAYER2_ID, floorLevelMap, 0, 0, 0);
+				this.cameraList.add(new Camera(player2));
+			}
+		} else if (gameStageType == GameStageType.LEVEL_EDITOR) {
+
+			cursor = new EditorCursor(floorLevelMap);
+			this.cameraList.add(new Camera(cursor));
+
+			this.editorManager = new LevelEditorManager(cursor, this);
+
+		} else if (gameStageType == GameStageType.THUMBNAIL) {
+
+			this.cameraList.add(new Camera(new IDrawable() {
+				@Override
+				public Vector3 getDrawPosition() {
+					return new Vector3(floorLevelMap.getSizeX() / 2, floorLevelMap.getSizeY() / 2, 0);
+				}
+
+				@Override
+				public void draw(Graphics2D g, Camera camera) {
+				}
+			}));
+
+		}
 
 		slopes.add(new Slope(6, 10, 0, Slope.ALIGNMENT_RIGHT));
 		slopes.add(new Slope(6, 5, 0, Slope.ALIGNMENT_RIGHT));
@@ -245,7 +265,7 @@ public class GameStage {
 		}.getType();
 
 		HashMap<String, String> a = gson.fromJson(hashmapJson, hashType);
-//		System.out.println(a.get("block"));
+		// System.out.println(a.get("block"));
 
 		Type blockType = new TypeToken<ArrayList<Block>>() {
 		}.getType();
@@ -339,12 +359,19 @@ public class GameStage {
 					eachGate);
 		}
 
-		ObjectMap.drawableObjectHashMap.put(
-				new ObjectVector(player1.getCellX(), player1.getCellY(), player1.getCellZ(), player1.getName()),
-				player1);
-		ObjectMap.drawableObjectHashMap.put(
-				new ObjectVector(player2.getCellX(), player2.getCellY(), player2.getCellZ(), player2.getName()),
-				player2);
+		if (player1 != null) {
+			ObjectMap.drawableObjectHashMap.put(
+					new ObjectVector(player1.getCellX(), player1.getCellY(), player1.getCellZ(), player1.getName()),
+					player1);
+		}
+		if (player2 != null) {
+			ObjectMap.drawableObjectHashMap.put(
+					new ObjectVector(player2.getCellX(), player2.getCellY(), player2.getCellZ(), player2.getName()),
+					player2);
+		}
+		if (cursor != null) {
+			ObjectMap.drawableObjectHashMap.put(new ObjectVector(-1, -1, -1, "EditorCursor"), cursor);
+		}
 		// ObjectMap.drawableObjectHashMap.put(
 		// player1.getCellX() + " " + player1.getCellY() + " " + player1.getCellZ() + " " + player1.getName(),
 		// player1);
@@ -370,6 +397,10 @@ public class GameStage {
 		if (player2 != null) {
 			player2.update(step);
 		}
+		if (cursor != null) {
+			cursor.setState(EditorCursorState.NORMAL);
+			cursor.update(step);
+		}
 
 		for (FloorSwitch fs : dataSetFloorSwitches) {
 			fs.update(step);
@@ -389,6 +420,10 @@ public class GameStage {
 		}
 		for (Gate each : dataSetsGate) {
 			each.update(step);
+		}
+
+		if (this.editorManager != null) {
+			this.editorManager.update(step);
 		}
 
 		levelNameShowTimer += step;
@@ -460,6 +495,10 @@ public class GameStage {
 		}
 	}
 
+	public boolean isEscapeKeyHandled() {
+		return (editorManager != null) && editorManager.isEscapeKeyHandled();
+	}
+
 	public void draw(Graphics2D g, int sceneWidth, int sceneHeight) {
 
 		// Draw background
@@ -468,10 +507,16 @@ public class GameStage {
 
 		int cameraCount = cameraList.size();
 
+		int shifter = 0;
+		if (editorManager != null) {
+			shifter = editorManager.drawPane(g, 0, 0, sceneWidth, sceneHeight);
+		}
+		int totalViewportWidth = sceneWidth - shifter;
+
 		for (int i = 0; i < cameraCount; i++) {
 			Camera camera = cameraList.get(i);
 
-			camera.setSceneSize(sceneWidth / cameraCount, sceneHeight);
+			camera.setSceneSize(totalViewportWidth / cameraCount, sceneHeight);
 
 			Block.refreshDrawCache(camera);
 			FloorPiece.refreshDrawCache(camera);
@@ -479,28 +524,70 @@ public class GameStage {
 			AffineTransform oldTransform = g.getTransform();
 			Rectangle oldClip = g.getClipBounds();
 
-			g.setClip(sceneWidth * i / cameraCount, 0, sceneWidth / cameraCount, sceneHeight);
-			g.translate(sceneWidth * i / cameraCount, 0);
+			g.setClip(shifter + totalViewportWidth * i / cameraCount, 0, totalViewportWidth / cameraCount, sceneHeight);
+			g.translate(shifter + totalViewportWidth * i / cameraCount, 0);
 
 			LevelRenderer.draw(ObjectMap.drawableObjectHashMap.values(), g, camera);
+			// Cursor and player(s) overlay is exception; it is on everything
+			drawOverlays(g, camera);
 
 			g.setTransform(oldTransform);
 			g.setClip(oldClip);
 
-			drawLevelName(g, sceneWidth * i / cameraCount, 0, sceneWidth / cameraCount, sceneHeight);
+			drawLevelName(g, shifter + totalViewportWidth * i / cameraCount, 0, totalViewportWidth / cameraCount,
+					sceneHeight);
 
 			if (i > 0) {
 				g.setColor(Helper.getAlphaColorPercentage(ColorSwatch.BACKGROUND, 1));
 				g.setStroke(new BasicStroke(9));
-				g.drawLine(sceneWidth * i / cameraCount, 0, sceneWidth * i / cameraCount, sceneHeight);
+				g.drawLine(shifter + totalViewportWidth * i / cameraCount, 0, totalViewportWidth * i / cameraCount,
+						sceneHeight);
 
 				g.setColor(ColorSwatch.SHADOW);
 				g.setStroke(new BasicStroke(5));
-				g.drawLine(sceneWidth * i / cameraCount, 0, sceneWidth * i / cameraCount, sceneHeight);
+				g.drawLine(shifter + totalViewportWidth * i / cameraCount, 0, totalViewportWidth * i / cameraCount,
+						sceneHeight);
 			}
+
+			camera.resetDeformationChanged();
 
 		}
 
+	}
+
+	private void drawOverlays(Graphics2D g, Camera camera) {
+		if (cursor != null) {
+			cursor.drawOverlay(g, camera);
+		}
+		if (player1 != null) {
+			player1.drawOverlay(g, camera);
+		}
+		if (player2 != null) {
+			player2.drawOverlay(g, camera);
+		}
+		if (editorManager != null) {
+			editorManager.drawOverlay(g, camera);
+		}
+	}
+
+	public ObjectVector getPlacingObjectPositionAtCursor() {
+		int x = cursor.getCurrentX();
+		int y = cursor.getCurrentY();
+		// TODO : Calculate z
+		return new ObjectVector(x, y, 0);
+	}
+
+	public boolean isAbleToPlaceObjectAtCursor(AddableObject objectType) {
+		// TODO : Correct this
+		return cursor.getCurrentX() % 5 != 0;
+	}
+
+	public void addBlockAtCursor() {
+		ObjectVector placePosition = getPlacingObjectPositionAtCursor();
+		int x = placePosition.getX();
+		int y = placePosition.getY();
+		int z = placePosition.getZ();
+		System.out.println("Add block at (" + x + ", " + y + ", " + z + ")");
 	}
 
 }

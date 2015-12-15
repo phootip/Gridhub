@@ -7,6 +7,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Stroke;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -27,8 +28,8 @@ public class Resource {
 		return this.getClass().getClassLoader();
 	}
 
-	private URI getResourceAsURI(String resourcePath) throws URISyntaxException {
-		return getClassLoader().getResource("res/" + resourcePath).toURI();
+	private InputStream getResourceAsStream(String resourcePath) {
+		return getClassLoader().getResourceAsStream("res/" + resourcePath);
 	}
 
 	/**
@@ -82,8 +83,8 @@ public class Resource {
 
 		for (FontWeight fontWeight : FontWeight.values()) {
 			Font newFont = Font.createFont(Font.TRUETYPE_FONT,
-					new File(getResourceAsURI("fonts/" + fontWeight.getFontFileName())));
-			ge.registerFont(newFont); 
+					getResourceAsStream("fonts/" + fontWeight.getFontFileName()));
+			ge.registerFont(newFont);
 		}
 	}
 

@@ -25,7 +25,7 @@ class LevelThumbnailRenderer {
 
 		@Override
 		public void run() {
-			System.out.println("Render job \"" + levelData.getMapName() + "\" : start");
+//			System.out.println("Render job \"" + levelData.getMapName() + "\" : start");
 
 			// Wait for previous runnable job to complete first
 			if (previousRunnable != null) {
@@ -39,14 +39,7 @@ class LevelThumbnailRenderer {
 				}
 			}
 
-			System.out.println("Render job \"" + levelData.getMapName() + "\" : rendering");
-
-			try {
-				Thread.sleep(200);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			System.out.println("Render job \"" + levelData.getMapName() + "\" : rendering");
 
 			BufferedImage thumbnailImg = DrawManager.getInstance().createBlankBufferedImage(THUMBNAIL_IMAGE_WIDTH,
 					THUMBNAIL_IMAGE_HEIGHT, false);
@@ -60,7 +53,7 @@ class LevelThumbnailRenderer {
 
 			this.levelData.setThumbnail(thumbnailImg);
 
-			System.out.println("Render job \"" + levelData.getMapName() + "\" : finished");
+//			System.out.println("Render job \"" + levelData.getMapName() + "\" : finished");
 
 			synchronized (finishNotifer) {
 				finishNotifer.notifyAll();

@@ -254,6 +254,26 @@ public final class Vector3 {
 		return this;
 	}
 
+	/**
+	 * Calculate the length of the vector. This is computationally expensive than {@link #getLengthSquared()}.
+	 * 
+	 * @return the length of the vector.
+	 * @see Vector3#getLengthSquared()
+	 */
+	public double getLength() {
+		return Math.sqrt(getLengthSquared());
+	}
+
+	/**
+	 * Calculate the square of length of the vector.
+	 * 
+	 * @return the squared length of the vector.
+	 * @see Vector3#getLength()
+	 */
+	public double getLengthSquared() {
+		return x * x + y * y + z * z;
+	}
+
 	@Override
 	public String toString() {
 		return "(" + this.x + ", " + this.y + ", " + this.z + ")";

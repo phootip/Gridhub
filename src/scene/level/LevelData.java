@@ -107,6 +107,24 @@ public final class LevelData implements IScrollableListItem {
 		this.chapter = chapter;
 		this.levelFileName = levelFileName;
 		floorLevel = new FloorLevel(floorWidth, floorHeight);
+
+		blocks = new ArrayList<>();
+		slopes = new ArrayList<>();
+		floorSwitches = new ArrayList<>();
+		gateTogateTeles = new ArrayList<>();
+		gateLink = new int[0];
+		teleportToArea = new ArrayList<>();
+		teleportDests = new ArrayList<>();
+		gates = new ArrayList<>();
+		swControllers = new ArrayList<>();
+		switchSetIndex = new ArrayList<>();
+		controlObjectIndex = new ArrayList<>();
+		this.mapName = levelName;
+		this.playerCount = playerCount;
+		finishX = new ArrayList<>();
+		finishY = new ArrayList<>();
+		startX = new int[]{0,0};
+		startY = new int[]{0,1};
 	}
 
 	@Override

@@ -20,6 +20,11 @@ import util.Constants;
 import util.Resource;
 import util.Constants.ColorSwatch;
 
+/**
+ * This class represents the object Block 
+ * @author Thanat Jatuphattharachat
+ *	
+ */
 public class Block implements PushableObject, WalkThroughable {
 
 	private static final float BLOCK_SIZE = 0.5f;

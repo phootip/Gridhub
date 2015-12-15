@@ -21,6 +21,7 @@ import core.geom.Vector2;
 import core.geom.Vector3;
 import stage.renderer.LevelRenderer;
 import scene.core.Scene;
+import scene.level.Chapter;
 import scene.level.LevelData;
 import scene.level.LevelDataBuilder;
 import stage.editor.EditorCursor.EditorCursorState;
@@ -651,7 +652,11 @@ public class GameStage {
 	
 	public LevelData buildLevelData() {
 		String outPutJSON = buildLevelDataAsString();
-		return levelData = LevelData.parse(outPutJSON);
+		Chapter chapter = levelData.getChapter();
+		levelData = LevelData.parse(outPutJSON);
+		levelData.setChapter(chapter);
+		return levelData;
+		
 	}
 	private void drawOverlays(Graphics2D g, Camera camera) {
 		for (FloorSwitch fs : dataSetFloorSwitches) {
@@ -674,7 +679,7 @@ public class GameStage {
 	protected ObjectVector getPlacingObjectPositionAtCursor() {
 		int x = cursor.getCurrentX();
 		int y = cursor.getCurrentY();
-		ObjectVector ans = new ObjectVector(x, y, floorLevelMap.getZValueFromXY(x, y));
+		ObjectVector ans = new ObjectVector(x, y, dataSetFloorLevel.getZValueFromXY(x, y));
 		while (objectMap.drawableObjectHashMap.get(ans) != null) {
 			ans.addVector(0, 0, 1);
 		}
@@ -686,7 +691,7 @@ public class GameStage {
 		int y = cursor.getCurrentY();
 		if (objectType == AddableObject.BOX) {
 			Object obj = objectMap.drawableObjectHashMap
-					.get(new ObjectVector(x, y, floorLevelMap.getZValueFromXY(x, y)));
+					.get(new ObjectVector(x, y, dataSetFloorLevel.getZValueFromXY(x, y)));
 			return (obj == null) || (obj instanceof Block);
 		}
 		return false;
@@ -698,11 +703,11 @@ public class GameStage {
 		ObjectVector endPos = Slope.getSlopeEndPosition(middlePos, alignment);
 
 		// Check level
-		if (floorLevelMap.getZValueFromXY(startPos.getX(), startPos.getY()) != startPos.getZ())
+		if (dataSetFloorLevel.getZValueFromXY(startPos.getX(), startPos.getY()) != startPos.getZ())
 			return false;
-		if (floorLevelMap.getZValueFromXY(middlePos.getX(), middlePos.getY()) != middlePos.getZ())
+		if (dataSetFloorLevel.getZValueFromXY(middlePos.getX(), middlePos.getY()) != middlePos.getZ())
 			return false;
-		if (floorLevelMap.getZValueFromXY(endPos.getX(), endPos.getY()) != endPos.getZ() - 1)
+		if (dataSetFloorLevel.getZValueFromXY(endPos.getX(), endPos.getY()) != endPos.getZ() - 1)
 			return false;
 
 		endPos.addVector(0, 0, -1);

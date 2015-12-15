@@ -281,12 +281,31 @@ public class GameStage {
 		dataSetStartY = levelData.getStartY();
 		playerCount = levelData.getPlayerCount();
 		
+		if(dataSetBlock == null) dataSetBlock = new ArrayList<>();
+		if(dataSetSlopes == null) dataSetSlopes = new ArrayList<>();
+		if(dataSetFloorSwitches == null) dataSetFloorSwitches = new ArrayList<>();
+		if(dataSetLinkTeleport == null) dataSetLinkTeleport = new int[0];
+		if(dataSetTeleportToGates == null) dataSetTeleportToGates = new ArrayList<>();
+		if(dataSetTeleportToArea == null) dataSetTeleportToArea = new ArrayList<>();
+		if(dataSetTeleportDests == null) dataSetTeleportDests = new ArrayList<>();
+		if(dataSetsGate == null) dataSetsGate = new ArrayList<>();
+		if(dataSetSWControllers == null) dataSetSWControllers = new ArrayList<>();
+		if(dataSetControlObjectIndex == null) dataSetControlObjectIndex = new ArrayList<>();
+		if(dataSetSwitchSetIndex == null) dataSetSwitchSetIndex = new ArrayList<>();
+		if(dataSetFloorLevel == null) dataSetFloorLevel = new FloorLevel(10, 10);
+		if(dataLevelName == null) dataLevelName = "N/A";
+		if(dataSetFinishX == null) dataSetFinishX = new ArrayList<>();
+		if(dataSetFinishY == null) dataSetFinishY = new ArrayList<>();
+		if(dataSetStartX == null) dataSetStartX = new int[]{0,0};
+		if(dataSetStartY == null) dataSetStartY = new int[]{0,1};
+		if(playerCount <= 0 || playerCount > 2) playerCount = 1;
+		
 		if (gameStageType == GameStageType.PLAY) {
-			player1 = new Player(util.Constants.PLAYER1_ID, dataSetFloorLevel, 9, 4, 1);
+			player1 = new Player(util.Constants.PLAYER1_ID, dataSetFloorLevel, dataSetStartX[0], dataSetStartX[0], dataSetFloorLevel.getZValueFromXY(dataSetStartX[0], dataSetStartX[0]));
 			this.cameraList.add(new Camera(player1));
 
 			if (levelData.getPlayerCount() == 2) {
-				player2 = new Player(util.Constants.PLAYER2_ID, dataSetFloorLevel, 0, 0, 0);
+				player2 = new Player(util.Constants.PLAYER2_ID, dataSetFloorLevel,  dataSetStartX[1], dataSetStartX[1], dataSetFloorLevel.getZValueFromXY(dataSetStartX[1], dataSetStartX[1]));
 				this.cameraList.add(new Camera(player2));
 			}
 		} else if (gameStageType == GameStageType.LEVEL_EDITOR) {

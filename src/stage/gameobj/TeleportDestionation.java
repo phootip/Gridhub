@@ -67,10 +67,9 @@ public class TeleportDestionation implements IDrawable, IWalkOnAble {
 		// TODO Auto-generated method stub
 		return new Vector3(x, y, z - 0.48f);
 	}
-
-	@Override
-	public void draw(Graphics2D g, Camera camera) {
-		Vector2 centerPos = camera.getDrawPosition(x, y, z);
+	
+	public static void draw(Graphics2D g, Camera camera, ObjectVector position) {
+		Vector2 centerPos = camera.getDrawPosition(position.toVector3());
 		int width = (int) camera.getDrawSizeX(TELEPORT_DEST_MARK_RADIUS * 2);
 		int height = (int) camera.getDrawSizeY(TELEPORT_DEST_MARK_RADIUS * 2);
 		int x = (int) (centerPos.getX() - camera.getDrawSizeX(TELEPORT_DEST_MARK_RADIUS));
@@ -79,6 +78,11 @@ public class TeleportDestionation implements IDrawable, IWalkOnAble {
 		g.setColor(ColorSwatch.FOREGROUND);
 		g.setStroke(new BasicStroke(2));
 		g.drawOval(x, y, width, height);
+	}
+
+	@Override
+	public void draw(Graphics2D g, Camera camera) {
+		draw(g, camera, new ObjectVector(x, y, z));
 	}
 
 }

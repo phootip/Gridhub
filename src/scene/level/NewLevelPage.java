@@ -29,8 +29,8 @@ public class NewLevelPage {
 	public NewLevelPage(PlayMode playMode, ILevelSelectCallback levelSelectCallbackObj) {
 		this.levelSelectCallbackObj = levelSelectCallbackObj;
 		this.playMode = playMode;
-		widthSpinner = new IntegerRangeSpinner(8, 50);
-		heightSpinner = new IntegerRangeSpinner(8, 50);
+		widthSpinner = new IntegerRangeSpinner(10, 150);
+		heightSpinner = new IntegerRangeSpinner(10, 150);
 		widthSpinner.setFocusing(true);
 	}
 

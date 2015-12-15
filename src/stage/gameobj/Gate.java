@@ -1,12 +1,17 @@
 package stage.gameobj;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 
+import core.geom.Vector2;
 import core.geom.Vector3;
 import stage.Camera;
 import stage.ObjectMap;
+import util.Helper;
+import util.Resource;
 
-public class Gate implements IDrawable , IControlable {
+public class Gate implements IDrawable, IControlable {
 	private boolean isAsserted;
 	private int x, y, z;
 	private transient ObjectMap objectMap;
@@ -17,43 +22,47 @@ public class Gate implements IDrawable , IControlable {
 		this.z = z;
 		this.isAsserted = false;
 	}
-	
-	protected final int gateProgressControl = 100 * 50;
+
+	protected final int gateProgressControl = 100 * 20;
 	protected int gateActivationProgress = 0;
-	
+	protected int gateActivationAnim = 0;
+
 	public void setObjectMap(ObjectMap objectMap) {
 		this.objectMap = objectMap;
 	}
 
 	public void update(int step) {
-		
-		if(isAsserted) {
+
+		gateActivationAnim -= step;
+
+		if (isAsserted) {
 			gateActivationProgress += step;
 		} else {
 			gateActivationProgress = 0;
-			if(objectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z)) == null ) {
+			if (objectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z)) == null) {
 				objectMap.drawableObjectHashMap.put(new ObjectVector(x, y, z), this);
 			}
 		}
-		
-		if(gateActivationProgress >= gateProgressControl) {
+		if (gateActivationAnim < gateActivationProgress) {
+			gateActivationAnim = gateActivationProgress;
+		}
+
+		if (gateActivationProgress >= gateProgressControl) {
 			// TODO take an action when gate is asserted
 			performAction();
 			gateActivationProgress = 0;
 		}
 	}
-	
+
 	public void performAction() {
 		// do action
-		if(isObjectAbove()) {
+		if (isObjectAbove()) {
 			return;
-		}
-		else objectMap.drawableObjectHashMap.remove(new ObjectVector(x, y, z));
-		
+		} else
+			objectMap.drawableObjectHashMap.remove(new ObjectVector(x, y, z));
+
 	}
-	
-	
-	
+
 	public boolean isAsserted() {
 		return isAsserted;
 	}
@@ -74,7 +83,6 @@ public class Gate implements IDrawable , IControlable {
 		return z;
 	}
 
-	
 	public boolean isObjectAbove() {
 		if (getPlayerAbove() != null || getBlockAbove() != null) {
 			return true;
@@ -82,7 +90,6 @@ public class Gate implements IDrawable , IControlable {
 
 		return false;
 	}
-	
 
 	public Player getPlayerAbove() {
 		if (objectMap.drawableObjectHashMap
@@ -99,7 +106,6 @@ public class Gate implements IDrawable , IControlable {
 		return null;
 	}
 
-
 	private Block getBlockAbove() {
 		IDrawable objectAbove = objectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z));
 		if (objectAbove != null && objectAbove instanceof Block) {
@@ -110,8 +116,24 @@ public class Gate implements IDrawable , IControlable {
 
 	@Override
 	public void draw(Graphics2D g, Camera camera) {
-		// TODO Auto-generated method stub
+		float ratio = 1 - Helper.sineInterpolate((float) gateActivationAnim / gateProgressControl, false, true);
 
+		float crossShifter = ratio * 0.3f;
+
+		Vector2 cornerA = camera.getDrawPosition(x + crossShifter, y + crossShifter, z);
+		Vector2 cornerB = camera.getDrawPosition(x - crossShifter, y - crossShifter, z);
+		Vector2 cornerC = camera.getDrawPosition(x - crossShifter, y + crossShifter, z);
+		Vector2 cornerD = camera.getDrawPosition(x + crossShifter, y - crossShifter, z);
+
+		g.setColor(Color.RED);
+		g.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		g.drawLine(cornerA.getIntX(), cornerA.getIntY(), cornerB.getIntX(), cornerB.getIntY());
+		g.drawLine(cornerC.getIntX(), cornerC.getIntY(), cornerD.getIntX(), cornerD.getIntY());
+
+		g.setColor(Helper.getAlphaColorPercentage(Color.RED, 0.5f));
+		g.setStroke(new BasicStroke(7, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		g.drawLine(cornerA.getIntX(), cornerA.getIntY(), cornerB.getIntX(), cornerB.getIntY());
+		g.drawLine(cornerC.getIntX(), cornerC.getIntY(), cornerD.getIntX(), cornerD.getIntY());
 	}
 
 	@Override
@@ -122,13 +144,13 @@ public class Gate implements IDrawable , IControlable {
 	@Override
 	public void activate() {
 		this.isAsserted = true;
-		
+
 	}
 
 	@Override
 	public void deActivate() {
 		this.isAsserted = false;
-		
+
 	}
-	
+
 }

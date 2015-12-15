@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 
 import core.geom.Vector2;
+import stage.gameobj.ObjectVector;
 import stage.gameobj.Slope;
 import util.Resource;
 import util.Constants.ColorSwatch;
@@ -16,6 +17,16 @@ public class AddPane extends Pane {
 
 	private AddableObject selectedAddableObject = null;
 	private int slopeAlignment;
+	
+	private ObjectVector oldPlacePosition;
+
+	public ObjectVector getOldPlacePosition() {
+		return oldPlacePosition;
+	}
+
+	public void setOldPlacePosition(ObjectVector oldPlacePosition) {
+		this.oldPlacePosition = oldPlacePosition;
+	}
 
 	public int getSlopeAlignment() {
 		return slopeAlignment;
@@ -52,6 +63,10 @@ public class AddPane extends Pane {
 							break;
 					}
 				}
+			}
+			if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_3)) {
+				selectedAddableObject = AddableObject.TELEPORT;
+				oldPlacePosition = null;
 			}
 		}
 	}

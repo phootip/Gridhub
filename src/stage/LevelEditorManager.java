@@ -19,6 +19,8 @@ import stage.gameobj.Block;
 import stage.gameobj.FloorPiece;
 import stage.gameobj.ObjectVector;
 import stage.gameobj.Slope;
+import stage.gameobj.TeleportDestionation;
+import stage.gameobj.TeleportGate;
 import util.InputManager;
 
 public class LevelEditorManager {
@@ -39,7 +41,7 @@ public class LevelEditorManager {
 		this.cursor = cursor;
 		this.paneList = new ArrayList<>();
 		this.stage = stage;
-		
+
 		this.idlePane.setVisible(true);
 		this.paneList.add(idlePane);
 	}
@@ -64,13 +66,13 @@ public class LevelEditorManager {
 					addPane = new AddPane();
 					addPane.setVisible(true);
 					paneList.add(addPane);
-					
+
 					this.idlePane.setVisible(false);
 				}
 				if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_MINUS)) {
 					int oldZValue = this.stage.getFloorLevelMap().getZValueFromXY(cursor.getCurrentX(),
 							cursor.getCurrentY());
-					if (oldZValue > 0) {
+					if (oldZValue > 0 && this.stage.isAbleToPlaceObjectAtCursor(null)) {
 						this.stage.getFloorLevelMap().setZValue(cursor.getCurrentX(), cursor.getCurrentY(),
 								oldZValue - 1);
 						this.stage.constructFloorPieces(true);
@@ -85,7 +87,7 @@ public class LevelEditorManager {
 				if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_EQUALS)) {
 					int oldZValue = this.stage.getFloorLevelMap().getZValueFromXY(cursor.getCurrentX(),
 							cursor.getCurrentY());
-					if (oldZValue < 10) {
+					if (oldZValue < 10 && this.stage.isAbleToPlaceObjectAtCursor(null)) {
 						this.stage.getFloorLevelMap().setZValue(cursor.getCurrentX(), cursor.getCurrentY(),
 								oldZValue + 1);
 						this.stage.constructFloorPieces(true);
@@ -103,6 +105,11 @@ public class LevelEditorManager {
 				boolean isPlaceable;
 				if (addPane.getSelectedAddableObject() == AddableObject.SLOPE) {
 					isPlaceable = stage.isAbleToPlaceSlopeAtCursor(addPane.getSlopeAlignment());
+				} else if (addPane.getSelectedAddableObject() == AddableObject.TELEPORT
+						&& addPane.getOldPlacePosition() != null) {
+					isPlaceable = stage.isAbleToPlaceObjectAtCursor(addPane.getSelectedAddableObject());
+					isPlaceable &= (addPane.getOldPlacePosition().getX() != cursor.getCurrentX())
+							|| (addPane.getOldPlacePosition().getY() != cursor.getCurrentY());
 				} else {
 					isPlaceable = stage.isAbleToPlaceObjectAtCursor(addPane.getSelectedAddableObject());
 				}
@@ -136,11 +143,20 @@ public class LevelEditorManager {
 								case SLOPE:
 									this.stage.addSlopeAtCursor(addPane.getSlopeAlignment());
 									break;
+								case TELEPORT:
+									if (addPane.getOldPlacePosition() == null) {
+										addPane.setOldPlacePosition(this.stage.getPlacingObjectPositionAtCursor());
+									} else {
+										this.stage.addTeleportPairAt(addPane.getOldPlacePosition(),
+												this.stage.getPlacingObjectPositionAtCursor());
+										addPane.setOldPlacePosition(null);
+									}
+									break;
 							}
 
-//							addPane.setVisible(false);
-//							currentOperation = LevelEditorOperation.NONE;
-//							this.idlePane.setVisible(true);
+							// addPane.setVisible(false);
+							// currentOperation = LevelEditorOperation.NONE;
+							// this.idlePane.setVisible(true);
 						}
 					}
 				}
@@ -189,6 +205,14 @@ public class LevelEditorManager {
 						}
 
 						break;
+					case TELEPORT:
+						ObjectVector curPos = stage.getPlacingObjectPositionAtCursor();
+						if (addPane.getOldPlacePosition() == null) {
+							TeleportGate.draw(g, camera, curPos);
+						} else {
+							TeleportDestionation.draw(g, camera, curPos);
+							TeleportGate.draw(g, camera, addPane.getOldPlacePosition());
+						}
 				}
 
 				g.setComposite(AlphaComposite.SrcOver);

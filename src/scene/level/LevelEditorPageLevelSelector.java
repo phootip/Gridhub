@@ -24,6 +24,7 @@ public final class LevelEditorPageLevelSelector {
 	private PlayMode selectedPlayMode;
 	private int selectedOptionChoice = 0;
 	private boolean playModeSelected = false;
+	private NewLevelPage newLevelPage = null;
 
 	private ScrollableUIList levelList;
 
@@ -70,28 +71,37 @@ public final class LevelEditorPageLevelSelector {
 
 	public void update(int step) {
 		if (playModeSelected) {
-			if (isEscapeKeyHandled()) { // ESC key is triggered
-				playModeSelected = false;
-				levelList.setFocusing(false);
-			} else {
-				if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_ENTER)) {
-					if (selectedOptionChoice == 3) { // Export
-						// TODO : Export level file
-					} else if (selectedOptionChoice == 1) { // Edit
-						if (levelSelectCallbackObj != null && levelList.getSelectedItem() != null) {
-							this.levelSelectCallbackObj.onLevelSelect((LevelData) levelList.getSelectedItem());
+			if (newLevelPage == null) {
+				if (isEscapeKeyHandled()) { // ESC key is triggered
+					playModeSelected = false;
+					levelList.setFocusing(false);
+				} else {
+					if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_ENTER)) {
+						if (selectedOptionChoice == 3) { // Export
+							// TODO : Export level file
+						} else if (selectedOptionChoice == 1) { // Edit
+							if (levelSelectCallbackObj != null && levelList.getSelectedItem() != null) {
+								this.levelSelectCallbackObj.onLevelSelect((LevelData) levelList.getSelectedItem());
+							}
+						}
+					} else {
+						if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_DOWN, false)) {
+							levelList.selectNextItem();
+						}
+						if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_UP, false)) {
+							levelList.selectPreviousItem();
 						}
 					}
+				}
+				levelList.update(step);
+			} else {
+				if (isEscapeKeyHandled()) { // ESC key is triggered
+					newLevelPage = null;
+					playModeSelected = false;
 				} else {
-					if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_DOWN, false)) {
-						levelList.selectNextItem();
-					}
-					if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_UP, false)) {
-						levelList.selectPreviousItem();
-					}
+					newLevelPage.update(step);
 				}
 			}
-			levelList.update(step);
 		} else {
 			if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_DOWN)
 					|| InputManager.getInstance().isKeyTriggering(KeyEvent.VK_UP)) {
@@ -127,6 +137,9 @@ public final class LevelEditorPageLevelSelector {
 
 				switch (selectedOptionChoice) {
 					case 0: // New
+						newLevelPage = new NewLevelPage(selectedPlayMode, levelSelectCallbackObj);
+						
+						playModeSelected = true;
 						break;
 					case 2: // Import
 						importLevelFile();
@@ -164,7 +177,9 @@ public final class LevelEditorPageLevelSelector {
 	}
 
 	public void draw(Graphics2D g, int x, int y, int width, int height) {
-		if (!playModeSelected) {
+		if (newLevelPage != null) {
+			newLevelPage.draw(g, x, y, width, height);
+		} else if (!playModeSelected) {
 			drawPlayModeSelector(g, x, y, width, height);
 		} else {
 			levelList.draw(g, x, y, width, height);

@@ -13,6 +13,7 @@ import core.geom.Vector3;
 import stage.Camera;
 import stage.FloorLevel;
 import stage.ObjectMap;
+import util.Constants;
 import util.Constants.ColorSwatch;
 import util.Constants.PlayerHelper;
 import util.Helper;
@@ -21,17 +22,12 @@ import util.InputManager;
 public class Player implements IDrawable, ICameraAssignable {
 
 	protected static float BALL_RADIUS = 0.4f;
-	private static float BALL_TRAIL_RADIUS = 0.4f;
-	private static int MAX_TRAIL_LENGTH = 50;
 
 	private static final BasicStroke BALL_MAIN_STROKE = new BasicStroke(3);
 	private static final BasicStroke BALL_GLOW_STROKE = new BasicStroke(9);
 
+	private PlayerTrail playerTrail;
 	private Color baseColor;
-	private Stroke mainTrailStroke;
-	private Color mainTrailColor;
-	private Stroke glowTrailStroke;
-	private Color glowTrailColor;
 
 	private float drawX;
 	private float drawY;
@@ -52,9 +48,6 @@ public class Player implements IDrawable, ICameraAssignable {
 	private String name;
 	private final int weight = 50;
 	private boolean isOnSlope;
-
-	private ArrayList<ArrayList<Vector3>> trailPosition;
-	private ArrayList<ArrayList<Vector3>> shiftedTrailPosition;
 
 	private FloorLevel floorLevelMap;
 
@@ -134,37 +127,9 @@ public class Player implements IDrawable, ICameraAssignable {
 		this.playerId = playerId;
 
 		this.name = "Player" + playerId;
-		// Create initial trail dots
-		float rotationX = 1.234f;
-		float rotationY = 2.345f;
-		float rotationZ = 3.456f;
 
-		Vector3[] trailDots = new Vector3[6];
-
-		trailDots[0] = new Vector3(1, 0, 0).rotateXY(rotationZ).rotateXZ(rotationY).rotateYZ(rotationX);
-		trailDots[1] = new Vector3(-1, 0, 0).rotateXY(rotationZ).rotateXZ(rotationY).rotateYZ(rotationX);
-		trailDots[2] = new Vector3(0, 1, 0).rotateXY(rotationZ).rotateXZ(rotationY).rotateYZ(rotationX);
-		trailDots[3] = new Vector3(0, -1, 0).rotateXY(rotationZ).rotateXZ(rotationY).rotateYZ(rotationX);
-		trailDots[4] = new Vector3(0, 0, 1).rotateXY(rotationZ).rotateXZ(rotationY).rotateYZ(rotationX);
-		trailDots[5] = new Vector3(0, 0, -1).rotateXY(rotationZ).rotateXZ(rotationY).rotateYZ(rotationX);
-
-		trailPosition = new ArrayList<>();
-		shiftedTrailPosition = new ArrayList<>();
-		for (int i = 0; i < trailDots.length; i++) {
-			trailPosition.add(new ArrayList<>());
-			shiftedTrailPosition.add(new ArrayList<>());
-
-			trailPosition.get(i).add(trailDots[i]);
-			shiftedTrailPosition.get(i)
-					.add(new Vector3(trailDots[i]).multiply(BALL_TRAIL_RADIUS).add(drawX, drawY, drawZ));
-		}
-
-		// Set player drawing assets
-		baseColor = PlayerHelper.getPlayerColor(playerId);
-		mainTrailStroke = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-		mainTrailColor = Helper.getAlphaColor(baseColor, 150);
-		glowTrailStroke = new BasicStroke(8, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-		glowTrailColor = Helper.getAlphaColor(baseColor, 75);
+		this.baseColor = Constants.PlayerHelper.getPlayerColor(playerId);
+		this.playerTrail = new PlayerTrail(this, this.baseColor);
 	}
 
 	private boolean isMoving = false;
@@ -172,28 +137,6 @@ public class Player implements IDrawable, ICameraAssignable {
 	private boolean isMoveFast = false;
 	private final int walkDurationSlow = 100 * 10;
 	private final int walkDurationFast = 100 * 5;
-
-	private void updateTrail(float diffX, float diffY) {
-
-		float angleXZ = -diffX / BALL_RADIUS;
-		float angleYZ = -diffY / BALL_RADIUS;
-
-		for (int i = 0; i < trailPosition.size(); i++) {
-			ArrayList<Vector3> trail = trailPosition.get(i);
-
-			Vector3 newTrailDot = new Vector3(trail.get(trail.size() - 1));
-			newTrailDot.rotateXZ(angleXZ).rotateYZ(angleYZ);
-
-			trail.add(newTrailDot);
-			shiftedTrailPosition.get(i)
-					.add(new Vector3(newTrailDot).multiply(BALL_TRAIL_RADIUS).add(drawX, drawY, drawZ));
-
-			if (trail.size() > MAX_TRAIL_LENGTH) {
-				trail.remove(0);
-				shiftedTrailPosition.get(i).remove(0);
-			}
-		}
-	}
 
 	private Camera assignedCamera;
 
@@ -697,19 +640,12 @@ public class Player implements IDrawable, ICameraAssignable {
 			}
 		}
 
-		// drawZ = isOnSlope ? 1 : 0;
-		// move on slope cheating
-		// if (y == 10) {
-		// if (x < 10 - 0.5)
-		// z = 0;
-		// else if (x > 12.5f)
-		// z = 1;
-		// else
-		// z = Helper.interpolate(0, 1, (x - 9.5f) / 3f);
-		// }
+		playerTrail.update(step,
+				(float) Math.hypot(ballDiffX, ballDiffZ) * Math.signum(ballDiffX), (float) Math.hypot(ballDiffY, ballDiffZ) * Math.signum(ballDiffY));
+	}
 
-		updateTrail((float) Math.hypot(ballDiffX, ballDiffZ) * Math.signum(ballDiffX),
-				(float) Math.hypot(ballDiffY, ballDiffZ) * Math.signum(ballDiffY));
+	public PlayerTrail getPlayerTrail() {
+		return playerTrail;
 	}
 
 	public void drawOverlay(Graphics2D g, Camera camera) {
@@ -733,40 +669,6 @@ public class Player implements IDrawable, ICameraAssignable {
 		g.setColor(ColorSwatch.BACKGROUND);
 		g.fillOval(ballCenter.getIntX() - (int) ballRadius, ballCenter.getIntY() - (int) ballRadius,
 				(int) (ballRadius * 2), (int) (ballRadius * 2));
-
-		// Draw trail
-		for (int i = 0; i < shiftedTrailPosition.size(); i++) {
-
-			int n = shiftedTrailPosition.get(i).size();
-			int[] xPos = new int[n];
-			int[] yPos = new int[n];
-
-			boolean isStill = true;
-
-			for (int j = 0; j < shiftedTrailPosition.get(i).size(); j++) {
-
-				Vector3 trail = new Vector3(shiftedTrailPosition.get(i).get(j)).add(0, 0, BALL_RADIUS);
-				Vector2 pos = camera.getDrawPosition(trail);
-				xPos[j] = (int) pos.getX();
-				yPos[j] = (int) pos.getY();
-
-				if (j > 0 && (xPos[j] != xPos[j - 1] || yPos[j] != yPos[j - 1]))
-					isStill = false;
-			}
-
-			if (!isStill) {
-				g.setStroke(mainTrailStroke);
-				g.setColor(mainTrailColor);
-				g.drawPolyline(xPos, yPos, n);
-
-				g.setStroke(glowTrailStroke);
-				g.setColor(glowTrailColor);
-				g.drawPolyline(xPos, yPos, n);
-			}
-
-		}
-
-		// Draw a ball
 
 		g.setStroke(BALL_GLOW_STROKE);
 		g.setColor(Helper.getAlphaColor(baseColor, 128));

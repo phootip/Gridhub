@@ -362,11 +362,12 @@ public class GameStage {
 			ObjectMap.drawableObjectHashMap.put(
 					new ObjectVector(player1.getCellX(), player1.getCellY(), player1.getCellZ(), player1.getName()),
 					player1);
+			ObjectMap.drawableObjectHashMap.put(new ObjectVector(-1, -1, -1, "PlayerTrail : " + player1.getName()),
+					player1.getPlayerTrail());
 		}
 		if (player2 != null) {
-			ObjectMap.drawableObjectHashMap.put(
-					new ObjectVector(player2.getCellX(), player2.getCellY(), player2.getCellZ(), player2.getName()),
-					player2);
+			ObjectMap.drawableObjectHashMap.put(new ObjectVector(-1, -1, -1, "PlayerTrail : " + player2.getName()),
+					player2.getPlayerTrail());
 		}
 		if (cursor != null) {
 			ObjectMap.drawableObjectHashMap.put(new ObjectVector(-1, -1, -1, "EditorCursor"), cursor);

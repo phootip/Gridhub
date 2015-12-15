@@ -257,7 +257,6 @@ public class Player implements IDrawable {
 		int floorLevelNextCellX = nextCellX;
 		int floorLevelNextCellY = nextCellY;
 		// System.out.println(isOnSlope);
-		//System.out.println(isOnSlope);
 		if (floorLevelMap.isOutOfMap(nextCellX, nextCellY) || isNextCellPlayer(nextCellX, nextCellY, nextCellZ)) {
 			if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
 				// if move diagonal then it can move either y or x
@@ -313,7 +312,6 @@ public class Player implements IDrawable {
 							if (slopeNextCell.isAlignX()) {
 								// will change to try push and move
 								moveOnlyXandZ();
-								
 								isOnSlope = true;
 							} else {
 								standStill();
@@ -332,7 +330,7 @@ public class Player implements IDrawable {
 						// exit the slope from both direction when there is the box waiting
 						Slope slopeBelow = (Slope) ObjectMap.drawableObjectHashMap
 								.get(new ObjectVector(cellX, cellY, cellZ - 1));
-
+						
 						if (nextCellX - cellX != 0 && slopeBelow.isAlignX() && nextCellY - cellY == 0) {
 							if (slopeBelow.isSlopeExit(cellX, cellY)) {
 								if (nextCellBelow == null) {
@@ -342,7 +340,6 @@ public class Player implements IDrawable {
 									// moveOnlyXandZ();
 									// isOnSlope = false;
 								} else {
-									
 									tryMoveAndPushXDirection();
 									isOnSlope = false;
 								}
@@ -355,6 +352,7 @@ public class Player implements IDrawable {
 									boolean isLeavingSlope = tryMoveAndPushXDirection();
 									if (isLeavingSlope) {
 										isOnSlope = false;
+										if(ObjectMap.drawableObjectHashMap.get(new ObjectVector(cellX, cellY, cellZ-1)) instanceof Slope) isOnSlope = true;
 									} else {
 										setCellZ(cellZ + 1);
 										setCellX(cellX);
@@ -381,6 +379,7 @@ public class Player implements IDrawable {
 								boolean isLeavingSlope = tryMoveAndPushYDirection();
 								if (isLeavingSlope) {
 									isOnSlope = false;
+									if(ObjectMap.drawableObjectHashMap.get(new ObjectVector(cellX, cellY, cellZ-1)) instanceof Slope) isOnSlope = true;
 								} else {
 									setCellZ(cellZ + 1);
 									setCellX(cellX);

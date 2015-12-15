@@ -257,7 +257,7 @@ public class Player implements IDrawable {
 		int floorLevelNextCellX = nextCellX;
 		int floorLevelNextCellY = nextCellY;
 		// System.out.println(isOnSlope);
-
+		//System.out.println(isOnSlope);
 		if (floorLevelMap.isOutOfMap(nextCellX, nextCellY) || isNextCellPlayer(nextCellX, nextCellY, nextCellZ)) {
 			if ((nextCellX - cellX) != 0 && (nextCellY - cellY) != 0) {
 				// if move diagonal then it can move either y or x
@@ -286,13 +286,14 @@ public class Player implements IDrawable {
 
 			if (cellZ != floorLevelMap.getZValueFromXY(floorLevelNextCellX, floorLevelNextCellY)) {
 				// if floor is not equal to current Z
+				
 				if (cellZ > floorLevelMap.getZValueFromXY(floorLevelNextCellX, floorLevelNextCellY)) {
 					// if player is on a higher floor then check for nextCell below
 					IDrawable nextCellBelow = ObjectMap.drawableObjectHashMap
 							.get(new ObjectVector(nextCellX, nextCellY, nextCellZ - 1));
 
 					if (nextCellBelow instanceof Slope) {
-
+						
 						Slope slopeNextCell = (Slope) nextCellBelow;
 						boolean isNextX_ZValueEqual = cellZ == floorLevelMap.getZValueFromXY(floorLevelNextCellX,
 								floorLevelCellY);
@@ -312,6 +313,7 @@ public class Player implements IDrawable {
 							if (slopeNextCell.isAlignX()) {
 								// will change to try push and move
 								moveOnlyXandZ();
+								
 								isOnSlope = true;
 							} else {
 								standStill();
@@ -490,9 +492,12 @@ public class Player implements IDrawable {
 				}
 			} else if (cellZ == floorLevelMap.getZValueFromXY(floorLevelNextCellX, floorLevelNextCellY)) {
 				// if the Floorlevel is equal to Z
-				if (isOnSlope) {
+				if (isOnSlope && (nextCellX - cellX) != 0 && nextCellY - cellY !=0) {
 					// if player is on slope the only case player move at the same cellZ and floor is when player jump
 					// back from slope entrance to the higher side
+					standStill();
+					isOnSlope = true;
+				} else if(isOnSlope) {
 					isOnSlope = false;
 				}
 				IDrawable nextCellObstacle = ObjectMap.drawableObjectHashMap
@@ -507,7 +512,7 @@ public class Player implements IDrawable {
 								.get(new ObjectVector(nextCellX, cellY, nextCellZ));
 						IDrawable nextYObstacle = ObjectMap.drawableObjectHashMap
 								.get(new ObjectVector(cellX, nextCellY, nextCellZ));
-
+						
 						if (nextXObstacle != null || nextYObstacle != null) {
 							// if Obstacle is Pushable Object
 							if (nextXObstacle != null && nextYObstacle != null) {

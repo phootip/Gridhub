@@ -375,7 +375,7 @@ public final class LevelData implements IScrollableListItem {
 	private int [] startX;
 	private int [] startY;
 	
-	private LevelData(int pCount ,String jsonContent) {
+	private LevelData(String jsonContent) {
 		levelContents = getContentList(jsonContent);
 		blocks = getBlocks(levelContents.get("Block"));
 		slopes = getSlopes(levelContents.get("Slope"));
@@ -398,10 +398,20 @@ public final class LevelData implements IScrollableListItem {
 				
 	}
 	
+	public static LevelData parse(String jsonContent) {
+		return new LevelData(1,jsonContent);
+	}
+	//mock up only
+	private LevelData(int p , String jsonContent) {
+		this.mapName = jsonContent;
+		this.playerCount = p;
+	}
+	
+	
 	public HashMap<String , String> getContentList(String json) {
 		Gson gson = new Gson();
 		return gson.fromJson(json, hashType);
-	}
+	}	
 	public ArrayList<Block> getBlocks(String json) {
 		Gson gson = new Gson();
 		return gson.fromJson(json, blockType);
@@ -469,10 +479,6 @@ public final class LevelData implements IScrollableListItem {
 	
 	public ArrayList<int[]> getControlObjectIndex() {
 		return controlObjectIndex;
-	}
-
-	public static LevelData parse(int pCount ,String jsonContent) {
-		return new LevelData(pCount ,jsonContent);
 	}
 
 	public ArrayList<Block> getBlocks() {

@@ -146,6 +146,7 @@ public class GameStage {
 		slopes.add(new Slope(19, 4, 2, Slope.ALIGNMENT_LEFT));
 
 		blocks.add(new Block(16, 4, 2, 20, true, floorLevelMap));
+		blocks.add(new Block(9, 6, 1, 20, true, floorLevelMap));
 		blocks.add(new Block(2, 3, 0, 20, true, floorLevelMap));
 		blocks.add(new Block(2, 4, 0, 20, true, floorLevelMap));
 		blocks.add(new Block(2, 5, 0, 20, true, floorLevelMap));

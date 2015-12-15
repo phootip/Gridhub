@@ -18,6 +18,7 @@ import core.geom.Vector3;
 import stage.renderer.LevelRenderer;
 import scene.core.Scene;
 import scene.level.LevelData;
+import scene.level.LevelDataBuilder;
 import stage.editor.AddPane.AddableObject;
 import stage.editor.EditorCursor.EditorCursorState;
 import stage.editor.EditorCursor;
@@ -88,8 +89,9 @@ public class GameStage {
 	private GameStageType gameStageType;
 	private LevelData levelData;
 	private LevelEditorManager editorManager = null;
-	
-	private ObjectMap objectMap  = new ObjectMap();
+
+	private ObjectMap objectMap = new ObjectMap();
+
 	public GameStage(LevelData levelData, GameStageType gameStageType) {
 		this(levelData, gameStageType, true);
 	}
@@ -329,7 +331,7 @@ public class GameStage {
 			int slopeEndY = eachSlope.getEndY();
 			int xBar = (slopeStartX + slopeEndX) / 2;
 			int yBar = (slopeStartY + slopeEndY) / 2;
-			
+
 			objectMap.drawableObjectHashMap.put(new ObjectVector(slopeStartX, slopeStartY, slopeStartZ), eachSlope);
 			objectMap.drawableObjectHashMap.put(new ObjectVector(xBar, yBar, slopeStartZ), eachSlope);
 			objectMap.drawableObjectHashMap.put(new ObjectVector(slopeEndX, slopeEndY, slopeStartZ), eachSlope);
@@ -350,8 +352,7 @@ public class GameStage {
 
 		for (Block eachBlock : datasetGsonBlock) {
 			eachBlock.setObjectMap(objectMap);
-			objectMap.drawableObjectHashMap.put(new ObjectVector(eachBlock.getX(), eachBlock.getY(), eachBlock.getZ()),
-					eachBlock);
+			objectMap.drawableObjectHashMap.put(eachBlock.getObjectVector(), eachBlock);
 		}
 
 		for (FloorSwitch eachSwitch : dataSetFloorSwitches) {
@@ -566,6 +567,25 @@ public class GameStage {
 		}
 
 	}
+	
+	public String buildLevelDataAsString() {
+		LevelDataBuilder builder = new LevelDataBuilder();
+		
+		builder.addBlocks(datasetGsonBlock);
+		builder.addFloorLevel(floorLevelMap.getFloorMap());
+		builder.addFloorSwitches(dataSetFloorSwitches);
+//		builder.addGates(dataSetsGate);
+//		builder.addGateTogateTeles(dataSetTeleportToGates);
+//		builder.addLevelName(levelData.getMapName());
+		builder.addSlopes(dataSetSlopes);
+//		builder.addSwControllers(swControllers);
+//		builder.addTeleportToArea(dataSetTeleportToArea);
+//		builder.addTelportDests(telportDests);
+		
+		builder.setPlayerCount(levelData.getPlayerCount());
+		
+		return builder.createLevelDataAsJSONString();
+	}
 
 	private void drawOverlays(Graphics2D g, Camera camera) {
 		if (cursor != null) {
@@ -585,21 +605,32 @@ public class GameStage {
 	public ObjectVector getPlacingObjectPositionAtCursor() {
 		int x = cursor.getCurrentX();
 		int y = cursor.getCurrentY();
-		// TODO : Calculate z
-		return new ObjectVector(x, y, 0);
+		ObjectVector ans = new ObjectVector(x, y, floorLevelMap.getZValueFromXY(x, y));
+		while (objectMap.drawableObjectHashMap.get(ans) != null) {
+			ans.addVector(0, 0, 1);
+		}
+		return ans;
 	}
 
 	public boolean isAbleToPlaceObjectAtCursor(AddableObject objectType) {
-		// TODO : Correct this
-		return cursor.getCurrentX() % 5 != 0;
+		int x = cursor.getCurrentX();
+		int y = cursor.getCurrentY();
+		if (objectType == AddableObject.BOX) {
+			Object obj = objectMap.drawableObjectHashMap
+					.get(new ObjectVector(x, y, floorLevelMap.getZValueFromXY(x, y)));
+			return (obj == null) || (obj instanceof Block);
+		}
+		return false;
 	}
 
-	public void addBlockAtCursor() {
+	public void addObjectAtCursor(AddableObject objectType) {
 		ObjectVector placePosition = getPlacingObjectPositionAtCursor();
-		int x = placePosition.getX();
-		int y = placePosition.getY();
-		int z = placePosition.getZ();
-		System.out.println("Add block at (" + x + ", " + y + ", " + z + ")");
+
+		if (objectType == AddableObject.BOX) {
+			Block obj = new Block(placePosition.getX(), placePosition.getY(), placePosition.getZ(), floorLevelMap);
+			obj.setObjectMap(objectMap);
+			objectMap.drawableObjectHashMap.put(obj.getObjectVector(), obj);
+		}
 	}
 
 }

@@ -262,4 +262,8 @@ public class Block implements PushableObject, WalkThroughable {
 				.multiply((float) (1 / Math.pow(Math.pow(5, 1.0 / 100), step))));
 	}
 
+	public ObjectVector getObjectVector() {
+		return new ObjectVector(x, y, z);
+	}
+
 }

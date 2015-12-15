@@ -145,7 +145,7 @@ public class EditorCursor implements IDrawable, ICameraAssignable {
 		}
 
 		g.setStroke(OVERLAY_STROKE);
-		g.setColor(ColorSwatch.FOREGROUND);
+		g.setColor(currentCursorColor);
 		g.drawPolygon(drawPositionX, drawPositionY, 4);
 	}
 

@@ -66,22 +66,13 @@ public class PlayScene extends Scene {
 				pauseDelayTimer = pauseDelayMaxValue;
 			}
 			if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_ENTER)) {
-				switch (selectedMenuItemIndex) {
-					case 0: // Restart
-						isSceneFadingOut = true;
-						nextScene = new PlayScene(levelData);
-						break;
-					case 1: // Exit
-						isSceneFadingOut = true;
-						nextScene = new MainMenuScene(false);
-						break;
-				}
+				performMenuAction(selectedMenuItemIndex);
 			} else {
 				if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_UP)) {
-					selectedMenuItemIndex = (selectedMenuItemIndex + menuItems.length - 1) % menuItems.length;
+					selectedMenuItemIndex = (selectedMenuItemIndex + getMenuItems().length - 1) % getMenuItems().length;
 				}
 				if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_DOWN)) {
-					selectedMenuItemIndex = (selectedMenuItemIndex + 1) % menuItems.length;
+					selectedMenuItemIndex = (selectedMenuItemIndex + 1) % getMenuItems().length;
 				}
 			}
 		} else {
@@ -108,6 +99,19 @@ public class PlayScene extends Scene {
 				sceneFadeProgress = sceneFadeDuration;
 				isSceneFadingIn = false;
 			}
+		}
+	}
+
+	protected void performMenuAction(int selectedMenuItem) {
+		switch (selectedMenuItem) {
+			case 0: // Restart
+				isSceneFadingOut = true;
+				nextScene = new PlayScene(levelData);
+				break;
+			case 1: // Exit
+				isSceneFadingOut = true;
+				nextScene = new MainMenuScene(false);
+				break;
 		}
 	}
 
@@ -147,16 +151,19 @@ public class PlayScene extends Scene {
 	}
 
 	private String[] menuItems = new String[] { "Restart", "Exit" };
+	protected String[] getMenuItems() {
+		return menuItems;
+	}
 	private int selectedMenuItemIndex;
 
 	private void drawMenuContent(Graphics2D g, int x, int y, int width, int height) {
 		Font menuItemFont = Resource.getInstance().getDefaultFont(MENU_ITEM_TEXT_HEIGHT);
 		Font selectedMenuItemFont = Resource.getInstance().getDefaultFont(MENU_ITEM_TEXT_HEIGHT, FontWeight.BOLD);
 
-		int startY = y + (height - MENU_ITEM_HEIGHT * menuItems.length) / 2;
+		int startY = y + (height - MENU_ITEM_HEIGHT * getMenuItems().length) / 2;
 
-		for (int i = 0; i < menuItems.length; i++) {
-			String menuItemText = menuItems[i];
+		for (int i = 0; i < getMenuItems().length; i++) {
+			String menuItemText = getMenuItems()[i];
 
 			if (i == selectedMenuItemIndex) {
 				g.setColor(ColorSwatch.BACKGROUND);

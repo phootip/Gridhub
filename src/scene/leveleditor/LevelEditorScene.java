@@ -1,6 +1,7 @@
 package scene.leveleditor;
 
 import scene.level.LevelData;
+import scene.level.LevelDataBuilder;
 import scene.play.PlayScene;
 import stage.GameStage;
 import stage.GameStageType;
@@ -9,6 +10,22 @@ public final class LevelEditorScene extends PlayScene {
 
 	public LevelEditorScene(LevelData levelData) {
 		super(levelData);
+	}
+
+	private String[] menuItems = new String[] { "Save Level", "Load Last Saved", "Exit" };
+
+	@Override
+	protected String[] getMenuItems() {
+		return menuItems;
+	}
+
+	@Override
+	protected void performMenuAction(int selectedMenuItem) {
+		if (selectedMenuItem == 0) {
+			System.out.println(gameStage.buildLevelDataAsString());
+		} else {
+			super.performMenuAction(selectedMenuItem - 1);
+		}
 	}
 
 	@Override

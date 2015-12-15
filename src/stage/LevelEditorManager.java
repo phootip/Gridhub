@@ -70,18 +70,14 @@ public class LevelEditorManager {
 					addPane.setVisible(false);
 					currentOperation = LevelEditorOperation.NONE;
 				} else if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_ENTER)) {
-					switch (addPane.getSelectedAddableObject()) {
-						case BOX:
-							if (callback.isAbleToPlaceObjectAtCursor(AddableObject.BOX)) {
-								this.callback.addBlockAtCursor();
+					if (addPane.getSelectedAddableObject() != null) {
+						if (callback.isAbleToPlaceObjectAtCursor(addPane.getSelectedAddableObject())) {
 
-								addPane.setVisible(false);
-								currentOperation = LevelEditorOperation.NONE;
-							}
-							break;
-						default:
-							break;
+							this.callback.addObjectAtCursor(addPane.getSelectedAddableObject());
 
+							addPane.setVisible(false);
+							currentOperation = LevelEditorOperation.NONE;
+						}
 					}
 				}
 				break;

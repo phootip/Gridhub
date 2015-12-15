@@ -23,8 +23,10 @@ public class NewLevelPage {
 	private IntegerRangeSpinner widthSpinner;
 	private IntegerRangeSpinner heightSpinner;
 	private int selectedIndex = 0;
+	private ILevelSelectCallback levelSelectCallbackObj;
 
-	public NewLevelPage(PlayMode playMode) {
+	public NewLevelPage(PlayMode playMode, ILevelSelectCallback levelSelectCallbackObj) {
+		this.levelSelectCallbackObj = levelSelectCallbackObj;
 		this.playMode = playMode;
 		widthSpinner = new IntegerRangeSpinner(8, 50);
 		heightSpinner = new IntegerRangeSpinner(8, 50);
@@ -78,7 +80,7 @@ public class NewLevelPage {
 					// LevelData levelData = new ...;
 
 					LevelFileManager.getInstance().saveLevelData(levelData);
-					SceneManager.getInstance().setNextScene(new LevelEditorScene(levelData));
+					this.levelSelectCallbackObj.onLevelSelect(levelData);
 				}
 			}
 		} else {

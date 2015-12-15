@@ -1,7 +1,11 @@
 package scene.level;
 
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
+import java.awt.image.ConvolveOp;
+import java.awt.image.Kernel;
 
 import core.DrawManager;
 import stage.GameStage;
@@ -9,8 +13,8 @@ import stage.GameStageType;
 
 class LevelThumbnailRenderer {
 
-	private static final int THUMBNAIL_IMAGE_WIDTH = 1000;
-	private static final int THUMBNAIL_IMAGE_HEIGHT = 500;
+	private static final int RENDER_IMAGE_WIDTH = 180 * 8;
+	private static final int RENDER_IMAGE_HEIGHT = 90 * 8;
 
 	private static class RendererRunnable implements Runnable {
 
@@ -23,9 +27,38 @@ class LevelThumbnailRenderer {
 			this.previousRunnable = previousRunnable;
 		}
 
+		float[] sharpenKernel = { 0, -1, 0, -1, 5, -1, 0, -1, 0 };
+		BufferedImageOp shapenOp = new ConvolveOp(new Kernel(3, 3, sharpenKernel));
+
+		private BufferedImage shapenImage(BufferedImage in) {
+			BufferedImage out = DrawManager.getInstance().createBlankBufferedImage(in.getWidth(), in.getHeight(),
+					false);
+			Graphics2D g = out.createGraphics();
+			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+
+			g.drawImage(in, shapenOp, 0, 0);
+
+			g.dispose();
+
+			return out;
+		}
+
+		private BufferedImage reduceImageSizeByFactorOfTwo(BufferedImage in) {
+			BufferedImage out = DrawManager.getInstance().createBlankBufferedImage(in.getWidth() / 2,
+					in.getHeight() / 2, false);
+			Graphics2D g = out.createGraphics();
+			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+
+			g.drawImage(in, 0, 0, in.getWidth() / 2, in.getHeight() / 2, null);
+
+			g.dispose();
+
+			return out;
+		}
+
 		@Override
 		public void run() {
-//			System.out.println("Render job \"" + levelData.getMapName() + "\" : start");
+			// System.out.println("Render job \"" + levelData.getMapName() + "\" : start");
 
 			// Wait for previous runnable job to complete first
 			if (previousRunnable != null) {
@@ -39,21 +72,29 @@ class LevelThumbnailRenderer {
 				}
 			}
 
-//			System.out.println("Render job \"" + levelData.getMapName() + "\" : rendering");
+			// System.out.println("Render job \"" + levelData.getMapName() + "\" : rendering");
 
-			BufferedImage thumbnailImg = DrawManager.getInstance().createBlankBufferedImage(THUMBNAIL_IMAGE_WIDTH,
-					THUMBNAIL_IMAGE_HEIGHT, false);
-			Graphics2D graphic = thumbnailImg.createGraphics();
-			graphic.setClip(0, 0, THUMBNAIL_IMAGE_WIDTH, THUMBNAIL_IMAGE_HEIGHT);
+			BufferedImage renderImg = DrawManager.getInstance().createBlankBufferedImage(RENDER_IMAGE_WIDTH,
+					RENDER_IMAGE_HEIGHT, false);
+			Graphics2D graphic = renderImg.createGraphics();
+			graphic.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			graphic.setClip(0, 0, RENDER_IMAGE_WIDTH, RENDER_IMAGE_HEIGHT);
 
 			GameStage renderStage = new GameStage(levelData, GameStageType.THUMBNAIL);
 			renderStage.update(0);
-			renderStage.draw(graphic, THUMBNAIL_IMAGE_WIDTH, THUMBNAIL_IMAGE_HEIGHT);
+			renderStage.draw(graphic, RENDER_IMAGE_WIDTH, RENDER_IMAGE_HEIGHT);
 			graphic.dispose();
 
-			this.levelData.setThumbnail(thumbnailImg);
+			// Resize image
 
-//			System.out.println("Render job \"" + levelData.getMapName() + "\" : finished");
+			renderImg = shapenImage(renderImg);
+			for (int i = 0; i < 3; i++) {
+				renderImg = reduceImageSizeByFactorOfTwo(renderImg);
+			}
+
+			this.levelData.setThumbnail(renderImg);
+
+			// System.out.println("Render job \"" + levelData.getMapName() + "\" : finished");
 
 			synchronized (finishNotifer) {
 				finishNotifer.notifyAll();

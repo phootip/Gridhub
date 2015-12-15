@@ -14,7 +14,6 @@ import com.google.gson.reflect.TypeToken;
 
 import core.IScrollableListItem;
 import core.geom.Vector2;
-import jdk.nashorn.internal.runtime.regexp.joni.SearchAlgorithm.SLOW_IC;
 import stage.gameobj.Block;
 import stage.gameobj.FloorSwitch;
 import stage.gameobj.Gate;
@@ -64,8 +63,8 @@ public final class LevelData implements IScrollableListItem {
 	}
 
 	private static final int CONTENT_MARGIN_LEFT = 50;
-	private static final int IMAGE_WIDTH = 180;
-	private static final int IMAGE_HEIGHT = 90;
+	public static final int THUMBNAIL_IMAGE_WIDTH = 180;
+	public static final int THUMBNAIL_IMAGE_HEIGHT = 90;
 	private static final int TEXT_MARGIN = 50;
 	private int playerCount;
 	private String mapName;
@@ -92,35 +91,34 @@ public final class LevelData implements IScrollableListItem {
 	public void drawListItemContent(Graphics2D g, int x, int y, int width, boolean isSelected) {
 
 		int imgLeft = x + CONTENT_MARGIN_LEFT;
-		int imgTop = y + (getListItemHeight() - IMAGE_HEIGHT) / 2;
+		int imgTop = y + (getListItemHeight() - THUMBNAIL_IMAGE_HEIGHT) / 2;
 
 		if (this.getThumbnail() != null) {
 			AffineTransform thumbnailTransform = new AffineTransform();
-			thumbnailTransform.scale((double) IMAGE_WIDTH / thumbnail.getWidth(),
-					(double) IMAGE_HEIGHT / thumbnail.getHeight());
-			g.drawImage(thumbnail, new AffineTransformOp(thumbnailTransform, AffineTransformOp.TYPE_BICUBIC), imgLeft,
+			thumbnailTransform.scale((double) THUMBNAIL_IMAGE_WIDTH / thumbnail.getWidth(),
+					(double) THUMBNAIL_IMAGE_HEIGHT / thumbnail.getHeight());
+			g.drawImage(thumbnail, new AffineTransformOp(thumbnailTransform, AffineTransformOp.TYPE_NEAREST_NEIGHBOR), imgLeft,
 					imgTop);
 		} else {
-			g.setColor(ColorSwatch.SHADOW);
-			g.setStroke(Resource.getGameObjectThinStroke());
-			g.drawRect(imgLeft, imgTop, IMAGE_WIDTH, IMAGE_HEIGHT);
-
 			g.setColor(ColorSwatch.SHADOW);
 			String loadingText = "Generating Preview...";
 			Font loadingTextFont = Resource.getInstance().getDefaultFont(20, FontWeight.BOLD);
 			Vector2 drawPosition = Helper.getCenteredTextPosition(loadingText, loadingTextFont, g, imgLeft, imgTop,
-					IMAGE_WIDTH, IMAGE_HEIGHT);
+					THUMBNAIL_IMAGE_WIDTH, THUMBNAIL_IMAGE_HEIGHT);
 
 			g.setFont(loadingTextFont);
 			g.drawString(loadingText, drawPosition.getX(), drawPosition.getY());
 		}
+		g.setColor(ColorSwatch.SHADOW);
+		g.setStroke(Resource.getGameObjectThinStroke());
+		g.drawRect(imgLeft, imgTop, THUMBNAIL_IMAGE_WIDTH, THUMBNAIL_IMAGE_HEIGHT);
 
 		Font levelNameFont = Resource.getInstance().getDefaultFont(50);
 		Vector2 levelNameTextPos = Helper.getCenteredTextPosition(mapName, levelNameFont, g, x, y, width,
 				getListItemHeight());
 		g.setFont(levelNameFont);
 		g.setColor(isSelected ? ColorSwatch.BACKGROUND : ColorSwatch.FOREGROUND);
-		g.drawString(mapName, x + IMAGE_WIDTH + CONTENT_MARGIN_LEFT + TEXT_MARGIN, levelNameTextPos.getY());
+		g.drawString(mapName, x + THUMBNAIL_IMAGE_WIDTH + CONTENT_MARGIN_LEFT + TEXT_MARGIN, levelNameTextPos.getY());
 
 	}
 

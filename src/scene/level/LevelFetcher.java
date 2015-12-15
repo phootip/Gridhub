@@ -117,7 +117,7 @@ final public class LevelFetcher {
 			coopModeChapters[i].setChapterOrder(i + 1);
 			coopModeChapters[i].setPlayMode(PlayMode.COOP_MODE);
 			if (coopModeChapters[i].isUserFolder()) {
-				coopModeUserChapter = singlePlayerChapters[i];
+				coopModeUserChapter = coopModeChapters[i];
 			}
 
 			coopModeChapterList.add(coopModeChapters[i]);

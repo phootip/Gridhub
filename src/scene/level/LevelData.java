@@ -5,13 +5,19 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.io.StringReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 
 import core.IScrollableListItem;
 import core.geom.Vector2;
@@ -415,6 +421,7 @@ public final class LevelData implements IScrollableListItem {
 		controlObjectIndex = getControlObject(levelContents.get("ControlObject"));
 		floorLevel = getFloorLevel(levelContents.get("FloorLevel"));
 		this.mapName = getLevelNameFromGson(levelContents.get("LevelName"));
+		this.levelName = getLevelNameFromGson(levelContents.get("LevelName"));
 		this.playerCount = getPlayerCountFromGson(levelContents.get("PlayerCount"));
 		finishX = getFisnishArea(levelContents.get("FinishX"));
 		finishY = getFisnishArea(levelContents.get("FinishY"));
@@ -428,7 +435,7 @@ public final class LevelData implements IScrollableListItem {
 	}
 
 	public static LevelData parse(String jsonContent) {
-		return new LevelData(1,jsonContent);
+		return new LevelData(jsonContent);
 	}
 
 	// mock up only
@@ -439,9 +446,21 @@ public final class LevelData implements IScrollableListItem {
 
 	public HashMap<String, String> getContentList(String json) {
 		Gson gson = new Gson();
-		return gson.fromJson(json, hashType);
+		System.out.println(isJSONValid(json));
+		HashMap<String , String> a = gson.fromJson(json, hashType);
+		return a;
 	}
-
+	
+	public static boolean isJSONValid(String JSON_STRING) {
+	    Gson gson = new Gson();  
+		try {
+	          gson.fromJson(JSON_STRING, Object.class);
+	          return true;
+	      } catch(com.google.gson.JsonSyntaxException ex) { 
+	          return false;
+	      }
+	  }
+	
 	public ArrayList<Block> getBlocks(String json) {
 		Gson gson = new Gson();
 		return gson.fromJson(json, blockType);

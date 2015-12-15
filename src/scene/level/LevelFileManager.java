@@ -66,7 +66,7 @@ final public class LevelFileManager {
 		Chapter chapter = levelData.getChapter();
 		return getLevelResourceFileAsOutputStream(chapter.getPlayMode().getLevelFolderName() + "/"
 				+ chapter.getFolderName() + "/" + levelData.getLevelFileName());
-	}
+	}	
 
 	private InputStream getChapterFileInputStream(String chapterFilePath, PlayMode playMode)
 			throws FileNotFoundException {
@@ -76,7 +76,7 @@ final public class LevelFileManager {
 	private String getFileContent(InputStream stream) {
 		// From http://stackoverflow.com/a/5445161
 
-		Scanner s = new Scanner(stream);
+		Scanner s = new Scanner(stream,"UTF-8");
 		s.useDelimiter("\\A");
 
 		String content = s.hasNext() ? s.next() : "";
@@ -84,6 +84,7 @@ final public class LevelFileManager {
 		s.close();
 
 		return content;
+		
 	}
 
 	public void saveLevelData(LevelData levelData) throws FileNotFoundException {
@@ -147,7 +148,7 @@ final public class LevelFileManager {
 	private void populateLevelInChapter(Chapter chapter) {
 
 		int currentFileCounter = 0;
-		final String fileNameSuffix = ".lev";
+		final String fileNameSuffix = ".json";
 
 		while (true) {
 			try {

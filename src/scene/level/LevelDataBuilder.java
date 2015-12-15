@@ -36,6 +36,10 @@ public class LevelDataBuilder {
 	public int getPlayerCount() {
 		return playerCount;
 	}
+	
+	public LevelData build() {
+		return LevelData.createLevelDataAsJSON(this);
+	}
 
 	public String createLevelDataAsJSONString() {
 		LevelData levelData = LevelData.createLevelDataAsJSON(this);

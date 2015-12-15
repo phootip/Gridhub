@@ -75,8 +75,8 @@ public class LevelEditorManager {
 
 							this.callback.addObjectAtCursor(addPane.getSelectedAddableObject());
 
-							addPane.setVisible(false);
-							currentOperation = LevelEditorOperation.NONE;
+//							addPane.setVisible(false);
+//							currentOperation = LevelEditorOperation.NONE;
 						}
 					}
 				}

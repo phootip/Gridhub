@@ -6,7 +6,7 @@ import java.awt.event.ComponentListener;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import scene.level.LevelFetcher;
+import scene.level.LevelFileManager;
 import stage.GameStageType;
 import util.Constants;
 import util.Constants.ColorSwatch;
@@ -22,7 +22,7 @@ public class Main {
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		if (!LevelFetcher.getInstance().initialize()) {
+		if (!LevelFileManager.getInstance().initialize()) {
 			JOptionPane.showMessageDialog(null, "Level files loading fail.", "Cannot open game",
 					JOptionPane.ERROR_MESSAGE);
 			return;

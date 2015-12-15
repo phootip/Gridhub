@@ -155,7 +155,7 @@ public final class LevelEditorPageLevelSelector {
 	}
 
 	private void populateLevelList() {
-		Chapter chapter = LevelFetcher.getInstance().getUserChapter(selectedPlayMode);
+		Chapter chapter = LevelFileManager.getInstance().getUserChapter(selectedPlayMode);
 
 		levelList.clear();
 		levelList.addAll(chapter.getLevelDataList());

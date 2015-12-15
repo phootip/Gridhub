@@ -2,7 +2,10 @@ package scene.level;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -13,11 +16,11 @@ import com.google.gson.JsonSyntaxException;
 import util.Constants;
 import util.Constants.PlayMode;
 
-final public class LevelFetcher {
+final public class LevelFileManager {
 
-	private static final LevelFetcher instance = new LevelFetcher();
+	private static final LevelFileManager instance = new LevelFileManager();
 
-	public static final LevelFetcher getInstance() {
+	public static final LevelFileManager getInstance() {
 		return instance;
 	}
 
@@ -46,17 +49,28 @@ final public class LevelFetcher {
 		return coopModeUserChapter;
 	}
 
-	private InputStream getLevelResourceFileAsStream(String resourcePath) throws FileNotFoundException {
+	private InputStream getLevelResourceFileAsInputStream(String resourcePath) throws FileNotFoundException {
 		return new FileInputStream("./levels/" + resourcePath);
 	}
 
-	private InputStream getLevelFileStream(String levelFileName, Chapter chapter) throws FileNotFoundException {
-		return getLevelResourceFileAsStream(
+	private OutputStream getLevelResourceFileAsOutputStream(String resourcePath) throws FileNotFoundException {
+		return new FileOutputStream("./levels/" + resourcePath);
+	}
+
+	private InputStream getLevelFileInputStream(String levelFileName, Chapter chapter) throws FileNotFoundException {
+		return getLevelResourceFileAsInputStream(
 				chapter.getPlayMode().getLevelFolderName() + "/" + chapter.getFolderName() + "/" + levelFileName);
 	}
 
-	private InputStream getChapterFileStream(String chapterFilePath, PlayMode playMode) throws FileNotFoundException {
-		return getLevelResourceFileAsStream(playMode.getLevelFolderName() + "/" + chapterFilePath);
+	private OutputStream getLevelDataOutputStream(LevelData levelData) throws FileNotFoundException {
+		Chapter chapter = levelData.getChapter();
+		return getLevelResourceFileAsOutputStream(chapter.getPlayMode().getLevelFolderName() + "/"
+				+ chapter.getFolderName() + "/" + levelData.getLevelFileName());
+	}
+
+	private InputStream getChapterFileInputStream(String chapterFilePath, PlayMode playMode)
+			throws FileNotFoundException {
+		return getLevelResourceFileAsInputStream(playMode.getLevelFolderName() + "/" + chapterFilePath);
 	}
 
 	private String getFileContent(InputStream stream) {
@@ -72,11 +86,17 @@ final public class LevelFetcher {
 		return content;
 	}
 
-	private String getFileContentFromPath(String levelFilePath, PlayMode playMode) throws FileNotFoundException {
-		return getFileContent(getChapterFileStream(levelFilePath, playMode));
+	public void saveLevelData(LevelData levelData) throws FileNotFoundException {
+		PrintWriter writer = new PrintWriter(getLevelDataOutputStream(levelData));
+		writer.print(levelData.getLevelDataJSON());
+		writer.close();
 	}
 
-	private LevelFetcher() {
+	private String getFileContentFromPath(String levelFilePath, PlayMode playMode) throws FileNotFoundException {
+		return getFileContent(getChapterFileInputStream(levelFilePath, playMode));
+	}
+
+	private LevelFileManager() {
 		this.singlePlayerChapterList = new ArrayList<>();
 		this.coopModeChapterList = new ArrayList<>();
 	}
@@ -131,9 +151,10 @@ final public class LevelFetcher {
 
 		while (true) {
 			try {
-				InputStream fileStream = getLevelFileStream(currentFileCounter + fileNameSuffix, chapter);
+				String fileName = currentFileCounter + fileNameSuffix;
+				InputStream fileStream = getLevelFileInputStream(fileName, chapter);
 
-				chapter.addLevel(getFileContent(fileStream));
+				chapter.addLevel(getFileContent(fileStream), fileName);
 				currentFileCounter++;
 			} catch (FileNotFoundException ex) {
 				break;

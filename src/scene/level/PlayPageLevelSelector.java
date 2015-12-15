@@ -111,7 +111,7 @@ public final class PlayPageLevelSelector {
 
 			if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_ENTER)) {
 				chapterList = new ScrollableUIList();
-				chapterList.addAll(LevelFetcher.getInstance().getChapterList(selectedPlayMode));
+				chapterList.addAll(LevelFileManager.getInstance().getChapterList(selectedPlayMode));
 				chapterList.setFocusing(true);
 
 				levelList = new ScrollableUIList();

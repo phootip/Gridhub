@@ -2,6 +2,7 @@ package scene.leveleditor;
 
 import scene.level.LevelData;
 import scene.level.LevelDataBuilder;
+import scene.level.LevelFileManager;
 import scene.play.PlayScene;
 import stage.GameStage;
 import stage.GameStageType;
@@ -22,7 +23,7 @@ public final class LevelEditorScene extends PlayScene {
 	@Override
 	protected void performMenuAction(int selectedMenuItem) {
 		if (selectedMenuItem == 0) {
-			System.out.println(gameStage.buildLevelDataAsString());
+			LevelFileManager.getInstance().saveLevelData(gameStage.buildLevelData());
 		} else {
 			super.performMenuAction(selectedMenuItem - 1);
 		}

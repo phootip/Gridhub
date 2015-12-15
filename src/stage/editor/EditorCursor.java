@@ -98,9 +98,27 @@ public class EditorCursor implements IDrawable, ICameraAssignable {
 						currentY += xDir;
 						break;
 				}
+				
+				// Prevent cursor going out of bound
+				
+				if (currentX >= floorLevelMap.getSizeX()) {
+					currentX = floorLevelMap.getSizeX() - 1;
+				}
+				if (currentX < 0) {
+					currentX = 0;
+				}
+
+				if (currentY >= floorLevelMap.getSizeY()) {
+					currentY = floorLevelMap.getSizeY() - 1;
+				}
+				if (currentY < 0) {
+					currentY = 0;
+				}
+				
 				updateCurrentZ();
 			}
 		}
+		
 	}
 
 	private static final float CURSOR_SIZE = 0.4f;

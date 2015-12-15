@@ -576,13 +576,14 @@ public class GameStage {
 		builder.addFloorSwitches(dataSetFloorSwitches);
 		// builder.addGates(dataSetsGate);
 		// builder.addGateTogateTeles(dataSetTeleportToGates);
-		// builder.addLevelName(levelData.getMapName());
+		builder.addLevelName(levelData.getMapName());
 		builder.addSlopes(dataSetSlopes);
 		// builder.addSwControllers(swControllers);
 		// builder.addTeleportToArea(dataSetTeleportToArea);
 		// builder.addTelportDests(telportDests);
 
 		// builder.setPlayerCount(levelData.getPlayerCount());
+		builder.setFileName(levelData.getLevelFileName());
 
 		return builder.createLevelDataAsJSONString();
 	}

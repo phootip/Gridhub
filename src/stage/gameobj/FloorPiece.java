@@ -212,7 +212,6 @@ public class FloorPiece implements IDrawable {
 			}
 			zAnimationShifter = Helper.sineInterpolate(orderedDelta, 0, (float) zAnimationProgress / zAnimationDuration,
 					false, true);
-			System.out.println(zAnimationShifter);
 		}
 	}
 

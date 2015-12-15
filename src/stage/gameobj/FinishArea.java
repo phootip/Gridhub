@@ -8,7 +8,7 @@ import stage.ObjectMap;
 
 public class FinishArea implements IDrawable, IWalkOnAble {
 	private int x, y, z;
-	private boolean isPlayerAbove;
+	private transient boolean isPlayerAbove;
 	private transient ObjectMap objectMap;
 	
 
@@ -30,6 +30,18 @@ public class FinishArea implements IDrawable, IWalkOnAble {
 	
 	
 
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public int getZ() {
+		return z;
+	}
+
 	public void setObjectMap(ObjectMap objectMap) {
 		this.objectMap = objectMap;
 	}
@@ -39,7 +51,7 @@ public class FinishArea implements IDrawable, IWalkOnAble {
 	}
 
 	public void perFormFinish() {
-
+		System.out.println("You won");
 	}
 
 	@Override

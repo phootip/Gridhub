@@ -3,7 +3,7 @@ package stage.gameobj;
 
 public class TeleportToArea extends TeleportGate {
 	private int destinationX , destinationY, destinationZ;
-	private TeleportDestionation teleportDestination;
+	private transient TeleportDestionation teleportDestination;
 	public TeleportToArea(int x, int y, int z , int destinationX , int destinationY , int destinationZ) {
 		super(x, y, z);
 		// TODO Auto-generated constructor stub

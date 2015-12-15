@@ -9,10 +9,10 @@ import stage.gameobj.FloorSwitch;
  *
  */
 public class SwitchController {
-	private ArrayList<FloorSwitch> floorSwitchesControllerSet = new ArrayList<>();
+	private transient ArrayList<FloorSwitch> floorSwitchesControllerSet = new ArrayList<>();
 	private int [] logicLookUpArray;
-	private boolean isLogicCombinationHit;
-	private IControlable controlObject;
+	private transient boolean isLogicCombinationHit;
+	private transient IControlable controlObject;
 
 	public SwitchController(ArrayList<FloorSwitch> floorSwitchesControllerSet , int [] logicLookUpArray) {
 		super();

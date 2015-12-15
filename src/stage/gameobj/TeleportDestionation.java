@@ -49,6 +49,18 @@ public class TeleportDestionation implements IDrawable, IWalkOnAble {
 
 		return null;
 	}
+	
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public int getZ() {
+		return z;
+	}
 
 	@Override
 	public Vector3 getDrawPosition() {

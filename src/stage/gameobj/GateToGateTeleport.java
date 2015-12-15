@@ -7,7 +7,7 @@ package stage.gameobj;
  */
 public class GateToGateTeleport extends TeleportGate {
 	
-	private TeleportGate destinationGate;
+	private transient TeleportGate destinationGate;
 	public GateToGateTeleport(int x, int y, int z) {
 		super(x, y, z);
 		// TODO Auto-generated constructor stub

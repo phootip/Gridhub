@@ -153,7 +153,6 @@ final public class LevelFileManager {
 			try {
 				String fileName = currentFileCounter + fileNameSuffix;
 				InputStream fileStream = getLevelFileInputStream(fileName, chapter);
-
 				chapter.addLevel(getFileContent(fileStream), fileName);
 				currentFileCounter++;
 			} catch (FileNotFoundException ex) {

@@ -132,5 +132,7 @@ public class FloorLevel {
 	public boolean isOutOfMap(int x, int y) {
 		return x > sizeX - 1 || x < 0 || y > sizeY - 1 || y < 0;
 	}
+	
+	
 
 }

@@ -2,6 +2,7 @@ package scene.level;
 
 import java.util.ArrayList;
 
+import stage.FloorLevel;
 import stage.gameobj.Block;
 import stage.gameobj.FloorSwitch;
 import stage.gameobj.Gate;
@@ -28,13 +29,23 @@ public class LevelDataBuilder {
 	private ArrayList<TeleportDestionation> telportDests;
 	private ArrayList<Gate> gates;
 	private ArrayList<SwitchController> swControllers;
-	private int[][] floorLevel;
+	private FloorLevel floorLevel;
 	private String levelName;
 	private ArrayList<Integer> finishX;
 	private ArrayList<Integer> finishY;
 	private int[] startX;
 	private int[] startY;
 	private int playerCount;
+
+	private String fileName;
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
 
 	public LevelDataBuilder() {
 
@@ -125,11 +136,11 @@ public class LevelDataBuilder {
 		this.swControllers = swControllers;
 	}
 
-	public int[][] getFloorLevel() {
+	public FloorLevel getFloorLevel() {
 		return floorLevel;
 	}
 
-	public void addFloorLevel(int[][] floorLevel) {
+	public void addFloorLevel(FloorLevel floorLevel) {
 		this.floorLevel = floorLevel;
 	}
 
@@ -155,6 +166,18 @@ public class LevelDataBuilder {
 
 	public void addFinishY(ArrayList<Integer> finishY) {
 		this.finishY = finishY;
+	}
+
+	public void addStartX(int[] startX) {
+		this.startX = startX;
+	}
+
+	public void addStartY(int[] startY) {
+		this.startY = startY;
+	}
+
+	public void addPlayerCount(int playerCount) {
+		this.playerCount = playerCount;
 	}
 
 }

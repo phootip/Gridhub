@@ -125,168 +125,138 @@ public class GameStage {
 	public GameStage(LevelData lvlData, GameStageType gameStageType, boolean showLevelName) {
 		this.gameStageType = gameStageType;
 		this.levelData = lvlData;
-		System.out.println(lvlData);
 		objectMap.drawableObjectHashMap = new HashMap<ObjectVector, IDrawable>();
 
-		floorLevelMap = new FloorLevel(25, 25);
-		int floorMapXSize = floorLevelMap.getSizeX();
-		int floorMapYSize = floorLevelMap.getSizeY();
+//		floorLevelMap = new FloorLevel(25, 25);
+//		int floorMapXSize = floorLevelMap.getSizeX();
+//		int floorMapYSize = floorLevelMap.getSizeY();
+//
+//		for (int i = 0; i < floorMapXSize; i++) {
+//			for (int j = 0; j < floorMapYSize; j++) {
+//				if (i > 11) {
+//					floorLevelMap.setZValue(i, j, 2);
+//				} else if (i > 8) {
+//					floorLevelMap.setZValue(i, j, 1);
+//				} else {
+//					floorLevelMap.setZValue(i, j, 0);
+//				}
+//			}
+//		}
 
-		for (int i = 0; i < floorMapXSize; i++) {
-			for (int j = 0; j < floorMapYSize; j++) {
-				if (i > 11) {
-					floorLevelMap.setZValue(i, j, 2);
-				} else if (i > 8) {
-					floorLevelMap.setZValue(i, j, 1);
-				} else {
-					floorLevelMap.setZValue(i, j, 0);
-				}
-			}
-		}
-
-		if (gameStageType == GameStageType.PLAY) {
-			player1 = new Player(util.Constants.PLAYER1_ID, floorLevelMap, 9, 4, 1);
-			this.cameraList.add(new Camera(player1));
-
-			if (levelData.getPlayerCount() == 2) {
-				player2 = new Player(util.Constants.PLAYER2_ID, floorLevelMap, 0, 0, 0);
-				this.cameraList.add(new Camera(player2));
-			}
-		} else if (gameStageType == GameStageType.LEVEL_EDITOR) {
-
-			cursor = new EditorCursor(floorLevelMap);
-			this.cameraList.add(new Camera(cursor));
-
-			this.editorManager = new LevelEditorManager(cursor, this);
-
-		} else if (gameStageType == GameStageType.THUMBNAIL) {
-
-			this.cameraList.add(new Camera(new IDrawable() {
-				@Override
-				public Vector3 getDrawPosition() {
-					return new Vector3(floorLevelMap.getSizeX() / 2, floorLevelMap.getSizeY() / 2, 0);
-				}
-
-				@Override
-				public void draw(Graphics2D g, Camera camera) {
-				}
-			}));
-
-		}
 
 		/////////////////////////Starting to Serialize ///////////////////////////////////
 
-		blocks.add(new Block(6, 11, 0, 20, true, floorLevelMap));
-		blocks.add(new Block(7, 11, 0, 20, true, floorLevelMap));
-		blocks.add(new Block(8, 11, 0, 20, true, floorLevelMap));
-		blocks.add(new Block(6, 12, 0, 20, true, floorLevelMap));
-		blocks.add(new Block(7, 12, 0, 20, true, floorLevelMap));
-		blocks.add(new Block(8, 12, 0, 20, true, floorLevelMap));
-		blocks.add(new Block(6, 13, 0, 20, true, floorLevelMap));
-		blocks.add(new Block(7, 13, 0, 20, true, floorLevelMap));
-		blocks.add(new Block(8, 13, 0, 20, true, floorLevelMap));
-		blocks.add(new Block(16, 4, 2, 20, true, floorLevelMap));
-		blocks.add(new Block(9, 6, 1, 20, true, floorLevelMap));
-		blocks.add(new Block(2, 3, 0, 20, true, floorLevelMap));
-		blocks.add(new Block(2, 4, 0, 20, true, floorLevelMap));
-		blocks.add(new Block(2, 5, 0, 20, true, floorLevelMap));
-		blocks.add(new Block(2, 7, 0, 20, true, floorLevelMap));
-		blocks.add(new Block(2, 8, 0, 20, true, floorLevelMap));
-		blocks.add(new Block(2, 9, 0, 20, true, floorLevelMap));
-		blocks.add(new Block(2, 10, 0, 20, true, floorLevelMap));
-		blocks.add(new Block(1, 4, 1, 150, true, floorLevelMap));
-		blocks.add(new Block(2, 3, 1, 20, true, floorLevelMap));
-		blocks.add(new Block(3, 3, 0, 20, true, floorLevelMap));
-		blocks.add(new Block(4, 3, 0, 20, true, floorLevelMap));
-		blocks.add(new Block(5, 3, 0, 20, true, floorLevelMap));
-		blocks.add(new Block(6, 3, 0, 20, true, floorLevelMap));
-		blocks.add(new Block(7, 3, 0, 20, true, floorLevelMap));
-		blocks.add(new Block(8, 3, 0, 20, true, floorLevelMap));
-		
-		slopes.add(new Slope(6, 10, 0, Slope.ALIGNMENT_RIGHT));
-		slopes.add(new Slope(6, 5, 0, Slope.ALIGNMENT_RIGHT));
-		slopes.add(new Slope(9, 10, 1, Slope.ALIGNMENT_RIGHT));
-		slopes.add(new Slope(-2, 3, 0, Slope.ALIGNMENT_RIGHT));
-		slopes.add(new Slope(13, 4, 2, Slope.ALIGNMENT_RIGHT));
-		slopes.add(new Slope(16, 1, 2, Slope.ALIGNMENT_DOWN));
-		slopes.add(new Slope(16, 7, 2, Slope.ALIGNMENT_UP));
-		slopes.add(new Slope(19, 4, 2, Slope.ALIGNMENT_LEFT));
-		
-		floorSwitches.add(new FloorSwitch(1, 0, 0, false, 20));
-		floorSwitches.add(new FloorSwitch(4, 0, 0, false, 10));
-		floorSwitches.add(new FloorSwitch(6, 0, 0, false, 10));
-
-		GateToGateTeleport gateTele0 = new GateToGateTeleport(0, 1, 0);
-		GateToGateTeleport gateTele1 = new GateToGateTeleport(5, 0, 0);
-		GateToGateTeleport gateTele2 = new GateToGateTeleport(16, 4, 3);
-		gateTele0.setDestinationGate(gateTele2);
-		gateTele1.setDestinationGate(gateTele0);
-		gateTele2.setDestinationGate(gateTele0);
-		teleportGates.add(gateTele0);
-		teleportGates.add(gateTele1);
-		teleportGates.add(gateTele2);
-		
-		teleportToAreas.add(new TeleportToArea(10, 4, 1, 0, 2, 0));
-		for(int i =  0 ; i < teleportToAreas.size() ; i++) {
-			teleportDests.add(teleportToAreas.get(i).getTeleportDestination());
-		}
-
-		Gate gate1 = new Gate(1, 3, 0);
-		Gate gate2 = new Gate(1, 4, 0);
-		Gate gate3 = new Gate(1, 5, 0);
-		gates.add(gate1);
-		gates.add(gate2);
-		gates.add(gate3);
-		
-		ArrayList<FloorSwitch> fsArray = new ArrayList<>();
-		fsArray.add(floorSwitches.get(0));
-		fsArray.add(floorSwitches.get(1));
-		SwitchController swControl0 = new SwitchController(fsArray, new int[] { 0, 1, 0, 0 }, gate1);
-		SwitchController swControl1 = new SwitchController(fsArray, new int[] { 0, 1, 0, 0 }, gate2);
-		fsArray = new ArrayList<>();
-		fsArray.add(floorSwitches.get(1));
-		fsArray.add(floorSwitches.get(2));
-		SwitchController swControl2 = new SwitchController(fsArray, new int[] { 0, 0, 1, 0 }, gate3);
-		SwitchController swControl3 = new SwitchController(fsArray, new int[] { 0, 0, 0, 1 }, gateTele2);
-		swControllers.add(swControl0);
-		swControllers.add(swControl1);
-		swControllers.add(swControl2);
-		swControllers.add(swControl3);
-		
-		String levelName = "Chenlong Test 01";
-		finishX.add(0);
-		finishY.add(24);
-		startX = new int []{9,4};
-		startY = new int []{0,0};
-		playerCount = 1;
-		
-		LevelDataBuilder lvlBuilder = new LevelDataBuilder();
-		lvlBuilder.addBlocks(blocks);
-		lvlBuilder.addSlopes(slopes);
-		lvlBuilder.addFloorSwitches(floorSwitches);
-		lvlBuilder.addGateTogateTeles(teleportGates);
-		lvlBuilder.addTeleportToArea(teleportToAreas);
-		lvlBuilder.addTelportDests(teleportDests);
-		lvlBuilder.addGates(gates);
-		lvlBuilder.addSwControllers(swControllers);
-		lvlBuilder.addFloorLevel(floorLevelMap);
-		lvlBuilder.addLevelName(levelName);
-		lvlBuilder.addFinishX(finishX);
-		lvlBuilder.addFinishY(finishY);
-		lvlBuilder.addStartX(startX);
-		lvlBuilder.addStartY(startY);
-		lvlBuilder.addPlayerCount(playerCount);
-		//lvlBuilder.build();
-		//System.out.println("FuckYou");
-		String outPutJSON = lvlBuilder.createLevelDataAsJSONString();
-		System.out.println(outPutJSON);
-		try{
-			FileWriter writer = new FileWriter("E:\\0.json");
-			writer.write(outPutJSON);
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		blocks.add(new Block(6, 11, 0, 20, true, floorLevelMap));
+//		blocks.add(new Block(7, 11, 0, 20, true, floorLevelMap));
+//		blocks.add(new Block(8, 11, 0, 20, true, floorLevelMap));
+//		blocks.add(new Block(6, 12, 0, 20, true, floorLevelMap));
+//		blocks.add(new Block(7, 12, 0, 20, true, floorLevelMap));
+//		blocks.add(new Block(8, 12, 0, 20, true, floorLevelMap));
+//		blocks.add(new Block(6, 13, 0, 20, true, floorLevelMap));
+//		blocks.add(new Block(7, 13, 0, 20, true, floorLevelMap));
+//		blocks.add(new Block(8, 13, 0, 20, true, floorLevelMap));
+//		blocks.add(new Block(16, 4, 2, 20, true, floorLevelMap));
+//		blocks.add(new Block(9, 6, 1, 20, true, floorLevelMap));
+//		blocks.add(new Block(2, 3, 0, 20, true, floorLevelMap));
+//		blocks.add(new Block(2, 4, 0, 20, true, floorLevelMap));
+//		blocks.add(new Block(2, 5, 0, 20, true, floorLevelMap));
+//		blocks.add(new Block(2, 7, 0, 20, true, floorLevelMap));
+//		blocks.add(new Block(2, 8, 0, 20, true, floorLevelMap));
+//		blocks.add(new Block(2, 9, 0, 20, true, floorLevelMap));
+//		blocks.add(new Block(2, 10, 0, 20, true, floorLevelMap));
+//		blocks.add(new Block(1, 4, 1, 150, true, floorLevelMap));
+//		blocks.add(new Block(2, 3, 1, 20, true, floorLevelMap));
+//		blocks.add(new Block(3, 3, 0, 20, true, floorLevelMap));
+//		blocks.add(new Block(4, 3, 0, 20, true, floorLevelMap));
+//		blocks.add(new Block(5, 3, 0, 20, true, floorLevelMap));
+//		blocks.add(new Block(6, 3, 0, 20, true, floorLevelMap));
+//		blocks.add(new Block(7, 3, 0, 20, true, floorLevelMap));
+//		blocks.add(new Block(8, 3, 0, 20, true, floorLevelMap));
+//		
+//		slopes.add(new Slope(6, 10, 0, Slope.ALIGNMENT_RIGHT));
+//		slopes.add(new Slope(6, 5, 0, Slope.ALIGNMENT_RIGHT));
+//		slopes.add(new Slope(9, 10, 1, Slope.ALIGNMENT_RIGHT));
+//		slopes.add(new Slope(-2, 3, 0, Slope.ALIGNMENT_RIGHT));
+//		slopes.add(new Slope(13, 4, 2, Slope.ALIGNMENT_RIGHT));
+//		slopes.add(new Slope(16, 1, 2, Slope.ALIGNMENT_DOWN));
+//		slopes.add(new Slope(16, 7, 2, Slope.ALIGNMENT_UP));
+//		slopes.add(new Slope(19, 4, 2, Slope.ALIGNMENT_LEFT));
+//		
+//		floorSwitches.add(new FloorSwitch(1, 0, 0, false, 20));
+//		floorSwitches.add(new FloorSwitch(4, 0, 0, false, 10));
+//		floorSwitches.add(new FloorSwitch(6, 0, 0, false, 10));
+//
+//		GateToGateTeleport gateTele0 = new GateToGateTeleport(0, 1, 0);
+//		GateToGateTeleport gateTele1 = new GateToGateTeleport(5, 0, 0);
+//		GateToGateTeleport gateTele2 = new GateToGateTeleport(16, 4, 3);
+//		gateTele0.setDestinationGate(gateTele2);
+//		gateTele1.setDestinationGate(gateTele0);
+//		gateTele2.setDestinationGate(gateTele0);
+//		teleportGates.add(gateTele0);
+//		teleportGates.add(gateTele1);
+//		teleportGates.add(gateTele2);
+//		
+//		teleportToAreas.add(new TeleportToArea(10, 4, 1, 0, 2, 0));
+//		for(int i =  0 ; i < teleportToAreas.size() ; i++) {
+//			teleportDests.add(teleportToAreas.get(i).getTeleportDestination());
+//		}
+//
+//		Gate gate1 = new Gate(1, 3, 0);
+//		Gate gate2 = new Gate(1, 4, 0);
+//		Gate gate3 = new Gate(1, 5, 0);
+//		gates.add(gate1);
+//		gates.add(gate2);
+//		gates.add(gate3);
+//		
+//		ArrayList<FloorSwitch> fsArray = new ArrayList<>();
+//		fsArray.add(floorSwitches.get(0));
+//		fsArray.add(floorSwitches.get(1));
+//		SwitchController swControl0 = new SwitchController(fsArray, new int[] { 0, 1, 0, 0 }, gate1);
+//		SwitchController swControl1 = new SwitchController(fsArray, new int[] { 0, 1, 0, 0 }, gate2);
+//		fsArray = new ArrayList<>();
+//		fsArray.add(floorSwitches.get(1));
+//		fsArray.add(floorSwitches.get(2));
+//		SwitchController swControl2 = new SwitchController(fsArray, new int[] { 0, 0, 1, 0 }, gate3);
+//		SwitchController swControl3 = new SwitchController(fsArray, new int[] { 0, 0, 0, 1 }, gateTele2);
+//		swControllers.add(swControl0);
+//		swControllers.add(swControl1);
+//		swControllers.add(swControl2);
+//		swControllers.add(swControl3);
+//		
+//		String levelName = "Chenlong Test 01";
+//		finishX.add(0);
+//		finishY.add(24);
+//		startX = new int []{9,4};
+//		startY = new int []{0,0};
+//		playerCount = 1;
+//		
+//		LevelDataBuilder lvlBuilder = new LevelDataBuilder();
+//		lvlBuilder.addBlocks(blocks);
+//		lvlBuilder.addSlopes(slopes);
+//		lvlBuilder.addFloorSwitches(floorSwitches);
+//		lvlBuilder.addGateTogateTeles(teleportGates);
+//		lvlBuilder.addTeleportToArea(teleportToAreas);
+//		lvlBuilder.addTelportDests(teleportDests);
+//		lvlBuilder.addGates(gates);
+//		lvlBuilder.addSwControllers(swControllers);
+//		lvlBuilder.addFloorLevel(floorLevelMap);
+//		lvlBuilder.addLevelName(levelName);
+//		lvlBuilder.addFinishX(finishX);
+//		lvlBuilder.addFinishY(finishY);
+//		lvlBuilder.addStartX(startX);
+//		lvlBuilder.addStartY(startY);
+//		lvlBuilder.addPlayerCount(playerCount);
+//		//lvlBuilder.build();
+//		//System.out.println("FuckYou");
+//		String outPutJSON = lvlBuilder.createLevelDataAsJSONString();
+//		System.out.println(outPutJSON);
+//		try{
+//			FileWriter writer = new FileWriter("E:\\0.json");
+//			writer.write(outPutJSON);
+//			writer.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		///////////////////////// End of File Creating ///////////////////////////////////
 		
 		/////////////////////////Begin to Deserialize ///////////////////////////////////
@@ -309,7 +279,37 @@ public class GameStage {
 		dataSetStartX = levelData.getStartX();
 		dataSetStartY = levelData.getStartY();
 		playerCount = levelData.getPlayerCount();
-		System.out.println("FuckYeah"+dataLevelName);
+		
+		if (gameStageType == GameStageType.PLAY) {
+			player1 = new Player(util.Constants.PLAYER1_ID, dataSetFloorLevel, 9, 4, 1);
+			this.cameraList.add(new Camera(player1));
+
+			if (levelData.getPlayerCount() == 2) {
+				player2 = new Player(util.Constants.PLAYER2_ID, dataSetFloorLevel, 0, 0, 0);
+				this.cameraList.add(new Camera(player2));
+			}
+		} else if (gameStageType == GameStageType.LEVEL_EDITOR) {
+
+			cursor = new EditorCursor(dataSetFloorLevel);
+			this.cameraList.add(new Camera(cursor));
+
+			this.editorManager = new LevelEditorManager(cursor, this);
+
+		} else if (gameStageType == GameStageType.THUMBNAIL) {
+
+			this.cameraList.add(new Camera(new IDrawable() {
+				@Override
+				public Vector3 getDrawPosition() {
+					return new Vector3(dataSetFloorLevel.getSizeX() / 2, dataSetFloorLevel.getSizeY() / 2, 0);
+				}
+
+				@Override
+				public void draw(Graphics2D g, Camera camera) {
+				}
+			}));
+
+		}
+		
 		for (Block eachBlock : dataSetBlock) {
 			eachBlock.setObjectMap(objectMap);
 			eachBlock.setFloorLevelMap(dataSetFloorLevel);
@@ -646,13 +646,12 @@ public class GameStage {
 		lvlBuilder.addPlayerCount(dataPlayerCount);
 		String outPutJSON = lvlBuilder.createLevelDataAsJSONString();
 		lvlBuilder.setFileName(levelData.getLevelFileName());
-		System.out.println(outPutJSON);
-
 		return outPutJSON;
 	}
 	
 	public LevelData buildLevelData() {
-		return this.levelData;
+		String outPutJSON = buildLevelDataAsString();
+		return levelData = LevelData.parse(outPutJSON);
 	}
 	private void drawOverlays(Graphics2D g, Camera camera) {
 		for (FloorSwitch fs : dataSetFloorSwitches) {
@@ -718,6 +717,7 @@ public class GameStage {
 		if (object instanceof Block) {
 			Block obj = (Block) object;
 			obj.setObjectMap(objectMap);
+			dataSetBlock.add(obj);
 			objectMap.drawableObjectHashMap.put(obj.getObjectVector(), obj);
 		}
 	}

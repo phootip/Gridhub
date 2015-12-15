@@ -598,6 +598,9 @@ public class GameStage {
 	}
 
 	private void drawOverlays(Graphics2D g, Camera camera) {
+		for (FloorSwitch fs : dataSetFloorSwitches) {
+			fs.drawOverlay(g, camera);
+		}
 		if (cursor != null) {
 			cursor.drawOverlay(g, camera);
 		}

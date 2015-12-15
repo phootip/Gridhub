@@ -12,6 +12,7 @@ import stage.GameStage;
 import stage.editor.AddPane;
 import stage.editor.AddableObject;
 import stage.editor.EditorCursor.EditorCursorState;
+import stage.editor.IdlePane;
 import stage.editor.EditorCursor;
 import stage.editor.Pane;
 import stage.gameobj.Block;
@@ -28,6 +29,7 @@ public class LevelEditorManager {
 
 	private List<Pane> paneList;
 	private AddPane addPane;
+	private IdlePane idlePane = new IdlePane();
 	private EditorCursor cursor;
 	private GameStage stage;
 
@@ -37,6 +39,9 @@ public class LevelEditorManager {
 		this.cursor = cursor;
 		this.paneList = new ArrayList<>();
 		this.stage = stage;
+		
+		this.idlePane.setVisible(true);
+		this.paneList.add(idlePane);
 	}
 
 	public void update(int step) {
@@ -44,7 +49,7 @@ public class LevelEditorManager {
 		Iterator<Pane> paneIt = paneList.iterator();
 		while (paneIt.hasNext()) {
 			Pane pane = paneIt.next();
-			if (pane.shouldRemovePane()) {
+			if (pane.shouldRemovePane() && !(pane instanceof IdlePane)) {
 				paneIt.remove();
 			} else {
 				pane.update(step);
@@ -59,6 +64,8 @@ public class LevelEditorManager {
 					addPane = new AddPane();
 					addPane.setVisible(true);
 					paneList.add(addPane);
+					
+					this.idlePane.setVisible(false);
 				}
 				if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_MINUS)) {
 					int oldZValue = this.stage.getFloorLevelMap().getZValueFromXY(cursor.getCurrentX(),
@@ -105,6 +112,7 @@ public class LevelEditorManager {
 				}
 
 				if (isEscapeKeyHandled()) {
+					this.idlePane.setVisible(true);
 					addPane.setVisible(false);
 					currentOperation = LevelEditorOperation.NONE;
 				} else if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_ENTER)) {
@@ -130,6 +138,8 @@ public class LevelEditorManager {
 									break;
 							}
 
+
+							this.idlePane.setVisible(true);
 							addPane.setVisible(false);
 							currentOperation = LevelEditorOperation.NONE;
 						}

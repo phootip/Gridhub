@@ -131,6 +131,9 @@ public class FloorSwitch implements IDrawable, IWalkOnAble {
 	private final float innerCellSize = 0.8f;
 
 	public void draw(Graphics2D g, Camera camera) {
+	}
+	
+	public void drawOverlay(Graphics2D g, Camera camera) {
 		Color baseColor = new Color(200, 250, 100);
 
 		Vector2 cornerA = camera.getDrawPosition(x + innerCellShift, y + innerCellShift, z);
@@ -149,7 +152,7 @@ public class FloorSwitch implements IDrawable, IWalkOnAble {
 		g.setColor(Helper.getAlphaColor(baseColor, 150));
 		g.draw(innerBorderPath);
 
-		g.setColor(Helper.getAlphaColorPercentage(baseColor, currentCenterAlpha / 2.0f));
+		g.setColor(Helper.getAlphaColorPercentage(baseColor, currentCenterAlpha / 1.5f));
 		g.fill(innerBorderPath);
 
 		if (currentShowingWeight > -EPS) {
@@ -159,8 +162,14 @@ public class FloorSwitch implements IDrawable, IWalkOnAble {
 			Vector2 toC = camera.getDrawPosition(x - innerCellShift, y - innerCellShift + lineLength, z);
 			Vector2 toD = camera.getDrawPosition(x - innerCellShift + lineLength, y + innerCellShift, z);
 
-			g.setStroke(new BasicStroke(4));
+			g.setStroke(new BasicStroke(6));
 			g.setColor(new Color(150, 200, 50, 150));
+			g.draw(new Line2D.Float(cornerA.getX(), cornerA.getY(), toA.getX(), toA.getY()));
+			g.draw(new Line2D.Float(cornerB.getX(), cornerB.getY(), toB.getX(), toB.getY()));
+			g.draw(new Line2D.Float(cornerC.getX(), cornerC.getY(), toC.getX(), toC.getY()));
+			g.draw(new Line2D.Float(cornerD.getX(), cornerD.getY(), toD.getX(), toD.getY()));
+			g.setStroke(new BasicStroke(2));
+			g.setColor(Helper.getAlphaColor(Color.WHITE, 200));
 			g.draw(new Line2D.Float(cornerA.getX(), cornerA.getY(), toA.getX(), toA.getY()));
 			g.draw(new Line2D.Float(cornerB.getX(), cornerB.getY(), toB.getX(), toB.getY()));
 			g.draw(new Line2D.Float(cornerC.getX(), cornerC.getY(), toC.getX(), toC.getY()));
@@ -203,7 +212,7 @@ public class FloorSwitch implements IDrawable, IWalkOnAble {
 
 	@Override
 	public Vector3 getDrawPosition() {
-		return new Vector3(x, y, z);
+		return new Vector3(x, y, z - 0.48f);
 	}
 
 }

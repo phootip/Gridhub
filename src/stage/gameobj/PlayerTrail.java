@@ -24,7 +24,7 @@ public class PlayerTrail implements ILargeDrawable {
 		private boolean renderCloud;
 
 		private int cloudAlphaFader = 0;
-		private final int cloudAlphaFaderMax = 2000;
+		private final int cloudAlphaFaderMax = 1500;
 
 		public PlayerTrailDot(Vector3 startPosition, Vector3 endPosition, boolean renderCloud) {
 			this.startPosition = new Vector3(startPosition);
@@ -167,9 +167,9 @@ public class PlayerTrail implements ILargeDrawable {
 		}
 
 		// Set drawing assets
-		maignTrailCloudStroke = new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+		maignTrailCloudStroke = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 		mainTrailCloudColor = Helper.getAlphaColor(trailColor, 150);
-		glowTrailCloudStroke = new BasicStroke(7, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+		glowTrailCloudStroke = new BasicStroke(6, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 		glowTrailCloudColor = Helper.getAlphaColor(trailColor, 100);
 		mainTrailStroke = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
 		mainTrailColor = Helper.getAlphaColor(trailColor, 150);

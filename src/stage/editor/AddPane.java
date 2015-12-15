@@ -58,7 +58,7 @@ public class AddPane extends Pane {
 
 	@Override
 	protected int getMaxPaneWidth() {
-		return 300;
+		return 400;
 	}
 
 	private void drawAddableObjectList(Graphics2D g, int x, int y) {
@@ -72,13 +72,13 @@ public class AddPane extends Pane {
 
 		for (AddableObject obj : AddableObject.values()) {
 			if (obj == selectedAddableObject) {
-				g.setColor(ColorSwatch.BACKGROUND);
+				g.setColor(ColorSwatch.FOREGROUND);
 				g.fillRect(left, top, width, height);
 
-				g.setColor(ColorSwatch.FOREGROUND);
+				g.setColor(ColorSwatch.BACKGROUND);
 				g.setFont(selectedItemFont);
 			} else {
-				g.setColor(ColorSwatch.BACKGROUND);
+				g.setColor(ColorSwatch.FOREGROUND);
 				g.setFont(normalItemFont);
 			}
 
@@ -94,7 +94,7 @@ public class AddPane extends Pane {
 	@Override
 	protected void drawPaneContent(Graphics2D g, int x, int y, int height) {
 		Font headerFont = Resource.getInstance().getDefaultFont(80, FontWeight.REGULAR);
-		g.setColor(ColorSwatch.BACKGROUND);
+		g.setColor(ColorSwatch.FOREGROUND);
 		g.setFont(headerFont);
 		g.drawString("Add", x + 50, y + 40 + g.getFontMetrics().getAscent());
 

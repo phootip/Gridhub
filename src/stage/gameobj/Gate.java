@@ -9,6 +9,7 @@ import stage.ObjectMap;
 public class Gate implements IDrawable , IControlable {
 	private boolean isAsserted;
 	private int x, y, z;
+	private transient ObjectMap objectMap;
 
 	public Gate(int x, int y, int z) {
 		this.x = x;
@@ -20,14 +21,18 @@ public class Gate implements IDrawable , IControlable {
 	protected final int gateProgressControl = 100 * 50;
 	protected int gateActivationProgress = 0;
 	
+	public void setObjectMap(ObjectMap objectMap) {
+		this.objectMap = objectMap;
+	}
+
 	public void update(int step) {
 		
 		if(isAsserted) {
 			gateActivationProgress += step;
 		} else {
 			gateActivationProgress = 0;
-			if(ObjectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z)) == null ) {
-				ObjectMap.drawableObjectHashMap.put(new ObjectVector(x, y, z), this);
+			if(objectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z)) == null ) {
+				objectMap.drawableObjectHashMap.put(new ObjectVector(x, y, z), this);
 			}
 		}
 		
@@ -43,7 +48,7 @@ public class Gate implements IDrawable , IControlable {
 		if(isObjectAbove()) {
 			return;
 		}
-		else ObjectMap.drawableObjectHashMap.remove(new ObjectVector(x, y, z));
+		else objectMap.drawableObjectHashMap.remove(new ObjectVector(x, y, z));
 		
 	}
 	
@@ -80,14 +85,14 @@ public class Gate implements IDrawable , IControlable {
 	
 
 	public Player getPlayerAbove() {
-		if (ObjectMap.drawableObjectHashMap
+		if (objectMap.drawableObjectHashMap
 				.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER1_ID)) != null) {
-			return (Player) (ObjectMap.drawableObjectHashMap
+			return (Player) (objectMap.drawableObjectHashMap
 					.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER1_ID)));
 
-		} else if (ObjectMap.drawableObjectHashMap
+		} else if (objectMap.drawableObjectHashMap
 				.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER2_ID)) != null) {
-			return (Player) (ObjectMap.drawableObjectHashMap
+			return (Player) (objectMap.drawableObjectHashMap
 					.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER2_ID)));
 		}
 
@@ -96,7 +101,7 @@ public class Gate implements IDrawable , IControlable {
 
 
 	private Block getBlockAbove() {
-		IDrawable objectAbove = ObjectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z));
+		IDrawable objectAbove = objectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z));
 		if (objectAbove != null && objectAbove instanceof Block) {
 			return (Block) objectAbove;
 		} else

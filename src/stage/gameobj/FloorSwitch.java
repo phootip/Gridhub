@@ -24,6 +24,7 @@ public class FloorSwitch implements IDrawable, IWalkOnAble {
 	private int x, y, z;
 	private boolean defaultAssertion;
 	private int minimumWeight;
+	private transient ObjectMap objectMap;
 
 	private int currentWeight = 0;
 
@@ -42,7 +43,7 @@ public class FloorSwitch implements IDrawable, IWalkOnAble {
 	public ObjectVector getObjectVectorWithName() {
 		return new ObjectVector(x, y, z, "Switch");
 	}
-
+	
 	protected boolean isDefaultAssertion() {
 		return defaultAssertion;
 	}
@@ -56,6 +57,10 @@ public class FloorSwitch implements IDrawable, IWalkOnAble {
 	}
 	
 
+
+	public void setObjectMap(ObjectMap objectMap) {
+		this.objectMap = objectMap;
+	}
 
 	public FloorSwitch(int x, int y, int z, boolean defaultAssertion, int minimumWeight) {
 		this.x = x;
@@ -174,14 +179,14 @@ public class FloorSwitch implements IDrawable, IWalkOnAble {
 	}
 
 	private Player getPlayerAbove() {
-		if (ObjectMap.drawableObjectHashMap
+		if (objectMap.drawableObjectHashMap
 				.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER1_ID)) != null) {
-			return (Player) (ObjectMap.drawableObjectHashMap
+			return (Player) (objectMap.drawableObjectHashMap
 					.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER1_ID)));
 
-		} else if (ObjectMap.drawableObjectHashMap
+		} else if (objectMap.drawableObjectHashMap
 				.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER2_ID)) != null) {
-			return (Player) (ObjectMap.drawableObjectHashMap
+			return (Player) (objectMap.drawableObjectHashMap
 					.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER2_ID)));
 		}
 
@@ -189,7 +194,7 @@ public class FloorSwitch implements IDrawable, IWalkOnAble {
 	}
 
 	private Block getBlockAbove() {
-		IDrawable objectAbove = ObjectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z));
+		IDrawable objectAbove = objectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z));
 		if (objectAbove != null && objectAbove instanceof Block) {
 			return (Block) objectAbove;
 		} else

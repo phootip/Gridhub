@@ -1,11 +1,14 @@
 package scene.level;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import util.Constants;
 import util.Constants.PlayMode;
@@ -43,20 +46,16 @@ final public class LevelFetcher {
 		return coopModeUserChapter;
 	}
 
-	private ClassLoader getClassLoader() {
-		return this.getClass().getClassLoader();
+	private InputStream getLevelResourceFileAsStream(String resourcePath) throws FileNotFoundException {
+		return new FileInputStream("./levels/" + resourcePath);
 	}
 
-	private InputStream getLevelResourceFileAsStream(String resourcePath) {
-		return getClassLoader().getResourceAsStream("leveldata/" + resourcePath);
-	}
-
-	private InputStream getLevelFileStream(String levelFileName, Chapter chapter) {
+	private InputStream getLevelFileStream(String levelFileName, Chapter chapter) throws FileNotFoundException {
 		return getLevelResourceFileAsStream(
 				chapter.getPlayMode().getLevelFolderName() + "/" + chapter.getFolderName() + "/" + levelFileName);
 	}
 
-	private InputStream getChapterFileStream(String chapterFilePath, PlayMode playMode) {
+	private InputStream getChapterFileStream(String chapterFilePath, PlayMode playMode) throws FileNotFoundException {
 		return getLevelResourceFileAsStream(playMode.getLevelFolderName() + "/" + chapterFilePath);
 	}
 
@@ -73,7 +72,7 @@ final public class LevelFetcher {
 		return content;
 	}
 
-	private String getFileContentFromPath(String levelFilePath, PlayMode playMode) {
+	private String getFileContentFromPath(String levelFilePath, PlayMode playMode) throws FileNotFoundException {
 		return getFileContent(getChapterFileStream(levelFilePath, playMode));
 	}
 
@@ -92,7 +91,7 @@ final public class LevelFetcher {
 		return true;
 	}
 
-	private void populateChapterList() {
+	private void populateChapterList() throws JsonSyntaxException, FileNotFoundException {
 
 		// Single player
 		Chapter[] singlePlayerChapters = new Gson().fromJson(
@@ -131,13 +130,14 @@ final public class LevelFetcher {
 		final String fileNameSuffix = ".lev";
 
 		while (true) {
-			InputStream fileStream = getLevelFileStream(currentFileCounter + fileNameSuffix, chapter);
-			if (fileStream == null) {
+			try {
+				InputStream fileStream = getLevelFileStream(currentFileCounter + fileNameSuffix, chapter);
+
+				chapter.addLevel(getFileContent(fileStream));
+				currentFileCounter++;
+			} catch (FileNotFoundException ex) {
 				break;
 			}
-
-			chapter.addLevel(getFileContent(fileStream));
-			currentFileCounter++;
 		}
 	}
 

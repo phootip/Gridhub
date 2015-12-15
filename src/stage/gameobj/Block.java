@@ -110,7 +110,9 @@ public class Block implements PushableObject, WalkThroughable {
 
 		IDrawable nextObjectObstacles = ObjectMap.drawableObjectHashMap
 				.get(new ObjectVector(x + diffX, y + diffY, z + diffZ));
-		if(nextObjectObstacles instanceof TeleportGate || nextObjectObstacles instanceof FinishArea || nextObjectObstacles instanceof TeleportDestionation) return false;
+		if (nextObjectObstacles instanceof TeleportGate || nextObjectObstacles instanceof FinishArea
+				|| nextObjectObstacles instanceof TeleportDestionation)
+			return false;
 		if (z != floorLevelMap.getZValueFromXY(x + diffX, y + diffY)) {
 			IDrawable nextObjectBelow = ObjectMap.drawableObjectHashMap
 					.get(new ObjectVector(x + diffX, y + diffY, z + diffZ - 1));
@@ -118,7 +120,7 @@ public class Block implements PushableObject, WalkThroughable {
 			if (!(nextObjectBelow instanceof Block))
 				return false;
 		}
-		
+
 		if (nextObjectObstacles == null || nextObjectObstacles instanceof IWalkOnAble) {
 			ObjectMap.drawableObjectHashMap.put(new ObjectVector(x + diffX, y + diffY, z + diffZ), this);
 			ObjectMap.drawableObjectHashMap.remove(new ObjectVector(x, y, z));
@@ -155,8 +157,8 @@ public class Block implements PushableObject, WalkThroughable {
 	private static final float[][] cornerShifter = new float[][] { { -BLOCK_SIZE, -BLOCK_SIZE },
 			{ +BLOCK_SIZE, -BLOCK_SIZE }, { +BLOCK_SIZE, +BLOCK_SIZE }, { -BLOCK_SIZE, +BLOCK_SIZE } };
 
-	private static void drawBlock(Graphics2D g, Camera camera,Vector3 pos, boolean isRawDrawPosition) {
-		
+	public static void drawBlock(Graphics2D g, Camera camera, Vector3 pos, boolean isRawDrawPosition) {
+
 		float x = pos.getX();
 		float y = pos.getY();
 		float z = pos.getZ();

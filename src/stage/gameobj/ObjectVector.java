@@ -1,5 +1,7 @@
 package stage.gameobj;
 
+import core.geom.Vector3;
+
 public final class ObjectVector {
 	private int x, y, z;
 	private String name;
@@ -69,6 +71,10 @@ public final class ObjectVector {
 		return x == objVector.getX() && y == objVector.getY() && z == objVector.getZ()
 				&& name.equals(objVector.getName());
 
+	}
+
+	public Vector3 toVector3() {
+		return new Vector3(x, y, z);
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package stage.editor;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 
 import com.sun.glass.events.KeyEvent;
@@ -11,6 +12,7 @@ import stage.Camera;
 import stage.FloorLevel;
 import stage.gameobj.ICameraAssignable;
 import stage.gameobj.IDrawable;
+import stage.gameobj.ObjectVector;
 import util.InputManager;
 import util.Constants;
 import util.Constants.ColorSwatch;
@@ -44,6 +46,14 @@ public class EditorCursor implements IDrawable, ICameraAssignable {
 
 	private void updateCurrentZ() {
 		this.currentZ = floorLevelMap.getZValueFromXY(currentX, currentY);
+	}
+
+	public int getCurrentX() {
+		return currentX;
+	}
+
+	public int getCurrentY() {
+		return currentY;
 	}
 
 	@Override
@@ -96,6 +106,7 @@ public class EditorCursor implements IDrawable, ICameraAssignable {
 	private static final float CURSOR_SIZE = 0.4f;
 	private float[][] rectShifter = { { CURSOR_SIZE, CURSOR_SIZE }, { -CURSOR_SIZE, CURSOR_SIZE },
 			{ -CURSOR_SIZE, -CURSOR_SIZE }, { CURSOR_SIZE, -CURSOR_SIZE } };
+	private Color currentCursorColor = ColorSwatch.FOREGROUND;
 
 	@Override
 	public void draw(Graphics2D g, Camera camera) {
@@ -108,15 +119,15 @@ public class EditorCursor implements IDrawable, ICameraAssignable {
 			drawPositionY[i] = drawPos.getIntY();
 		}
 
-		g.setColor(Helper.getAlphaColorPercentage(ColorSwatch.FOREGROUND, 0.5f));
+		g.setColor(Helper.getAlphaColorPercentage(currentCursorColor, 0.5f));
 		g.fillPolygon(drawPositionX, drawPositionY, 4);
 
 		g.setStroke(new BasicStroke(3, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER));
-		g.setColor(ColorSwatch.FOREGROUND);
+		g.setColor(currentCursorColor);
 		g.drawPolygon(drawPositionX, drawPositionY, 4);
 
 		g.setStroke(new BasicStroke(5, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER));
-		g.setColor(Helper.getAlphaColorPercentage(ColorSwatch.FOREGROUND, 0.5f));
+		g.setColor(Helper.getAlphaColorPercentage(currentCursorColor, 0.5f));
 		g.drawPolygon(drawPositionX, drawPositionY, 4);
 	}
 
@@ -136,6 +147,30 @@ public class EditorCursor implements IDrawable, ICameraAssignable {
 		g.setStroke(OVERLAY_STROKE);
 		g.setColor(ColorSwatch.FOREGROUND);
 		g.drawPolygon(drawPositionX, drawPositionY, 4);
+	}
+
+	public enum EditorCursorState {
+		NORMAL, INVALID, VALID;
+	}
+	
+	private EditorCursorState currentState = EditorCursorState.NORMAL;
+
+	public void setState(EditorCursorState state) {
+		this.currentState = state;
+		switch(state) {
+			case INVALID:
+				currentCursorColor = Color.RED;
+				break;
+			case VALID:
+				currentCursorColor = Color.GREEN;
+				break;
+			case NORMAL:
+				currentCursorColor = ColorSwatch.FOREGROUND;
+				break;
+			default:
+				break;
+			
+		}
 	}
 
 }

@@ -56,6 +56,7 @@ public class Chapter implements IScrollableListItem {
 	 */
 	protected void addLevel(String levelFileContent, String levelFileName) {
 	//	LevelData levelData = LevelData.parse((playMode == PlayMode.SINGLE_PLAYER) ? 1 : 2, levelFileContent);
+		
 		LevelData levelData = LevelData.parse(levelFileContent);
 		levelData.setLevelFileName(levelFileName);
 		levelData.setChapter(this);

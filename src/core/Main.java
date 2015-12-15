@@ -6,6 +6,7 @@ import java.awt.event.ComponentListener;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import scene.level.LevelData;
 import scene.level.LevelFileManager;
 import stage.GameStageType;
 import util.Constants;
@@ -74,8 +75,9 @@ public class Main {
 
 		// Set initial scene
 
-		 SceneManager.getInstance().setNextScene(new scene.mainmenu.MainMenuScene(false));
+		SceneManager.getInstance().setNextScene(new scene.mainmenu.MainMenuScene(false));
 //		SceneManager.getInstance().setNextScene(new stage.GameStage(GameStageType.PLAY));
+
 
 		// Game looper
 		final long maximumWaitTime = 1000000000 / Constants.MAX_FRAME_PER_SECOND;

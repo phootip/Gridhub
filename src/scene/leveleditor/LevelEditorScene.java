@@ -1,5 +1,7 @@
 package scene.leveleditor;
 
+import java.io.FileNotFoundException;
+
 import scene.level.LevelData;
 import scene.level.LevelDataBuilder;
 import scene.level.LevelFileManager;
@@ -23,7 +25,12 @@ public final class LevelEditorScene extends PlayScene {
 	@Override
 	protected void performMenuAction(int selectedMenuItem) {
 		if (selectedMenuItem == 0) {
-			LevelFileManager.getInstance().saveLevelData(gameStage.buildLevelData());
+			try {
+				LevelFileManager.getInstance().saveLevelData(gameStage.buildLevelData());
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else {
 			super.performMenuAction(selectedMenuItem - 1);
 		}

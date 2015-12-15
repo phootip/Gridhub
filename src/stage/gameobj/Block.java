@@ -25,8 +25,8 @@ public class Block implements PushableObject, WalkThroughable {
 	protected static final float BLOCK_HEIGHT = 1.0f;
 	private int x, y, z, nextX, nextY, nextZ, weight;
 	private Vector3 drawPosition;
-	private boolean isWalkThroughable;
-	private FloorLevel floorLevelMap;
+	private transient boolean isWalkThroughable;
+	private transient FloorLevel floorLevelMap;
 	private transient ObjectMap objectMap;
 	// private boolean isObjectAbove;
 	
@@ -84,7 +84,7 @@ public class Block implements PushableObject, WalkThroughable {
 		this.nextZ = z;
 		this.weight = weight;
 		this.isWalkThroughable = isWalkThroughable;
-
+		
 		this.drawPosition = new Vector3(x, y, z);
 	}
 
@@ -156,6 +156,13 @@ public class Block implements PushableObject, WalkThroughable {
 	public boolean isWalkThroughable() {
 		return isWalkThroughable;
 	}
+	
+
+	public void setFloorLevelMap(FloorLevel floorLevelMap) {
+		this.floorLevelMap = floorLevelMap;
+	}
+
+
 
 	private static BufferedImage cachedBoxImg;
 	private static int cachedBoxImgSize = 150;

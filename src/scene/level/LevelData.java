@@ -10,10 +10,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import core.IScrollableListItem;
 import core.geom.Vector2;
+import jdk.nashorn.api.scripting.JSObject;
+import stage.FloorLevel;
 import stage.gameobj.Block;
 import stage.gameobj.FloorSwitch;
 import stage.gameobj.Gate;
@@ -140,7 +143,7 @@ public final class LevelData implements IScrollableListItem {
 	private String createLevelData(ArrayList<Block> blocks, ArrayList<Slope> slopes,
 			ArrayList<FloorSwitch> floorSwitches, ArrayList<GateToGateTeleport> gateTogateTeles,
 			ArrayList<TeleportToArea> teleportToArea, ArrayList<TeleportDestionation> telportDests,
-			ArrayList<Gate> gates, ArrayList<SwitchController> swControllers, int[][] floorLevel, String levelName,
+			ArrayList<Gate> gates, ArrayList<SwitchController> swControllers, FloorLevel floorLevel, String levelName,
 			ArrayList<Integer> finishX, ArrayList<Integer> finishY, int[] startX, int[] startY, int playerCount) {
 
 		String blockJSON = getBlockArrayAsJSON(blocks);
@@ -315,7 +318,7 @@ public final class LevelData implements IScrollableListItem {
 		return gson.toJson(indexList);
 	}
 
-	private String getFloorLevelAsString(int[][] floorLevel) {
+	private String getFloorLevelAsString(FloorLevel floorLevel) {
 		Gson gson = new Gson();
 		return gson.toJson(floorLevel);
 	}
@@ -361,10 +364,11 @@ public final class LevelData implements IScrollableListItem {
 	}.getType();
 	private final Type switchSetIndexType = new TypeToken<ArrayList<int[]>>() {
 	}.getType();
-	private final Type hashType = new TypeToken<HashMap<String, String>>() {
+	private final Type hashType = new TypeToken<HashMap<String,String>>() {
 	}.getType();
 	private final Type integerType = new TypeToken<ArrayList<Integer>>() {
 	}.getType();
+
 
 	private HashMap<String, String> levelContents;
 	private ArrayList<Block> blocks;
@@ -378,7 +382,7 @@ public final class LevelData implements IScrollableListItem {
 	private ArrayList<SwitchController> swControllers;
 	private ArrayList<int[]> controlObjectIndex;
 	private ArrayList<int[]> switchSetIndex;
-	private int[][] floorLevel;
+	private FloorLevel floorLevel;
 	private String levelName;
 	private ArrayList<Integer> finishX;
 	private ArrayList<Integer> finishY;
@@ -386,6 +390,7 @@ public final class LevelData implements IScrollableListItem {
 	private int[] startY;
 
 	private LevelData(String jsonContent) {
+		
 		levelContents = getContentList(jsonContent);
 		blocks = getBlocks(levelContents.get("Block"));
 		slopes = getSlopes(levelContents.get("Slope"));
@@ -407,9 +412,13 @@ public final class LevelData implements IScrollableListItem {
 		startY = getPositionArray(levelContents.get("StartY"));
 
 	}
+	
+	public static LevelData parse(int p ,String jsonContent) {
+		return new LevelData(jsonContent);
+	}
 
 	public static LevelData parse(String jsonContent) {
-		return new LevelData(1, jsonContent);
+		return new LevelData(1,jsonContent);
 	}
 
 	// mock up only
@@ -478,9 +487,9 @@ public final class LevelData implements IScrollableListItem {
 		return gson.fromJson(json, controlObjectIndexType);
 	}
 
-	public int[][] getFloorLevel(String json) {
+	public FloorLevel getFloorLevel(String json) {
 		Gson gson = new Gson();
-		return gson.fromJson(json, int[][].class);
+		return gson.fromJson(json, FloorLevel.class);
 	}
 
 	public int[] getPositionArray(String json) {
@@ -547,7 +556,7 @@ public final class LevelData implements IScrollableListItem {
 		return switchSetIndex;
 	}
 
-	public int[][] getFloorLevel() {
+	public FloorLevel getFloorLevel() {
 		return floorLevel;
 	}
 
@@ -576,5 +585,12 @@ public final class LevelData implements IScrollableListItem {
 	public String getLevelFileName() {
 		return levelFileName;
 	}
+
+	public String getLevelName() {
+		return levelName;
+	}
+	
+	
+	 
 
 }

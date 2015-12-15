@@ -567,23 +567,23 @@ public class GameStage {
 		}
 
 	}
-	
+
 	public String buildLevelDataAsString() {
 		LevelDataBuilder builder = new LevelDataBuilder();
-		
+
 		builder.addBlocks(datasetGsonBlock);
 		builder.addFloorLevel(floorLevelMap.getFloorMap());
 		builder.addFloorSwitches(dataSetFloorSwitches);
-//		builder.addGates(dataSetsGate);
-//		builder.addGateTogateTeles(dataSetTeleportToGates);
-//		builder.addLevelName(levelData.getMapName());
+		// builder.addGates(dataSetsGate);
+		// builder.addGateTogateTeles(dataSetTeleportToGates);
+		// builder.addLevelName(levelData.getMapName());
 		builder.addSlopes(dataSetSlopes);
-//		builder.addSwControllers(swControllers);
-//		builder.addTeleportToArea(dataSetTeleportToArea);
-//		builder.addTelportDests(telportDests);
-		
-		builder.setPlayerCount(levelData.getPlayerCount());
-		
+		// builder.addSwControllers(swControllers);
+		// builder.addTeleportToArea(dataSetTeleportToArea);
+		// builder.addTelportDests(telportDests);
+
+		// builder.setPlayerCount(levelData.getPlayerCount());
+
 		return builder.createLevelDataAsJSONString();
 	}
 

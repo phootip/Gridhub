@@ -11,7 +11,7 @@ import stage.gameobj.SwitchController;
 import stage.gameobj.TeleportDestionation;
 import stage.gameobj.TeleportToArea;
 
-public class LevelBuilder {
+public class LevelDataBuilder {
 	private ArrayList<Block> blocks;
 	private ArrayList<Slope> slopes;
 	private ArrayList<FloorSwitch> floorSwitches;
@@ -25,7 +25,7 @@ public class LevelBuilder {
 	private ArrayList<Integer> finishX;
 	private ArrayList<Integer> finishY;
 	
-	public LevelBuilder() {
+	public LevelDataBuilder() {
 		
 	}
 	public ArrayList<Block> getBlocks() {

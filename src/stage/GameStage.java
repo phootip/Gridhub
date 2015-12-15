@@ -19,8 +19,8 @@ import stage.renderer.LevelRenderer;
 import scene.core.Scene;
 import scene.level.LevelData;
 import scene.level.LevelDataBuilder;
-import stage.editor.AddPane.AddableObject;
 import stage.editor.EditorCursor.EditorCursorState;
+import stage.editor.AddableObject;
 import stage.editor.EditorCursor;
 import stage.LevelEditorManager;
 import stage.gameobj.Block;
@@ -51,6 +51,11 @@ public class GameStage {
 	private Player player1 = null, player2 = null;
 	private EditorCursor cursor = null;
 	private FloorLevel floorLevelMap;
+
+	public FloorLevel getFloorLevelMap() {
+		return floorLevelMap;
+	}
+
 	private ArrayList<Block> blocks = new ArrayList<>();
 	private ArrayList<FloorSwitch> floorSwitches = new ArrayList<>();
 	private ArrayList<Slope> slopes = new ArrayList<>();
@@ -567,23 +572,23 @@ public class GameStage {
 		}
 
 	}
-	
+
 	public String buildLevelDataAsString() {
 		LevelDataBuilder builder = new LevelDataBuilder();
-		
+
 		builder.addBlocks(datasetGsonBlock);
 		builder.addFloorLevel(floorLevelMap.getFloorMap());
 		builder.addFloorSwitches(dataSetFloorSwitches);
-//		builder.addGates(dataSetsGate);
-//		builder.addGateTogateTeles(dataSetTeleportToGates);
-//		builder.addLevelName(levelData.getMapName());
+		// builder.addGates(dataSetsGate);
+		// builder.addGateTogateTeles(dataSetTeleportToGates);
+		// builder.addLevelName(levelData.getMapName());
 		builder.addSlopes(dataSetSlopes);
-//		builder.addSwControllers(swControllers);
-//		builder.addTeleportToArea(dataSetTeleportToArea);
-//		builder.addTelportDests(telportDests);
-		
-		builder.setPlayerCount(levelData.getPlayerCount());
-		
+		// builder.addSwControllers(swControllers);
+		// builder.addTeleportToArea(dataSetTeleportToArea);
+		// builder.addTelportDests(telportDests);
+
+		// builder.setPlayerCount(levelData.getPlayerCount());
+
 		return builder.createLevelDataAsJSONString();
 	}
 
@@ -623,14 +628,52 @@ public class GameStage {
 		return false;
 	}
 
-	public void addObjectAtCursor(AddableObject objectType) {
-		ObjectVector placePosition = getPlacingObjectPositionAtCursor();
+	public boolean isAbleToPlaceSlopeAtCursor(int alignment) {
+		ObjectVector middlePos = getPlacingObjectPositionAtCursor();
+		ObjectVector startPos = Slope.getSlopeStartPosition(middlePos, alignment);
+		ObjectVector endPos = Slope.getSlopeEndPosition(middlePos, alignment);
 
-		if (objectType == AddableObject.BOX) {
-			Block obj = new Block(placePosition.getX(), placePosition.getY(), placePosition.getZ(), floorLevelMap);
+		// Check level
+		if (floorLevelMap.getZValueFromXY(startPos.getX(), startPos.getY()) != startPos.getZ())
+			return false;
+		if (floorLevelMap.getZValueFromXY(middlePos.getX(), middlePos.getY()) != middlePos.getZ())
+			return false;
+		if (floorLevelMap.getZValueFromXY(endPos.getX(), endPos.getY()) != endPos.getZ() - 1)
+			return false;
+
+		endPos.addVector(0, 0, -1);
+
+		return (objectMap.drawableObjectHashMap.get(startPos) == null)
+				&& (objectMap.drawableObjectHashMap.get(middlePos) == null)
+				&& (objectMap.drawableObjectHashMap.get(endPos) == null);
+	}
+
+	public void addObjectAtCursor(Object object) {
+		// ObjectVector placePosition = getPlacingObjectPositionAtCursor();
+		if (object instanceof Block) {
+			Block obj = (Block) object;
 			obj.setObjectMap(objectMap);
 			objectMap.drawableObjectHashMap.put(obj.getObjectVector(), obj);
 		}
+	}
+
+	public void addSlopeAtCursor(int alignment) {
+		ObjectVector middlePos = getPlacingObjectPositionAtCursor();
+		ObjectVector startPos = Slope.getSlopeStartPosition(middlePos, alignment);
+
+		Slope slope = new Slope(startPos.getX(), startPos.getY(), startPos.getZ(), alignment);
+
+		int slopeStartX = slope.getStartX();
+		int slopeStartY = slope.getStartY();
+		int slopeStartZ = slope.getStartZ();
+		int slopeEndX = slope.getEndX();
+		int slopeEndY = slope.getEndY();
+		int xBar = (slopeStartX + slopeEndX) / 2;
+		int yBar = (slopeStartY + slopeEndY) / 2;
+
+		objectMap.drawableObjectHashMap.put(new ObjectVector(slopeStartX, slopeStartY, slopeStartZ), slope);
+		objectMap.drawableObjectHashMap.put(new ObjectVector(xBar, yBar, slopeStartZ), slope);
+		objectMap.drawableObjectHashMap.put(new ObjectVector(slopeEndX, slopeEndY, slopeStartZ), slope);
 	}
 
 }

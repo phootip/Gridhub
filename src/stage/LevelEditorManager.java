@@ -10,11 +10,13 @@ import java.util.List;
 
 import stage.GameStage;
 import stage.editor.AddPane;
-import stage.editor.AddPane.AddableObject;
+import stage.editor.AddableObject;
 import stage.editor.EditorCursor.EditorCursorState;
 import stage.editor.EditorCursor;
 import stage.editor.Pane;
 import stage.gameobj.Block;
+import stage.gameobj.ObjectVector;
+import stage.gameobj.Slope;
 import util.InputManager;
 
 public class LevelEditorManager {
@@ -26,14 +28,14 @@ public class LevelEditorManager {
 	private List<Pane> paneList;
 	private AddPane addPane;
 	private EditorCursor cursor;
-	private GameStage callback;
+	private GameStage stage;
 
 	private LevelEditorOperation currentOperation = LevelEditorOperation.NONE;
 
-	public LevelEditorManager(EditorCursor cursor, GameStage callback) {
+	public LevelEditorManager(EditorCursor cursor, GameStage stage) {
 		this.cursor = cursor;
 		this.paneList = new ArrayList<>();
-		this.callback = callback;
+		this.stage = stage;
 	}
 
 	public void update(int step) {
@@ -59,21 +61,42 @@ public class LevelEditorManager {
 				}
 				break;
 			case ADD:
-				if (addPane.getSelectedAddableObject() != null) {
-					if (callback.isAbleToPlaceObjectAtCursor(addPane.getSelectedAddableObject())) {
-						cursor.setState(EditorCursorState.VALID);
-					} else {
-						cursor.setState(EditorCursorState.INVALID);
-					}
+				boolean isPlaceable;
+				if (addPane.getSelectedAddableObject() == AddableObject.SLOPE) {
+					isPlaceable = stage.isAbleToPlaceSlopeAtCursor(addPane.getSlopeAlignment());
+				} else {
+					isPlaceable = stage.isAbleToPlaceObjectAtCursor(addPane.getSelectedAddableObject());
 				}
+				
+				if (addPane.getSelectedAddableObject() != null) {
+					cursor.setState(isPlaceable ? EditorCursorState.VALID : EditorCursorState.INVALID);
+				}
+
 				if (isEscapeKeyHandled()) {
 					addPane.setVisible(false);
 					currentOperation = LevelEditorOperation.NONE;
 				} else if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_ENTER)) {
 					if (addPane.getSelectedAddableObject() != null) {
-						if (callback.isAbleToPlaceObjectAtCursor(addPane.getSelectedAddableObject())) {
 
-							this.callback.addObjectAtCursor(addPane.getSelectedAddableObject());
+						if (addPane.getSelectedAddableObject() == AddableObject.SLOPE) {
+							isPlaceable = stage.isAbleToPlaceSlopeAtCursor(addPane.getSlopeAlignment());
+						} else {
+							isPlaceable = stage.isAbleToPlaceObjectAtCursor(addPane.getSelectedAddableObject());
+						}
+
+						if (isPlaceable) {
+
+							switch (addPane.getSelectedAddableObject()) {
+								case BOX:
+									ObjectVector placePosition = this.stage.getPlacingObjectPositionAtCursor();
+									Block obj = new Block(placePosition.getX(), placePosition.getY(),
+											placePosition.getZ(), this.stage.getFloorLevelMap());
+									this.stage.addObjectAtCursor(obj);
+									break;
+								case SLOPE:
+									this.stage.addSlopeAtCursor(addPane.getSlopeAlignment());
+									break;
+							}
 
 							addPane.setVisible(false);
 							currentOperation = LevelEditorOperation.NONE;
@@ -106,7 +129,24 @@ public class LevelEditorManager {
 
 				switch (addPane.getSelectedAddableObject()) {
 					case BOX:
-						Block.drawBlock(g, camera, callback.getPlacingObjectPositionAtCursor().toVector3(), false);
+						Block.drawBlock(g, camera, stage.getPlacingObjectPositionAtCursor().toVector3(), false);
+						break;
+					case SLOPE:
+						ObjectVector middlePos = stage.getPlacingObjectPositionAtCursor();
+						ObjectVector startPos = Slope.getSlopeStartPosition(middlePos, addPane.getSlopeAlignment());
+						ObjectVector endPos = Slope.getSlopeEndPosition(middlePos, addPane.getSlopeAlignment());
+
+						if (camera.getDrawPosition(startPos.toVector3()).getY() < camera
+								.getDrawPosition(endPos.toVector3()).getY()) {
+							Slope.drawStartPiece(g, camera, startPos, endPos);
+							Slope.drawMiddlePiece(g, camera, startPos, endPos);
+							Slope.drawEndPiece(g, camera, startPos, endPos);
+						} else {
+							Slope.drawEndPiece(g, camera, startPos, endPos);
+							Slope.drawMiddlePiece(g, camera, startPos, endPos);
+							Slope.drawStartPiece(g, camera, startPos, endPos);
+						}
+
 						break;
 				}
 

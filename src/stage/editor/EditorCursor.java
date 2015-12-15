@@ -98,9 +98,9 @@ public class EditorCursor implements IDrawable, ICameraAssignable {
 						currentY += xDir;
 						break;
 				}
-				updateCurrentZ();
 			}
 		}
+		updateCurrentZ();
 	}
 
 	private static final float CURSOR_SIZE = 0.4f;
@@ -152,12 +152,12 @@ public class EditorCursor implements IDrawable, ICameraAssignable {
 	public enum EditorCursorState {
 		NORMAL, INVALID, VALID;
 	}
-	
+
 	private EditorCursorState currentState = EditorCursorState.NORMAL;
 
 	public void setState(EditorCursorState state) {
 		this.currentState = state;
-		switch(state) {
+		switch (state) {
 			case INVALID:
 				currentCursorColor = Color.RED;
 				break;
@@ -169,7 +169,7 @@ public class EditorCursor implements IDrawable, ICameraAssignable {
 				break;
 			default:
 				break;
-			
+
 		}
 	}
 

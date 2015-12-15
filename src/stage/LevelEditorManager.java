@@ -15,6 +15,7 @@ import stage.editor.EditorCursor.EditorCursorState;
 import stage.editor.EditorCursor;
 import stage.editor.Pane;
 import stage.gameobj.Block;
+import stage.gameobj.FloorPiece;
 import stage.gameobj.ObjectVector;
 import stage.gameobj.Slope;
 import util.InputManager;
@@ -59,6 +60,37 @@ public class LevelEditorManager {
 					addPane.setVisible(true);
 					paneList.add(addPane);
 				}
+				if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_MINUS)) {
+					int oldZValue = this.stage.getFloorLevelMap().getZValueFromXY(cursor.getCurrentX(),
+							cursor.getCurrentY());
+					if (oldZValue > 0) {
+						this.stage.getFloorLevelMap().setZValue(cursor.getCurrentX(), cursor.getCurrentY(),
+								oldZValue - 1);
+						this.stage.constructFloorPieces(true);
+						for (FloorPiece piece : this.stage.getFloorPieceList()) {
+							if (piece.getObjectVector().equals(new ObjectVector(cursor.getCurrentX(),
+									cursor.getCurrentY(), oldZValue - 1, "FloorPiece"))) {
+								piece.setZAnimation(1);
+							}
+						}
+					}
+				}
+				if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_EQUALS)) {
+					int oldZValue = this.stage.getFloorLevelMap().getZValueFromXY(cursor.getCurrentX(),
+							cursor.getCurrentY());
+					if (oldZValue < 10) {
+						this.stage.getFloorLevelMap().setZValue(cursor.getCurrentX(), cursor.getCurrentY(),
+								oldZValue + 1);
+						this.stage.constructFloorPieces(true);
+						for (FloorPiece piece : this.stage.getFloorPieceList()) {
+							if (piece.getObjectVector().equals(new ObjectVector(cursor.getCurrentX(),
+									cursor.getCurrentY(), oldZValue + 1, "FloorPiece"))) {
+								piece.setZAnimation(-1);
+							}
+						}
+					}
+				}
+
 				break;
 			case ADD:
 				boolean isPlaceable;
@@ -67,7 +99,7 @@ public class LevelEditorManager {
 				} else {
 					isPlaceable = stage.isAbleToPlaceObjectAtCursor(addPane.getSelectedAddableObject());
 				}
-				
+
 				if (addPane.getSelectedAddableObject() != null) {
 					cursor.setState(isPlaceable ? EditorCursorState.VALID : EditorCursorState.INVALID);
 				}

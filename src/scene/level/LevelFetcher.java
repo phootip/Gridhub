@@ -1,12 +1,6 @@
 package scene.level;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -26,6 +20,28 @@ final public class LevelFetcher {
 
 	private List<Chapter> singlePlayerChapterList;
 	private List<Chapter> coopModeChapterList;
+
+	private Chapter singlePlayerUserChapter;
+	private Chapter coopModeUserChapter;
+
+	protected Chapter getUserChapter(PlayMode playMode) {
+		switch (playMode) {
+			case COOP_MODE:
+				return getCoopModeUserChapter();
+			case SINGLE_PLAYER:
+				return getSinglePlayerUserChapter();
+			default:
+				throw new IllegalArgumentException("Invalid playMode : " + playMode);
+		}
+	}
+
+	protected Chapter getSinglePlayerUserChapter() {
+		return singlePlayerUserChapter;
+	}
+
+	protected Chapter getCoopModeUserChapter() {
+		return coopModeUserChapter;
+	}
 
 	private ClassLoader getClassLoader() {
 		return this.getClass().getClassLoader();
@@ -76,7 +92,7 @@ final public class LevelFetcher {
 		return true;
 	}
 
-	private void populateChapterList() throws IOException, URISyntaxException {
+	private void populateChapterList() {
 
 		// Single player
 		Chapter[] singlePlayerChapters = new Gson().fromJson(
@@ -85,6 +101,10 @@ final public class LevelFetcher {
 		for (int i = 0; i < singlePlayerChapters.length; i++) {
 			singlePlayerChapters[i].setChapterOrder(i + 1);
 			singlePlayerChapters[i].setPlayMode(PlayMode.SINGLE_PLAYER);
+			if (singlePlayerChapters[i].isUserFolder()) {
+				singlePlayerUserChapter = singlePlayerChapters[i];
+			}
+
 			singlePlayerChapterList.add(singlePlayerChapters[i]);
 			populateLevelInChapter(singlePlayerChapters[i]);
 		}
@@ -96,14 +116,16 @@ final public class LevelFetcher {
 		for (int i = 0; i < coopModeChapters.length; i++) {
 			coopModeChapters[i].setChapterOrder(i + 1);
 			coopModeChapters[i].setPlayMode(PlayMode.COOP_MODE);
+			if (coopModeChapters[i].isUserFolder()) {
+				coopModeUserChapter = singlePlayerChapters[i];
+			}
+
 			coopModeChapterList.add(coopModeChapters[i]);
 			populateLevelInChapter(coopModeChapters[i]);
 		}
 	}
 
-	private void populateLevelInChapter(Chapter chapter) throws URISyntaxException, IOException {
-
-		PlayMode playMode = chapter.getPlayMode();
+	private void populateLevelInChapter(Chapter chapter) {
 
 		int currentFileCounter = 0;
 		final String fileNameSuffix = ".lev";

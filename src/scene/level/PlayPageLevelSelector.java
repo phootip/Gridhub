@@ -5,7 +5,6 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 
-import core.IScrollableListItem;
 import core.ScrollableUIList;
 import core.geom.Vector2;
 import util.Helper;
@@ -15,7 +14,7 @@ import util.Constants.ColorSwatch;
 import util.Constants.PlayMode;
 import util.Resource.FontWeight;
 
-public class LevelSelector {
+public final class PlayPageLevelSelector {
 
 	private PlayMode selectedPlayMode;
 	private boolean playModeSelected = false;
@@ -41,7 +40,7 @@ public class LevelSelector {
 		return playModeSelected && InputManager.getInstance().isKeyTriggering(KeyEvent.VK_ESCAPE);
 	}
 
-	public LevelSelector() {
+	public PlayPageLevelSelector() {
 		selectedPlayMode = PlayMode.SINGLE_PLAYER;
 	}
 

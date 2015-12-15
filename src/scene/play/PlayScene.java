@@ -25,7 +25,7 @@ import util.Helper;
 import util.InputManager;
 import util.Resource;
 
-public final class PlayScene extends Scene {
+public class PlayScene extends Scene {
 
 	private static final int MAX_MENU_WIDTH = 800;
 	private static final int MENU_ITEM_TEXT_HEIGHT = 60;
@@ -33,8 +33,8 @@ public final class PlayScene extends Scene {
 	private static final int MENU_LEVEL_NAME_TEXT_SIZE = 100;
 	private static final int MENU_CHAPTER_NAME_TEXT_SIZE = 40;
 	private static final int MENU_TOP_MARGIN = 50;
-	private LevelData levelData;
-	private GameStage gameStage;
+	protected LevelData levelData;
+	protected GameStage gameStage;
 
 	private boolean isPause = false;
 	private boolean isGameRunning = true;
@@ -45,6 +45,10 @@ public final class PlayScene extends Scene {
 
 	public PlayScene(LevelData levelData) {
 		this.levelData = levelData;
+		createGameStage();
+	}
+	
+	protected void createGameStage() {
 		this.gameStage = new GameStage(this.levelData, GameStageType.PLAY);
 	}
 

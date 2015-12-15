@@ -24,10 +24,27 @@ public class LevelDataBuilder {
 	private String LevelName;
 	private ArrayList<Integer> finishX;
 	private ArrayList<Integer> finishY;
+	private int [] startX;
+	private int [] startY;
+	
 	
 	public LevelDataBuilder() {
 		
 	}
+	
+	public String createLevelDataAsJSONString() {
+		LevelData levelData = LevelData.createLevelDataAsJSON(this);
+		return levelData.getLevelDataJSON();
+	}
+	
+	public int[] getStartX() {
+		return startX;
+	}
+
+	public int[] getStartY() {
+		return startY;
+	}
+
 	public ArrayList<Block> getBlocks() {
 		return blocks;
 	}

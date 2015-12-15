@@ -14,6 +14,7 @@ import com.google.gson.reflect.TypeToken;
 
 import core.IScrollableListItem;
 import core.geom.Vector2;
+import stage.GameStage;
 import stage.gameobj.Block;
 import stage.gameobj.FloorSwitch;
 import stage.gameobj.Gate;
@@ -30,6 +31,16 @@ import util.Helper;
 import util.Resource;
 import util.Resource.FontWeight;
 
+// TODO: Complete Javadoc
+
+/**
+ * A class representing a level data. Used for representing a single level in the game. This can be passed to
+ * {@link GameStage} for constructing game stage. Also, {@link LevelData} can be used in serializing or deserializing
+ * JSON string for level loading from file and level saving to file.
+ * 
+ * @author Kasidit Iamthong, Thanat
+ * @see LevelDataBuilder
+ */
 public final class LevelData implements IScrollableListItem {
 
 	/**

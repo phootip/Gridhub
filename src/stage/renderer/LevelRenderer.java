@@ -16,6 +16,12 @@ import stage.Camera;
 import stage.gameobj.IDrawable;
 import stage.gameobj.ILargeDrawable;
 
+/**
+ * A level renderer helper by managing {@link IDrawable}'s draw ordering inside.
+ * 
+ * @author Kasidit Iamthong
+ *
+ */
 public class LevelRenderer {
 
 	private static final int CLIPPER_PADDING = 100;
@@ -61,8 +67,18 @@ public class LevelRenderer {
 		return true;
 	}
 
+	/**
+	 * Draw a collection of {@link IDrawable}, ordered by internal rules.
+	 * 
+	 * @param objectCollection
+	 *            collection of {@link IDrawable} objects to be drawn.
+	 * @param g
+	 *            a {@link Graphics2D} object.
+	 * @param camera
+	 *            a {@link Camera} for drawing {@link IDrawable} onto the {@link Graphics2D}.
+	 */
 	public static void draw(Collection<IDrawable> objectCollection, Graphics2D g, Camera camera) {
-		
+
 		List<IDrawable> drawList = createListWithUniqueItem(objectCollection);
 		List<RenderEntity> renderEntities = createRenderEntityList(drawList, camera);
 

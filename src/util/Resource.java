@@ -11,6 +11,13 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+/**
+ * This class contains resources that is required in the game. The game will load the required resource from file
+ * automatically after starting the game.
+ * 
+ * @author Kasidit Iamthong
+ *
+ */
 public class Resource {
 
 	private static Resource instance = new Resource();
@@ -48,6 +55,12 @@ public class Resource {
 		}
 	}
 
+	/**
+	 * List of available font weights of game's font faces.
+	 * 
+	 * @author Kasidit Iamthong
+	 *
+	 */
 	public static enum FontWeight {
 		THIN("Bebas Neue Thin", "BebasNeue Thin.ttf"), LIGHT("BebasNeueLight",
 				"BebasNeue Light.ttf"), REGULAR("BebasNeueRegular", "BebasNeue Regular.ttf"), BOLD("BebasNeueBold",
@@ -61,19 +74,47 @@ public class Resource {
 			this.fontFileName = fontFileName;
 		}
 
+		/**
+		 * Get the font name associated with the font file.
+		 * 
+		 * @return the font name.
+		 */
 		public String getFontName() {
 			return fontName;
 		}
 
+		/**
+		 * Get the font resource file name.
+		 * 
+		 * @return File name of the font.
+		 */
 		public String getFontFileName() {
 			return fontFileName;
 		}
 	}
 
+	/**
+	 * Get the game {@link Font} with specified size and weight.
+	 * 
+	 * @param size
+	 *            the point size of the font.
+	 * @param weight
+	 *            the weight of the font.
+	 * @return A game {@link Font} with specified size and weight.
+	 * @see #getDefaultFont(int)
+	 */
 	public Font getDefaultFont(int size, FontWeight weight) {
 		return new Font(weight.getFontName(), Font.PLAIN, size);
 	}
 
+	/**
+	 * Get the game {@link Font} with specified size.
+	 * 
+	 * @param size
+	 *            the point size of the font.
+	 * @return A game {@link Font} with specified size and regular weight.
+	 * @see #getDefaultFont(int, FontWeight)
+	 */
 	public Font getDefaultFont(int size) {
 		return getDefaultFont(size, FontWeight.REGULAR);
 	}

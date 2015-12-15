@@ -11,6 +11,13 @@ import core.DrawManager;
 import stage.GameStage;
 import stage.GameStageType;
 
+/**
+ * A {@link LevelData} thumbnail image renderer. When started, a rendering job is separated into another thread and
+ * rendering each {@link LevelData} in specified {@link Chapter}.
+ * 
+ * @author Kasidit Iamthong
+ *
+ */
 class LevelThumbnailRenderer {
 
 	private static final int RENDER_IMAGE_WIDTH = 180 * 8;
@@ -22,13 +29,24 @@ class LevelThumbnailRenderer {
 		private LevelData levelData;
 		private Object finishNotifer = new Object();
 
+		/**
+		 * A runnable job for single {@link LevelData}. If {@code previousRunnable}, is not {@code null}, a job will
+		 * start rendering thumbnail image of {@link LevelData} when {@code previousRunnable} has raised a "finish flag"
+		 * .
+		 * 
+		 * @param levelData
+		 *            a {@link LevelData} object that its thumbnail image will be rendered.
+		 * @param previousRunnable
+		 *            a previous {@link RendererRunnable} to wait for. Can be set to {@code null} to start rendering job
+		 *            immediately.
+		 */
 		public RendererRunnable(LevelData levelData, RendererRunnable previousRunnable) {
 			this.levelData = levelData;
 			this.previousRunnable = previousRunnable;
 		}
 
-		float[] sharpenKernel = { 0, -1, 0, -1, 5, -1, 0, -1, 0 };
-		BufferedImageOp shapenOp = new ConvolveOp(new Kernel(3, 3, sharpenKernel));
+		private float[] sharpenKernel = { 0, -1, 0, -1, 5, -1, 0, -1, 0 };
+		private BufferedImageOp shapenOp = new ConvolveOp(new Kernel(3, 3, sharpenKernel));
 
 		private BufferedImage shapenImage(BufferedImage in) {
 			BufferedImage out = DrawManager.getInstance().createBlankBufferedImage(in.getWidth(), in.getHeight(),
@@ -103,6 +121,13 @@ class LevelThumbnailRenderer {
 
 	}
 
+	/**
+	 * Start a rendering job for specified {@link Chapter}. The job will sequentially render a thumbnail one by one,
+	 * starting from the first {@link LevelData}.
+	 * 
+	 * @param chapter
+	 *            a {@link Chapter} that all of its {@link LevelData}'s thumbnail images will be rendered.
+	 */
 	protected static void startRenderThumbnail(Chapter chapter) {
 		if (!chapter.isRenderingJobStarted()) {
 			chapter.setRenderingJobStarted(true);
@@ -111,8 +136,10 @@ class LevelThumbnailRenderer {
 
 			RendererRunnable previousJob = null;
 			for (LevelData level : chapter.getLevelDataList()) {
-				previousJob = new RendererRunnable(level, previousJob);
-				new Thread(previousJob).start();
+				if (level.getThumbnail() == null) {
+					previousJob = new RendererRunnable(level, previousJob);
+					new Thread(previousJob).start();
+				}
 			}
 		}
 	}

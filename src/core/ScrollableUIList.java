@@ -8,14 +8,18 @@ import util.Constants.ColorSwatch;
 import util.Helper;
 import util.Resource;
 
+/**
+ * A custom ScrollView-like UI component list with customizable item. Note that when using this class, which is extended
+ * from {@link ArrayList}, you have to manage selected item index yourself.
+ * 
+ * @author Kasidit Iamthong
+ *
+ */
 public class ScrollableUIList extends ArrayList<IScrollableListItem> {
 	private static final int INITIAL_SCROLL_POSITION = 20;
 	private static final int VERTICAL_GAP = 20;
 	private static final int SCROLL_LEFT_AREA = 100;
 	private static final long serialVersionUID = 1L;
-
-	public ScrollableUIList() {
-	}
 
 	private int getTotalHeight() {
 		int totalHeight = 0;
@@ -29,6 +33,11 @@ public class ScrollableUIList extends ArrayList<IScrollableListItem> {
 	private float currentScrollPosition = INITIAL_SCROLL_POSITION;
 	private float preferredPosition = 0;
 
+	/**
+	 * Get the selected item of the list.
+	 * 
+	 * @return Selected item of the list, or {@code null} if there is no item in the list.
+	 */
 	public IScrollableListItem getSelectedItem() {
 		if (this.size() == 0) {
 			return null;
@@ -62,14 +71,19 @@ public class ScrollableUIList extends ArrayList<IScrollableListItem> {
 		return false;
 	}
 
+	/**
+	 * Set the selected item index to zero.
+	 */
 	public void resetSelectedItemIndex() {
 		this.selectedItemIndex = 0;
-//		this.currentScrollPosition = INITIAL_SCROLL_POSITION;
+		// this.currentScrollPosition = INITIAL_SCROLL_POSITION;
 	}
 
 	private boolean focusing = false;
 
 	/**
+	 * Get the value for determining whether this list is set focus or not.
+	 * 
 	 * @return Whether this list is focusing or not.
 	 */
 	public boolean isFocusing() {
@@ -86,6 +100,12 @@ public class ScrollableUIList extends ArrayList<IScrollableListItem> {
 		this.focusing = focusing;
 	}
 
+	/**
+	 * Update the component with the specified step.
+	 * 
+	 * @param step
+	 *            number of game step.
+	 */
 	public void update(int step) {
 		currentScrollPosition += (preferredPosition - currentScrollPosition) / Math.pow(4, 100f / step);
 
@@ -130,6 +150,20 @@ public class ScrollableUIList extends ArrayList<IScrollableListItem> {
 	private int focusingAnimStep = 0;
 	private final int focusingAnimLength = 100 * 5;
 
+	/**
+	 * Draw this component with specified size.
+	 * 
+	 * @param g
+	 *            a {@link Graphics2D} object.
+	 * @param x
+	 *            left position of the bound
+	 * @param y
+	 *            top position of the bound.
+	 * @param width
+	 *            width of the bound.
+	 * @param height
+	 *            height of the bound.
+	 */
 	public void draw(Graphics2D g, int x, int y, int width, int height) {
 		calculatePreferredPosition(height);
 

@@ -117,13 +117,6 @@ public class Player implements IDrawable, ICameraAssignable {
 
 	}
 
-	/**
-	 * @deprecated Use {@link #Player(int,FloorLevel,int,int,int)} instead
-	 */
-	public Player(int playerId, FloorLevel floorLevelMap) {
-		this(playerId, floorLevelMap, 0, 0, 0);
-	}
-
 	public Player(int playerId, FloorLevel floorLevelMap, int initialX, int initialY, int initialZ) {
 		this.floorLevelMap = floorLevelMap;
 

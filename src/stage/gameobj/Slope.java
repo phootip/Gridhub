@@ -57,6 +57,8 @@ public class Slope implements ILargeDrawable {
 	 *            the starting x position of Slope
 	 * @param startY
 	 *            the starting y position of Slope
+	 * @param startZ
+	 *            the starting z position of Slope
 	 * @param alignment
 	 *            Possible value are {@link #ALIGNMENT_RIGHT}, {@link #ALIGNMENT_DOWN}, {@link #ALIGNMENT_LEFT}, and
 	 *            {@link #ALIGNMENT_UP}.

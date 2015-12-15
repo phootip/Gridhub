@@ -82,22 +82,49 @@ final public class DrawManager {
 		return canvasHeight;
 	}
 
+	/**
+	 * Create blank {@link BufferedImage}, with specified size, that is compatible with the default
+	 * {@link GraphicsConfiguration}.
+	 * 
+	 * @param width
+	 *            the width of the image
+	 * @param height
+	 *            the height of the image
+	 * @param alpha
+	 *            enable transparency
+	 * @return A compatible {@link BufferedImage} with specified option.
+	 * @see #createBlankBufferedImage(int, int, int)
+	 */
 	public BufferedImage createBlankBufferedImage(final int width, final int height, final boolean alpha) {
 		return gConfig.createCompatibleImage(width, height, alpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE);
 	}
 
+	/**
+	 * Create blank {@link BufferedImage}, with specified size, that is compatible with the default
+	 * {@link GraphicsConfiguration}.
+	 * 
+	 * @param width
+	 *            the width of the image
+	 * @param height
+	 *            the height of the image
+	 * @param transparency
+	 *            specified transparency mode for the image. Possible values are {@link Transparency#OPAQUE},
+	 *            {@link Transparency#BITMASK}, and {@link Transparency#TRANSLUCENT}.
+	 * @return A compatible {@link BufferedImage} with specified option.
+	 * @see #createBlankBufferedImage(int, int, boolean)
+	 */
 	public BufferedImage createBlankBufferedImage(final int width, final int height, final int transparency) {
 		return gConfig.createCompatibleImage(width, height, transparency);
 	}
 
-	public VolatileImage createVolatileImage(final int width, final int height, final int transparency) {
+	/*public VolatileImage createVolatileImage(final int width, final int height, final int transparency) {
 		VolatileImage vImg = gConfig.createCompatibleVolatileImage(width, height, transparency);
 		if (vImg.validate(gConfig) == VolatileImage.IMAGE_INCOMPATIBLE) {
 			vImg = this.createVolatileImage(width, height, transparency);
 		}
 		return vImg;
 	}
-
+	
 	public VolatileImage createVolatileImage(final int width, final int height, final boolean alpha) {
 		VolatileImage vImg = gConfig.createCompatibleVolatileImage(width, height,
 				alpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE);
@@ -105,7 +132,7 @@ final public class DrawManager {
 			vImg = this.createVolatileImage(width, height, alpha);
 		}
 		return vImg;
-	}
+	}*/
 
 	/**
 	 * Add the canvas component into a specified container.

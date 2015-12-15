@@ -9,7 +9,7 @@ import core.geom.Vector2;
 import core.geom.Vector3;
 
 /**
- * Helper class contains helper method, such as interpolation and color blending.
+ * Helper class contains helper method, such as interpolation, color blending, and text positioning.
  * 
  * @author Kasidit Iamthong
  *
@@ -236,7 +236,8 @@ public class Helper {
 	 * @return The position of text that its position can be directly passed into
 	 *         {@link Graphics2D#drawString(String, float, float)}.
 	 */
-	public static Vector2 getCenteredTextPosition(String text, Font font, Graphics2D g, int x, int y, int width, int height) {
+	public static Vector2 getCenteredTextPosition(String text, Font font, Graphics2D g, int x, int y, int width,
+			int height) {
 		FontMetrics fontMetric = g.getFontMetrics(font);
 
 		int textWidth = fontMetric.stringWidth(text);

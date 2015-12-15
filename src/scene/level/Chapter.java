@@ -12,6 +12,12 @@ import util.Constants.ColorSwatch;
 import util.Constants.PlayMode;
 import util.Resource.FontWeight;
 
+/**
+ * This class represents a chapter of the game. One chapter may contains multiple {@link LevelData}s.
+ * 
+ * @author Kasidit Iamthong
+ *
+ */
 public class Chapter implements IScrollableListItem {
 
 	private static final int BOTTOM_MARGIN = 10;
@@ -27,23 +33,51 @@ public class Chapter implements IScrollableListItem {
 	private transient List<LevelData> levelDataList;
 	private transient boolean isRenderingJobStarted;
 	private transient PlayMode playMode;
-	
+
+	/**
+	 * Get the play mode of the chapter.
+	 * 
+	 * @return The play mode.
+	 */
 	protected PlayMode getPlayMode() {
 		return playMode;
 	}
 
+	/**
+	 * Set the play mode of the chapter
+	 * 
+	 * @param playMode
+	 *            the play mode to set.
+	 */
 	protected void setPlayMode(PlayMode playMode) {
 		this.playMode = playMode;
 	}
 
+	/**
+	 * Determines whether the thumbnail image rendering job has started. Useful for preventing two rendering jobs
+	 * running at the same {@link Chapter} and preventing unnecessary rendering job.
+	 * 
+	 * @return Whether or not the rendering job has started.
+	 */
 	protected boolean isRenderingJobStarted() {
 		return isRenderingJobStarted;
 	}
 
+	/**
+	 * Set the is-rendering-job-started flag to specified value.
+	 * 
+	 * @param isRenderingJobStarted
+	 *            the specified value to set.
+	 */
 	protected void setRenderingJobStarted(boolean isRenderingJobStarted) {
 		this.isRenderingJobStarted = isRenderingJobStarted;
 	}
 
+	/**
+	 * Get the level data list that belongs to this {@link Chapter}.
+	 * 
+	 * @return The {@link List} of the {@link LevelData}.
+	 */
 	protected List<LevelData> getLevelDataList() {
 		return levelDataList;
 	}
@@ -52,10 +86,12 @@ public class Chapter implements IScrollableListItem {
 	 * Add new level to this chapter.
 	 * 
 	 * @param levelFileContent
-	 *            String representing content of the level file.
+	 *            a content of the level file as String.
+	 * @param levelFileName
+	 *            a filename of the level file, including the extension.
 	 */
 	protected void addLevel(String levelFileContent, String levelFileName) {
-	//	LevelData levelData = LevelData.parse((playMode == PlayMode.SINGLE_PLAYER) ? 1 : 2, levelFileContent);
+		// LevelData levelData = LevelData.parse((playMode == PlayMode.SINGLE_PLAYER) ? 1 : 2, levelFileContent);
 		LevelData levelData = LevelData.parse(levelFileContent);
 		levelData.setLevelFileName(levelFileName);
 		levelData.setChapter(this);
@@ -63,15 +99,19 @@ public class Chapter implements IScrollableListItem {
 	}
 
 	/**
-	 * @return the chapterOrder
+	 * Get the order number of this {@link Chapter}.
+	 * 
+	 * @return The chapter order number.
 	 */
 	protected int getChapterOrder() {
 		return chapterOrder;
 	}
 
 	/**
+	 * Set the order number of this {@link Chapter}.
+	 * 
 	 * @param chapterOrder
-	 *            the chapterOrder to set
+	 *            the chapter order number to set.
 	 */
 	protected void setChapterOrder(int chapterOrder) {
 		this.chapterOrder = chapterOrder;

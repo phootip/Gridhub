@@ -204,7 +204,7 @@ public final class Vector3 {
 	}
 
 	/**
-	 * Rotate this vector in plane X-Y plane with the specified degree, according to the right-hand rule.
+	 * Rotate this vector in X-Y plane with the specified degree, according to the right-hand rule.
 	 * 
 	 * @param angle
 	 *            the specified angle in radian.
@@ -221,7 +221,7 @@ public final class Vector3 {
 	}
 
 	/**
-	 * Rotate this vector in plane Y-Z plane with the specified degree, according to the right-hand rule.
+	 * Rotate this vector in Y-Z plane with the specified degree, according to the right-hand rule.
 	 * 
 	 * @param angle
 	 *            the specified angle in radian.
@@ -238,7 +238,7 @@ public final class Vector3 {
 	}
 
 	/**
-	 * Rotate this vector in plane X-Z plane with the specified degree, according to the right-hand rule.
+	 * Rotate this vector in X-Z plane with the specified degree, according to the right-hand rule.
 	 * 
 	 * @param angle
 	 *            the specified angle in radian.

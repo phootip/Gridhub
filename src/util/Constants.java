@@ -4,7 +4,16 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 
+/**
+ * A class containing useful constants.
+ * 
+ * @author Kasidit Iamthong
+ *
+ */
 public final class Constants {
+	/**
+	 * A program/game name.
+	 */
 	public static final String PROGRAM_NAME = "Gridhub";
 
 	/**
@@ -33,16 +42,16 @@ public final class Constants {
 	public static int MAX_FRAME_PER_SECOND = 60;
 
 	/**
-	 * The speed of the game. Default is 100. The number should be divisible by 100, or 100 is divisible by it.
+	 * The speed of the game. Default is 100. Number 100 should divisible by this number, such as 100, 50, 25, 20, etc.
 	 */
 	public static int GAME_SPEED = 100;
 
 	/**
-	 * A unique ID for Player1
+	 * A unique ID for Player 1.
 	 */
 	public static final int PLAYER1_ID = 1;
 	/**
-	 * A unique ID for Player2
+	 * A unique ID for Player 2.
 	 */
 	public static final int PLAYER2_ID = 2;
 
@@ -57,14 +66,33 @@ public final class Constants {
 	 */
 	public static final String CHAPTER_LIST_FILE_NAME = "ChapterList";
 
+	/**
+	 * The basic {@link Color}s for the game. Useful for setting up game to have coherant look.
+	 * 
+	 * @author Kasidit Iamthong
+	 *
+	 */
 	public final static class ColorSwatch {
 		public static final Color BACKGROUND = new Color(25, 38, 69);
 		public static final Color FOREGROUND = Color.WHITE;
 		public static final Color SHADOW = new Color(50, 76, 138);
 	}
 
+	/**
+	 * A helper related to player;
+	 * 
+	 * @author Kasidit Iamthong
+	 *
+	 */
 	public final static class PlayerHelper {
 
+		/**
+		 * Get player's color.
+		 * 
+		 * @param playerId
+		 *            the id of the player.
+		 * @return A {@link Color} belonged to specified player.
+		 */
 		public static Color getPlayerColor(int playerId) {
 			switch (playerId) {
 				case PLAYER1_ID:
@@ -76,6 +104,13 @@ public final class Constants {
 			}
 		}
 
+		/**
+		 * Check whether the left key is pressing.
+		 * 
+		 * @param playerId
+		 *            the id of the player.
+		 * @return Whether or not the left key is pressing.
+		 */
 		public static boolean isLeftKeyPressing(int playerId) {
 			switch (playerId) {
 				case PLAYER1_ID:
@@ -89,6 +124,13 @@ public final class Constants {
 			}
 		}
 
+		/**
+		 * Check whether the right key is pressing.
+		 * 
+		 * @param playerId
+		 *            the id of the player.
+		 * @return Whether or not the right key is pressing.
+		 */
 		public static boolean isRightKeyPressing(int playerId) {
 			switch (playerId) {
 				case PLAYER1_ID:
@@ -103,6 +145,13 @@ public final class Constants {
 			}
 		}
 
+		/**
+		 * Check whether the down key is pressing.
+		 * 
+		 * @param playerId
+		 *            the id of the player.
+		 * @return Whether or not the down key is pressing.
+		 */
 		public static boolean isDownKeyPressing(int playerId) {
 			switch (playerId) {
 				case PLAYER1_ID:
@@ -117,6 +166,13 @@ public final class Constants {
 			}
 		}
 
+		/**
+		 * Check whether the up key is pressing.
+		 * 
+		 * @param playerId
+		 *            the id of the player.
+		 * @return Whether or not the up key is pressing.
+		 */
 		public static boolean isUpKeyPressing(int playerId) {
 			switch (playerId) {
 				case PLAYER1_ID:
@@ -130,6 +186,13 @@ public final class Constants {
 			}
 		}
 
+		/**
+		 * Check whether the camera left-rotation key is pressing.
+		 * 
+		 * @param playerId
+		 *            the id of the player.
+		 * @return Whether or not the camera left-rotation key is pressing.
+		 */
 		public static boolean isRotateCameraLeftPressing(int playerId) {
 			switch (playerId) {
 				case PLAYER1_ID:
@@ -141,6 +204,13 @@ public final class Constants {
 			}
 		}
 
+		/**
+		 * Check whether the camera right-rotation key is pressing.
+		 * 
+		 * @param playerId
+		 *            the id of the player.
+		 * @return Whether or not the camera right-rotation key is pressing.
+		 */
 		public static boolean isRotateCameraRightPressing(int playerId) {
 			switch (playerId) {
 				case PLAYER1_ID:
@@ -154,6 +224,12 @@ public final class Constants {
 
 	}
 
+	/**
+	 * Availble play mode of the game.
+	 * 
+	 * @author Kasidit Iamthong
+	 *
+	 */
 	public enum PlayMode {
 		SINGLE_PLAYER("Single Player", "singleplayer"), COOP_MODE("Co-op mode", "coop");
 
@@ -172,6 +248,11 @@ public final class Constants {
 			this.fullModeName = fullModeName;
 		}
 
+		/**
+		 * Get the full name of the mode.
+		 * 
+		 * @return A {@link String} representing full name of the mode.
+		 */
 		public String getFullModeName() {
 			return fullModeName;
 		}

@@ -6,8 +6,6 @@ import java.awt.event.KeyListener;
 import java.util.HashSet;
 import java.util.Set;
 
-// TODO: Implement MouseListener and MouseMoveListener
-
 /**
  * This manages the input of the game, e.g. keyboard. It also support inputing in the triggering way, in the similar
  * manner to monostable multivibrator, i.e. the input that is asserted true for only one frame.
@@ -85,8 +83,8 @@ public class InputManager implements KeyListener {
 	 */
 	public boolean isKeyTriggering(int keyCode, boolean filterRepeatedFire) {
 		if (filterRepeatedFire) {
-		return keyTriggerHasher.contains(keyCode);
-		}else {
+			return keyTriggerHasher.contains(keyCode);
+		} else {
 			return keyRepeatedTriggerHasher.contains(keyCode);
 		}
 	}

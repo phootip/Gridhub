@@ -1,14 +1,19 @@
 package stage.gameobj;
 
+import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 
+import core.geom.Vector2;
 import core.geom.Vector3;
 import stage.Camera;
 import stage.ObjectMap;
+import util.Constants.ColorSwatch;
 
 public class TeleportDestionation implements IDrawable, IWalkOnAble {
 	private int x, y, z;
 	private transient ObjectMap objectMap;
+	
+	private static final float TELEPORT_DEST_MARK_RADIUS = 0.2f;
 
 	public TeleportDestionation(int x, int y, int z) {
 		super();
@@ -48,13 +53,20 @@ public class TeleportDestionation implements IDrawable, IWalkOnAble {
 	@Override
 	public Vector3 getDrawPosition() {
 		// TODO Auto-generated method stub
-		return new Vector3(x, y, z);
+		return new Vector3(x, y, z - 0.48f);
 	}
 
 	@Override
 	public void draw(Graphics2D g, Camera camera) {
-		// TODO Auto-generated method stub
+		Vector2 centerPos = camera.getDrawPosition(x, y, z);
+		int width = (int) camera.getDrawSizeX(TELEPORT_DEST_MARK_RADIUS * 2);
+		int height = (int) camera.getDrawSizeY(TELEPORT_DEST_MARK_RADIUS * 2);
+		int x = (int) (centerPos.getX() - camera.getDrawSizeX(TELEPORT_DEST_MARK_RADIUS));
+		int y = (int) (centerPos.getY() - camera.getDrawSizeY(TELEPORT_DEST_MARK_RADIUS));
 
+		g.setColor(ColorSwatch.FOREGROUND);
+		g.setStroke(new BasicStroke(2));
+		g.drawOval(x, y, width, height);
 	}
 
 }

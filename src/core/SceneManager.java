@@ -41,8 +41,8 @@ public class SceneManager {
 	}
 
 	/**
-	 * Perform an update to current scene, including the game logic and drawing.
-	 * This function should be called every game frame.
+	 * Perform an update to current scene, including the game logic and drawing. This function should be called every
+	 * game frame.
 	 */
 	public void update() {
 		// Logic section
@@ -55,15 +55,15 @@ public class SceneManager {
 			this.currentScene.update(Constants.GAME_SPEED);
 			InputManager.getInstance().update();
 
-			do {	
+			do {
 				Graphics2D graphic = DrawManager.getInstance().getGraphic();
 				this.currentScene.draw(graphic, DrawManager.getInstance().getCanvasWidth(),
 						DrawManager.getInstance().getCanvasHeight());
-				
+
 				if (util.Constants.SHOW_FPS_MONITOR) {
 					FPSCollector.drawMonitor(graphic, DrawManager.getInstance().getCanvasWidth());
 				}
-				
+
 				// Retry drawing if updating canvas fail.
 			} while (!DrawManager.getInstance().updateCanvas());
 		}

@@ -11,6 +11,14 @@ import stage.gameobj.SwitchController;
 import stage.gameobj.TeleportDestionation;
 import stage.gameobj.TeleportToArea;
 
+// TODO: Complete Javadoc
+
+/**
+ * A builder for constructing {@link LevelData} object in a more beautiful way.
+ * 
+ * @author Kasidit Iamthong
+ *
+ */
 public class LevelDataBuilder {
 	private ArrayList<Block> blocks;
 	private ArrayList<Slope> slopes;
@@ -24,19 +32,18 @@ public class LevelDataBuilder {
 	private String levelName;
 	private ArrayList<Integer> finishX;
 	private ArrayList<Integer> finishY;
-	private int [] startX;
-	private int [] startY;
+	private int[] startX;
+	private int[] startY;
 	private int playerCount;
-	
-	
+
 	public LevelDataBuilder() {
-		
+
 	}
-	
+
 	public int getPlayerCount() {
 		return playerCount;
 	}
-	
+
 	public LevelData build() {
 		return LevelData.createLevelDataAsJSON(this);
 	}
@@ -45,7 +52,7 @@ public class LevelDataBuilder {
 		LevelData levelData = LevelData.createLevelDataAsJSON(this);
 		return levelData.getLevelDataJSON();
 	}
-	
+
 	public int[] getStartX() {
 		return startX;
 	}
@@ -57,75 +64,97 @@ public class LevelDataBuilder {
 	public ArrayList<Block> getBlocks() {
 		return blocks;
 	}
+
 	public void addBlocks(ArrayList<Block> blocks) {
 		this.blocks = blocks;
 	}
+
 	public ArrayList<Slope> getSlopes() {
 		return slopes;
 	}
+
 	public void addSlopes(ArrayList<Slope> slopes) {
 		this.slopes = slopes;
 	}
+
 	public ArrayList<FloorSwitch> getFloorSwitches() {
 		return floorSwitches;
 	}
+
 	public void addFloorSwitches(ArrayList<FloorSwitch> floorSwitches) {
 		this.floorSwitches = floorSwitches;
 	}
+
 	public ArrayList<GateToGateTeleport> getGateTogateTeles() {
 		return gateTogateTeles;
 	}
+
 	public void addGateTogateTeles(ArrayList<GateToGateTeleport> gateTogateTeles) {
 		this.gateTogateTeles = gateTogateTeles;
 	}
+
 	public ArrayList<TeleportToArea> getTeleportToArea() {
 		return teleportToArea;
 	}
+
 	public void addTeleportToArea(ArrayList<TeleportToArea> teleportToArea) {
 		this.teleportToArea = teleportToArea;
 	}
+
 	public ArrayList<TeleportDestionation> getTelportDests() {
 		return telportDests;
 	}
+
 	public void addTelportDests(ArrayList<TeleportDestionation> telportDests) {
 		this.telportDests = telportDests;
 	}
+
 	public ArrayList<Gate> getGates() {
 		return gates;
 	}
+
 	public void addGates(ArrayList<Gate> gates) {
 		this.gates = gates;
 	}
+
 	public ArrayList<SwitchController> getSwControllers() {
 		return swControllers;
 	}
+
 	public void addSwControllers(ArrayList<SwitchController> swControllers) {
 		this.swControllers = swControllers;
 	}
+
 	public int[][] getFloorLevel() {
 		return floorLevel;
 	}
+
 	public void addFloorLevel(int[][] floorLevel) {
 		this.floorLevel = floorLevel;
 	}
+
 	public String getLevelName() {
 		return levelName;
 	}
+
 	public void addLevelName(String levelName) {
 		this.levelName = levelName;
 	}
+
 	public ArrayList<Integer> getFinishX() {
 		return finishX;
 	}
+
 	public void addFinishX(ArrayList<Integer> finishX) {
 		this.finishX = finishX;
 	}
+
 	public ArrayList<Integer> getFinishY() {
 		return finishY;
 	}
+
 	public void addFinishY(ArrayList<Integer> finishY) {
 		this.finishY = finishY;
 	}
-	
-	
+
 }

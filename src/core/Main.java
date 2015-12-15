@@ -13,8 +13,20 @@ import util.Constants.ColorSwatch;
 import util.InputManager;
 import util.Resource;
 
+/**
+ * The main class of the game engine.
+ * 
+ * @author Kasidit Iamthong
+ *
+ */
 public class Main {
 
+	/**
+	 * The main function of the game. Something fun starts here. :)
+	 * 
+	 * @param args
+	 *            passed command line arguments.
+	 */
 	public static void main(String[] args) {
 
 		if (!Resource.getInstance().initialize()) {
@@ -74,8 +86,8 @@ public class Main {
 
 		// Set initial scene
 
-		 SceneManager.getInstance().setNextScene(new scene.mainmenu.MainMenuScene(false));
-//		SceneManager.getInstance().setNextScene(new stage.GameStage(GameStageType.PLAY));
+		SceneManager.getInstance().setNextScene(new scene.mainmenu.MainMenuScene(false));
+		// SceneManager.getInstance().setNextScene(new stage.GameStage(GameStageType.PLAY));
 
 		// Game looper
 		final long maximumWaitTime = 1000000000 / Constants.MAX_FRAME_PER_SECOND;

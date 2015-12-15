@@ -36,7 +36,7 @@ public class PlayScene extends Scene {
 	protected LevelData levelData;
 	protected GameStage gameStage;
 
-	private boolean isPause = false;
+	protected boolean isPause = false;
 	private boolean isGameRunning = true;
 	private int pauseDelayTimer = 0;
 	private final int pauseDelayMaxValue = 100 * 20;

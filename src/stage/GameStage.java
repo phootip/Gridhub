@@ -688,8 +688,10 @@ public class GameStage {
 	public LevelData buildLevelData() {
 		String outPutJSON = buildLevelDataAsString();
 		Chapter chapter = levelData.getChapter();
+		String fileName = levelData.getLevelFileName();
 		levelData = LevelData.parse(outPutJSON);
 		levelData.setChapter(chapter);
+		levelData.setLevelFileName(fileName);
 		return levelData;
 
 	}

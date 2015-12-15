@@ -23,6 +23,8 @@ final public class LevelFileManager {
 	public static final LevelFileManager getInstance() {
 		return instance;
 	}
+	
+	public static final String LEVEL_FILE_NAME_SUFFIX = ".json";
 
 	private List<Chapter> singlePlayerChapterList;
 	private List<Chapter> coopModeChapterList;
@@ -148,11 +150,10 @@ final public class LevelFileManager {
 	private void populateLevelInChapter(Chapter chapter) {
 
 		int currentFileCounter = 0;
-		final String fileNameSuffix = ".json";
 
 		while (true) {
 			try {
-				String fileName = currentFileCounter + fileNameSuffix;
+				String fileName = currentFileCounter + LEVEL_FILE_NAME_SUFFIX;
 				InputStream fileStream = getLevelFileInputStream(fileName, chapter);
 				chapter.addLevel(getFileContent(fileStream), fileName);
 				currentFileCounter++;

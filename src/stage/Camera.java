@@ -2,6 +2,7 @@ package stage;
 
 import core.geom.Vector2;
 import core.geom.Vector3;
+import stage.gameobj.ICameraAssignable;
 import stage.gameobj.IDrawable;
 import stage.gameobj.Player;
 import util.Constants;
@@ -24,8 +25,8 @@ public class Camera {
 	public Camera(IDrawable followObj) {
 		this.followObj = followObj;
 		this.centerPos = getPreferredCenterPos();
-		if (this.followObj instanceof Player) {
-			((Player) this.followObj).assignCamera(this);
+		if (this.followObj instanceof ICameraAssignable) {
+			((ICameraAssignable) this.followObj).assignCamera(this);
 		}
 	}
 

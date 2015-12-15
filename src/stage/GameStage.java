@@ -14,9 +14,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import core.geom.Vector2;
+import core.geom.Vector3;
 import stage.renderer.LevelRenderer;
 import scene.core.Scene;
 import scene.level.LevelData;
+import stage.editor.EditorCursor;
 import stage.gameobj.Block;
 
 import stage.gameobj.FloorPiece;
@@ -43,6 +45,7 @@ public class GameStage {
 
 	private List<Camera> cameraList = new ArrayList<>();
 	private Player player1 = null, player2 = null;
+	private EditorCursor cursor = null;
 	private FloorLevel floorLevelMap;
 	private ArrayList<Block> blocks = new ArrayList<>();
 	private ArrayList<FloorSwitch> floorSwitches = new ArrayList<>();
@@ -120,10 +123,33 @@ public class GameStage {
 			}*/
 		}
 
-		player1 = new Player(util.Constants.PLAYER1_ID, floorLevelMap, 9, 4, 1);
-		this.cameraList.add(new Camera(player1));
-		player2 = new Player(util.Constants.PLAYER2_ID, floorLevelMap, 0, 0, 0);
-		this.cameraList.add(new Camera(player2));
+		if (gameStageType == GameStageType.PLAY) {
+			player1 = new Player(util.Constants.PLAYER1_ID, floorLevelMap, 9, 4, 1);
+			this.cameraList.add(new Camera(player1));
+
+			if (levelData.getPlayerCount() == 2) {
+				player2 = new Player(util.Constants.PLAYER2_ID, floorLevelMap, 0, 0, 0);
+				this.cameraList.add(new Camera(player2));
+			}
+		} else if (gameStageType == GameStageType.LEVEL_EDITOR) {
+
+			cursor = new EditorCursor(floorLevelMap);
+			this.cameraList.add(new Camera(cursor));
+
+		} else if (gameStageType == GameStageType.THUMBNAIL) {
+
+			this.cameraList.add(new Camera(new IDrawable() {
+				@Override
+				public Vector3 getDrawPosition() {
+					return new Vector3(floorLevelMap.getSizeX() / 2, floorLevelMap.getSizeY() / 2, 0);
+				}
+
+				@Override
+				public void draw(Graphics2D g, Camera camera) {
+				}
+			}));
+
+		}
 
 		slopes.add(new Slope(6, 10, 0, Slope.ALIGNMENT_RIGHT));
 		slopes.add(new Slope(6, 5, 0, Slope.ALIGNMENT_RIGHT));
@@ -244,7 +270,7 @@ public class GameStage {
 		}.getType();
 
 		HashMap<String, String> a = gson.fromJson(hashmapJson, hashType);
-//		System.out.println(a.get("block"));
+		// System.out.println(a.get("block"));
 
 		Type blockType = new TypeToken<ArrayList<Block>>() {
 		}.getType();
@@ -338,12 +364,19 @@ public class GameStage {
 					eachGate);
 		}
 
-		ObjectMap.drawableObjectHashMap.put(
-				new ObjectVector(player1.getCellX(), player1.getCellY(), player1.getCellZ(), player1.getName()),
-				player1);
-		ObjectMap.drawableObjectHashMap.put(
-				new ObjectVector(player2.getCellX(), player2.getCellY(), player2.getCellZ(), player2.getName()),
-				player2);
+		if (player1 != null) {
+			ObjectMap.drawableObjectHashMap.put(
+					new ObjectVector(player1.getCellX(), player1.getCellY(), player1.getCellZ(), player1.getName()),
+					player1);
+		}
+		if (player2 != null) {
+			ObjectMap.drawableObjectHashMap.put(
+					new ObjectVector(player2.getCellX(), player2.getCellY(), player2.getCellZ(), player2.getName()),
+					player2);
+		}
+		if (cursor != null) {
+			ObjectMap.drawableObjectHashMap.put(new ObjectVector(-1, -1, -1, "EditorCursor"), cursor);
+		}
 		// ObjectMap.drawableObjectHashMap.put(
 		// player1.getCellX() + " " + player1.getCellY() + " " + player1.getCellZ() + " " + player1.getName(),
 		// player1);
@@ -368,6 +401,9 @@ public class GameStage {
 		}
 		if (player2 != null) {
 			player2.update(step);
+		}
+		if (cursor != null) {
+			cursor.update(step);
 		}
 
 		for (FloorSwitch fs : dataSetFloorSwitches) {
@@ -482,6 +518,16 @@ public class GameStage {
 			g.translate(sceneWidth * i / cameraCount, 0);
 
 			LevelRenderer.draw(ObjectMap.drawableObjectHashMap.values(), g, camera);
+			// Cursor and player(s) overlay is exception; it is on everything
+			if (cursor != null) {
+				cursor.drawOverlay(g, camera);
+			}
+			if (player1 != null) {
+				player1.drawOverlay(g, camera);
+			}
+			if (player2 != null) {
+				player2.drawOverlay(g, camera);
+			}
 
 			g.setTransform(oldTransform);
 			g.setClip(oldClip);
@@ -497,7 +543,7 @@ public class GameStage {
 				g.setStroke(new BasicStroke(5));
 				g.drawLine(sceneWidth * i / cameraCount, 0, sceneWidth * i / cameraCount, sceneHeight);
 			}
-			
+
 			camera.resetDeformationChanged();
 
 		}

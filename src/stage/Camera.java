@@ -222,7 +222,6 @@ public class Camera {
 	 * @see #getDrawPosition(Vector3)
 	 */
 	public Vector2 getDrawPosition(float x, float y, float z) {
-		System.out.println(centerPos.getZ());
 		return new Vector2(x, y).subtract(centerPos.getX(), centerPos.getY()).rotate(rotationAngle)
 				.multiply(zoomFactor, zoomFactor * yFactor).add(0, getDrawSizeZ(0.5f + centerPos.getZ()))
 				.add(sceneWidth / 2f, sceneHeight / 2f - getDrawSizeZ(z));

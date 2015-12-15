@@ -20,6 +20,11 @@ import util.Constants;
 import util.Resource;
 import util.Constants.ColorSwatch;
 
+/**
+ * This class represents the object Block 
+ * @author Thanat Jatuphattharachat
+ *	
+ */
 public class Block implements PushableObject, WalkThroughable {
 
 	private static final float BLOCK_SIZE = 0.5f;
@@ -52,7 +57,7 @@ public class Block implements PushableObject, WalkThroughable {
 	}
 
 	public Block(int x, int y, int z, FloorLevel floorLevelMap) {
-		this(x, y, z, 100, false, floorLevelMap);
+		this(x, y, z, 50, false, floorLevelMap);
 	}
 
 	public void setZ(int diffZ) {

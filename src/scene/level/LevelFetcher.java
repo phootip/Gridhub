@@ -3,11 +3,13 @@ package scene.level;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import com.google.gson.Gson;
 
@@ -29,34 +31,34 @@ final public class LevelFetcher {
 		return this.getClass().getClassLoader();
 	}
 
-	private URI getLevelFileURIIfExists(String levelFileName, Chapter chapter) throws URISyntaxException {
-		System.out.println("leveldata/" + chapter.getPlayMode().getLevelFolderName() + "/" + chapter.getFolderName()
-				+ "/" + levelFileName);
-
-		URL resourceURL = getClassLoader().getResource("leveldata/" + chapter.getPlayMode().getLevelFolderName() + "/"
-				+ chapter.getFolderName() + "/" + levelFileName);
-		if (resourceURL == null)
-			return null;
-		return resourceURL.toURI();
+	private InputStream getLevelResourceFileAsStream(String resourcePath) {
+		return getClassLoader().getResourceAsStream("leveldata/" + resourcePath);
 	}
 
-	private URI getChapterFileURI(String chapterFilePath, PlayMode playMode) throws URISyntaxException {
-		return getClassLoader().getResource("leveldata/" + playMode.getLevelFolderName() + "/" + chapterFilePath)
-				.toURI();
+	private InputStream getLevelFileStream(String levelFileName, Chapter chapter) {
+		return getLevelResourceFileAsStream(
+				chapter.getPlayMode().getLevelFolderName() + "/" + chapter.getFolderName() + "/" + levelFileName);
 	}
 
-	private String getFileContent(File file) throws IOException {
-		FileInputStream fis = new FileInputStream(file);
-		byte[] data = new byte[(int) file.length()];
-		fis.read(data);
-		fis.close();
-
-		return new String(data);
+	private InputStream getChapterFileStream(String chapterFilePath, PlayMode playMode) {
+		return getLevelResourceFileAsStream(playMode.getLevelFolderName() + "/" + chapterFilePath);
 	}
 
-	private String getFileContentFromPath(String levelFilePath, PlayMode playMode)
-			throws IOException, URISyntaxException {
-		return getFileContent(new File(getChapterFileURI(levelFilePath, playMode)));
+	private String getFileContent(InputStream stream) {
+		// From http://stackoverflow.com/a/5445161
+
+		Scanner s = new Scanner(stream);
+		s.useDelimiter("\\A");
+
+		String content = s.hasNext() ? s.next() : "";
+
+		s.close();
+
+		return content;
+	}
+
+	private String getFileContentFromPath(String levelFilePath, PlayMode playMode) {
+		return getFileContent(getChapterFileStream(levelFilePath, playMode));
 	}
 
 	private LevelFetcher() {
@@ -107,12 +109,12 @@ final public class LevelFetcher {
 		final String fileNameSuffix = ".lev";
 
 		while (true) {
-			URI fileURI = getLevelFileURIIfExists(currentFileCounter + fileNameSuffix, chapter);
-			if (fileURI == null) {
+			InputStream fileStream = getLevelFileStream(currentFileCounter + fileNameSuffix, chapter);
+			if (fileStream == null) {
 				break;
 			}
 
-			chapter.addLevel(getFileContent(new File(fileURI)));
+			chapter.addLevel(getFileContent(fileStream));
 			currentFileCounter++;
 		}
 	}

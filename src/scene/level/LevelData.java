@@ -18,6 +18,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import com.sun.org.apache.regexp.internal.recompile;
 
 import core.IScrollableListItem;
 import core.geom.Vector2;
@@ -99,13 +100,15 @@ public final class LevelData implements IScrollableListItem {
 	// public static void createBlank(PlayerMode playerMode ,int sizeX , int sizeY) {
 	//
 	// }
-	public LevelData(int playerCount , String levelName , int floorWidth , int floorHeight , Chapter chapter) {
+	public LevelData(int playerCount, String levelName, int floorWidth, int floorHeight, Chapter chapter,
+			String levelFileName) {
 		this.playerCount = playerCount;
 		this.levelName = levelName;
 		this.chapter = chapter;
+		this.levelFileName = levelFileName;
 		floorLevel = new FloorLevel(floorWidth, floorHeight);
 	}
-	
+
 	@Override
 	public int getListItemHeight() {
 		return 100;
@@ -386,11 +389,10 @@ public final class LevelData implements IScrollableListItem {
 	}.getType();
 	private final Type switchSetIndexType = new TypeToken<ArrayList<int[]>>() {
 	}.getType();
-	private final Type hashType = new TypeToken<HashMap<String,String>>() {
+	private final Type hashType = new TypeToken<HashMap<String, String>>() {
 	}.getType();
 	private final Type integerType = new TypeToken<ArrayList<Integer>>() {
 	}.getType();
-
 
 	private HashMap<String, String> levelContents;
 	private ArrayList<Block> blocks;
@@ -412,7 +414,7 @@ public final class LevelData implements IScrollableListItem {
 	private int[] startY;
 
 	private LevelData(String jsonContent) {
-		
+
 		levelContents = getContentList(jsonContent);
 		blocks = getBlocks(levelContents.get("Block"));
 		slopes = getSlopes(levelContents.get("Slope"));
@@ -435,8 +437,8 @@ public final class LevelData implements IScrollableListItem {
 		startY = getPositionArray(levelContents.get("StartY"));
 
 	}
-	
-	public static LevelData parse(int p ,String jsonContent) {
+
+	public static LevelData parse(int p, String jsonContent) {
 		return new LevelData(jsonContent);
 	}
 
@@ -452,99 +454,146 @@ public final class LevelData implements IScrollableListItem {
 
 	public HashMap<String, String> getContentList(String json) {
 		Gson gson = new Gson();
-		System.out.println(isJSONValid(json));
-		HashMap<String , String> a = gson.fromJson(json, hashType);
-		return a;
+		HashMap<String, String> hMap = gson.fromJson(json, hashType);
+		if (hMap == null)
+			return new HashMap<String, String>();
+		return hMap;
 	}
-	
+
 	public static boolean isJSONValid(String JSON_STRING) {
-	    Gson gson = new Gson();  
+		Gson gson = new Gson();
 		try {
-	          gson.fromJson(JSON_STRING, Object.class);
-	          return true;
-	      } catch(com.google.gson.JsonSyntaxException ex) { 
-	          return false;
-	      }
-	  }
-	
+			gson.fromJson(JSON_STRING, Object.class);
+			return true;
+		} catch (com.google.gson.JsonSyntaxException ex) {
+			return false;
+		}
+	}
+
 	public ArrayList<Block> getBlocks(String json) {
 		Gson gson = new Gson();
-		return gson.fromJson(json, blockType);
+		ArrayList<Block> bl = gson.fromJson(json, blockType);
+		if (bl == null)
+			return new ArrayList<Block>();
+		return bl;
 	}
 
 	public ArrayList<Slope> getSlopes(String json) {
 		Gson gson = new Gson();
-		return gson.fromJson(json, slopeType);
+		ArrayList<Slope> as = gson.fromJson(json, slopeType);
+		if (as == null)
+			return new ArrayList<Slope>();
+		return as;
 	}
 
 	public ArrayList<FloorSwitch> getFloorSwitches(String json) {
 		Gson gson = new Gson();
-		return gson.fromJson(json, floorSwitchType);
+		ArrayList<FloorSwitch> fs = gson.fromJson(json, floorSwitchType);
+		if (fs == null)
+			return new ArrayList<FloorSwitch>();
+		return fs;
 	}
 
 	public ArrayList<GateToGateTeleport> getGateToGateTeleport(String json) {
 		Gson gson = new Gson();
-		return gson.fromJson(json, teleportToGateType);
+		ArrayList<GateToGateTeleport> g = gson.fromJson(json, teleportToGateType);
+		if (g == null)
+			return new ArrayList<GateToGateTeleport>();
+		return g;
 	}
 
 	public int[] getGateLink(String json) {
 		Gson gson = new Gson();
-		return gson.fromJson(json, int[].class);
+		int[] g = gson.fromJson(json, int[].class);
+		if (g == null)
+			return new int[0];
+		return g;
 	}
 
 	public ArrayList<TeleportToArea> getTeleportToArea(String json) {
 		Gson gson = new Gson();
-		return gson.fromJson(json, teleportToAreaType);
+		ArrayList<TeleportToArea> g = gson.fromJson(json, teleportToAreaType);
+		if (g == null)
+			return new ArrayList<TeleportToArea>();
+		return g;
 	}
 
 	public ArrayList<TeleportDestionation> getTeleportDestination(String json) {
 		Gson gson = new Gson();
-		return gson.fromJson(json, teleportDestinationType);
+		ArrayList<TeleportDestionation> g = gson.fromJson(json, teleportDestinationType);
+		if (g == null)
+			return new ArrayList<TeleportDestionation>();
+		return g;
 	}
 
 	public ArrayList<Gate> getGates(String json) {
 		Gson gson = new Gson();
-		return gson.fromJson(json, gateType);
+		ArrayList<Gate> g = gson.fromJson(json, gateType);
+		if (g == null)
+			return new ArrayList<Gate>();
+		return g;
 	}
 
 	public ArrayList<SwitchController> getController(String json) {
 		Gson gson = new Gson();
-		return gson.fromJson(json, switchControllerType);
+		ArrayList<SwitchController> g = gson.fromJson(json, switchControllerType);
+		if (g == null)
+			return new ArrayList<SwitchController>();
+		return g;
 	}
 
 	public ArrayList<int[]> getSwitchSetIndex(String json) {
 		Gson gson = new Gson();
-		return gson.fromJson(json, switchSetIndexType);
+		ArrayList<int[]> g = gson.fromJson(json, switchSetIndexType);
+		if (g == null)
+			return new ArrayList<int[]>();
+		return g;
 	}
 
 	public ArrayList<int[]> getControlObject(String json) {
 		Gson gson = new Gson();
-		return gson.fromJson(json, controlObjectIndexType);
+		ArrayList<int[]> g = gson.fromJson(json, controlObjectIndexType);
+		if (g == null)
+			return new ArrayList<int[]>();
+		return g;
 	}
 
 	public FloorLevel getFloorLevel(String json) {
 		Gson gson = new Gson();
-		return gson.fromJson(json, FloorLevel.class);
+		FloorLevel f = gson.fromJson(json, FloorLevel.class);
+		if (f == null)
+			return new FloorLevel(10, 10);
+		return f;
 	}
 
 	public int[] getPositionArray(String json) {
 		Gson gson = new Gson();
-		return gson.fromJson(json, int[].class);
+		int[] g = gson.fromJson(json, int[].class);
+		if (g == null)
+			return new int[0];
+		return g;
 	}
 
 	public ArrayList<Integer> getFisnishArea(String json) {
 		Gson gson = new Gson();
-		return gson.fromJson(json, integerType);
+		ArrayList<Integer> g = gson.fromJson(json, integerType);
+		if (g == null)
+			return new ArrayList<Integer>();
+		return g;
 	}
 
 	public String getLevelNameFromGson(String json) {
 		Gson gson = new Gson();
-		return gson.fromJson(json, String.class);
+		String g = gson.fromJson(json, String.class);
+		if (g == null)
+			return "N/A";
+		return g;
 	}
 
 	public int getPlayerCountFromGson(String json) {
 		Gson gson = new Gson();
 		return gson.fromJson(json, int.class);
+		
 	}
 
 	public ArrayList<int[]> getControlObjectIndex() {
@@ -624,8 +673,5 @@ public final class LevelData implements IScrollableListItem {
 	public String getLevelName() {
 		return levelName;
 	}
-	
-	
-	 
 
 }

@@ -3,6 +3,7 @@ package scene.level;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.io.FileNotFoundException;
 
 import javax.swing.JOptionPane;
 
@@ -78,8 +79,13 @@ public class NewLevelPage {
 					String fileName = chapter.getLevelDataList().size() + LevelFileManager.LEVEL_FILE_NAME_SUFFIX;
 
 					// LevelData levelData = new ...;
-
-					LevelFileManager.getInstance().saveLevelData(levelData);
+					LevelData levelData = new LevelData(playerCount, levelName, levelWidth, levelHeight, chapter,fileName);
+					try {
+						LevelFileManager.getInstance().saveLevelData(levelData);
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					this.levelSelectCallbackObj.onLevelSelect(levelData);
 				}
 			}

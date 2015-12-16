@@ -961,7 +961,7 @@ public class GameStage {
 
 	protected void addSwitchGatePairAt(ObjectVector switchPos, ObjectVector gatePos) {
 
-		FloorSwitch floorSwitch = new FloorSwitch(switchPos.getX(), switchPos.getY(), switchPos.getZ(), false, 60);
+		FloorSwitch floorSwitch = new FloorSwitch(switchPos.getX(), switchPos.getY(), switchPos.getZ(), false, 40);
 		dataSetFloorSwitches.add(floorSwitch);
 		floorSwitch.setObjectMap(objectMap);
 		objectMap.drawableObjectHashMap.put(floorSwitch.getObjectVectorWithName(), floorSwitch);

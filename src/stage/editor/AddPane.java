@@ -68,6 +68,10 @@ public class AddPane extends Pane {
 				selectedAddableObject = AddableObject.TELEPORT;
 				oldPlacePosition = null;
 			}
+			if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_4)) {
+				selectedAddableObject = AddableObject.GATE_SWITCH;
+				oldPlacePosition = null;
+			}
 			if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_5)) {
 				selectedAddableObject = AddableObject.FINISH_POINT;
 			}

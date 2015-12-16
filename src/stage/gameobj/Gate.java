@@ -114,9 +114,16 @@ public class Gate implements IDrawable, IControlable {
 			return null;
 	}
 
-	@Override
-	public void draw(Graphics2D g, Camera camera) {
-		float ratio = 1 - Helper.sineInterpolate((float) gateActivationAnim / gateProgressControl, false, true);
+	public static void draw(Graphics2D g, Camera camera, ObjectVector pos) {
+		draw(g, camera, pos, 0);
+	}
+
+	public static void draw(Graphics2D g, Camera camera, ObjectVector pos, float animFrameRatio) {
+		float ratio = 1 - Helper.sineInterpolate(animFrameRatio, false, true);
+		
+		int x = pos.getX();
+		int y = pos.getY();
+		int z = pos.getZ();
 
 		float crossShifter = ratio * 0.3f;
 
@@ -134,6 +141,11 @@ public class Gate implements IDrawable, IControlable {
 		g.setStroke(new BasicStroke(7, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 		g.drawLine(cornerA.getIntX(), cornerA.getIntY(), cornerB.getIntX(), cornerB.getIntY());
 		g.drawLine(cornerC.getIntX(), cornerC.getIntY(), cornerD.getIntX(), cornerD.getIntY());
+	}
+
+	@Override
+	public void draw(Graphics2D g, Camera camera) {
+		draw(g, camera, new ObjectVector(x, y, z), (float) gateActivationAnim / gateProgressControl);
 	}
 
 	@Override

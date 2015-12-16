@@ -765,6 +765,8 @@ public class GameStage {
 			return obj == null;
 		} else if (objectType == AddableObject.FINISH_POINT) {
 			return obj == null;
+		} else if (objectType == AddableObject.GATE_SWITCH) {
+			return obj == null;
 		}
 		return false;
 	}
@@ -850,7 +852,7 @@ public class GameStage {
 		TeleportToArea teleporter = new TeleportToArea(from.getX(), from.getY(), from.getZ(), to.getX(), to.getY(),
 				to.getZ());
 
-		teleportToAreas.add(teleporter);
+		dataSetTeleportToArea.add(teleporter);
 
 		teleporter.setObjectMap(objectMap);
 		objectMap.drawableObjectHashMap.put(new ObjectVector(teleporter.getX(), teleporter.getY(), teleporter.getZ()),
@@ -859,11 +861,34 @@ public class GameStage {
 		// ============
 
 		TeleportDestionation teleDest = teleporter.getTeleportDestination();
-		teleportDests.add(teleDest);
+		dataSetTeleportDests.add(teleDest);
 
 		teleDest.setObjectMap(objectMap);
 		objectMap.drawableObjectHashMap.put(new ObjectVector(teleDest.getX(), teleDest.getY(), teleDest.getZ()),
 				teleDest);
+	}
+
+	protected void addSwitchGatePairAt(ObjectVector switchPos, ObjectVector gatePos) {
+		
+		FloorSwitch floorSwitch = new FloorSwitch(switchPos.getX(), switchPos.getY(), switchPos.getZ(), false, 60);
+		dataSetFloorSwitches.add(floorSwitch);
+		floorSwitch.setObjectMap(objectMap);
+		objectMap.drawableObjectHashMap.put(floorSwitch.getObjectVectorWithName(), floorSwitch);
+	
+		
+		Gate gate = new Gate(gatePos.getX(), gatePos.getY(), gatePos.getZ());
+		dataSetsGate.add(gate);
+		gate.setObjectMap(objectMap);
+		objectMap.drawableObjectHashMap.put(new ObjectVector(gatePos.getX(), gatePos.getY(), gatePos.getZ()), gate);
+
+		// Controller
+		
+		ArrayList<FloorSwitch> fsList = new ArrayList<>();
+		fsList.add(floorSwitch);
+		
+		SwitchController switchCtrl = new SwitchController(fsList, new int[]{0, 1}, gate);
+		dataSetSWControllers.add(switchCtrl);
+		
 	}
 
 }

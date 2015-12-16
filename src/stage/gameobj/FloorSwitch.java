@@ -43,7 +43,7 @@ public class FloorSwitch implements IDrawable, IWalkOnAble {
 	public ObjectVector getObjectVectorWithName() {
 		return new ObjectVector(x, y, z, "Switch");
 	}
-	
+
 	protected boolean isDefaultAssertion() {
 		return defaultAssertion;
 	}
@@ -55,8 +55,6 @@ public class FloorSwitch implements IDrawable, IWalkOnAble {
 	public boolean isAsserting() {
 		return isAsserting;
 	}
-	
-
 
 	public void setObjectMap(ObjectMap objectMap) {
 		this.objectMap = objectMap;
@@ -88,10 +86,10 @@ public class FloorSwitch implements IDrawable, IWalkOnAble {
 
 		// This is just for testing. In production, link FloorSwitch with the
 		// HashMap instead.
-		
+
 		Player p = getPlayerAbove();
 		Block b = getBlockAbove();
-		
+
 		if (p != null) {
 			this.currentWeight = p.getWeight();
 		} else if (b != null) {
@@ -127,12 +125,36 @@ public class FloorSwitch implements IDrawable, IWalkOnAble {
 
 	}
 
-	private final float innerCellShift = 0.4f;
-	private final float innerCellSize = 0.8f;
+	private static final float innerCellShift = 0.4f;
+	private static final float innerCellSize = 0.8f;
 
 	public void draw(Graphics2D g, Camera camera) {
 	}
-	
+
+	public static void drawFake(Graphics2D g, Camera camera, ObjectVector pos) {
+		int x = pos.getX();
+		int y = pos.getY();
+		int z = pos.getZ();
+
+		Color baseColor = new Color(200, 250, 100);
+
+		Vector2 cornerA = camera.getDrawPosition(x + innerCellShift, y + innerCellShift, z);
+		Vector2 cornerB = camera.getDrawPosition(x + innerCellShift, y - innerCellShift, z);
+		Vector2 cornerC = camera.getDrawPosition(x - innerCellShift, y - innerCellShift, z);
+		Vector2 cornerD = camera.getDrawPosition(x - innerCellShift, y + innerCellShift, z);
+
+		Path2D.Float innerBorderPath = new Path2D.Float();
+		innerBorderPath.moveTo(cornerA.getX(), cornerA.getY());
+		innerBorderPath.lineTo(cornerB.getX(), cornerB.getY());
+		innerBorderPath.lineTo(cornerC.getX(), cornerC.getY());
+		innerBorderPath.lineTo(cornerD.getX(), cornerD.getY());
+		innerBorderPath.closePath();
+
+		g.setStroke(new BasicStroke(2));
+		g.setColor(Helper.getAlphaColor(baseColor, 150));
+		g.draw(innerBorderPath);
+	}
+
 	public void drawOverlay(Graphics2D g, Camera camera) {
 		Color baseColor = new Color(200, 250, 100);
 

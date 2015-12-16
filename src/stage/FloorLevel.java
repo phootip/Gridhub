@@ -92,13 +92,13 @@ public class FloorLevel {
 	 *            the x position of the floor
 	 * @param y
 	 *            the y position of the floor
-	 * @return The z value of the floor at the specified position, or return {@code 0} if the requested position is
+	 * @return The z value of the floor at the specified position, or return {@code -1} if the requested position is
 	 *         invalid, e.g. outside the map.
 	 * @see #setZValue(int, int, int)
 	 */
 	public int getZValueFromXY(int x, int y) {
 		if (x >= floorLevelMap.length || x < 0 || y >= floorLevelMap[0].length || y < 0)
-			return 0;
+			return -1;
 		return floorLevelMap[x][y];
 	}
 

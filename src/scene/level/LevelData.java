@@ -123,8 +123,11 @@ public final class LevelData implements IScrollableListItem {
 		this.playerCount = playerCount;
 		finishX = new ArrayList<>();
 		finishY = new ArrayList<>();
-		startX = new int[]{0,0};
-		startY = new int[]{0,1};
+		startX = new int[] { 0, 0 };
+		startY = new int[] { 0, 1 };
+
+		levelDataJSON = createLevelData(blocks, slopes, floorSwitches, gateTogateTeles, teleportToArea, teleportDests,
+				gates, swControllers, floorLevel, mapName, finishX, finishY, startX, startY, playerCount);
 	}
 
 	@Override
@@ -433,6 +436,8 @@ public final class LevelData implements IScrollableListItem {
 
 	private LevelData(String jsonContent) {
 
+		levelDataJSON = jsonContent;
+
 		levelContents = getContentList(jsonContent);
 		blocks = getBlocks(levelContents.get("Block"));
 		slopes = getSlopes(levelContents.get("Slope"));
@@ -611,7 +616,7 @@ public final class LevelData implements IScrollableListItem {
 	public int getPlayerCountFromGson(String json) {
 		Gson gson = new Gson();
 		return gson.fromJson(json, int.class);
-		
+
 	}
 
 	public ArrayList<int[]> getControlObjectIndex() {

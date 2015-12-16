@@ -1,21 +1,21 @@
 package stage.gameobj;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 
 import core.geom.Vector2;
 import core.geom.Vector3;
 import stage.Camera;
 import stage.ObjectMap;
+import util.Resource;
 import util.Constants.ColorSwatch;
 
-public class TeleportDestionation implements IDrawable, IWalkOnAble {
+public class StartArea implements IDrawable, IWalkOnAble {
 	private int x, y, z;
 	private transient ObjectMap objectMap;
-	
-	private static final float TELEPORT_DEST_MARK_RADIUS = 0.2f;
 
-	public TeleportDestionation(int x, int y, int z) {
+	public StartArea(int x, int y, int z) {
 		super();
 		this.x = x;
 		this.y = y;
@@ -30,7 +30,7 @@ public class TeleportDestionation implements IDrawable, IWalkOnAble {
 
 		return false;
 	}
-	
+
 	public void setObjectMap(ObjectMap objectMap) {
 		this.objectMap = objectMap;
 	}
@@ -49,7 +49,7 @@ public class TeleportDestionation implements IDrawable, IWalkOnAble {
 
 		return null;
 	}
-	
+
 	public int getX() {
 		return x;
 	}
@@ -67,17 +67,23 @@ public class TeleportDestionation implements IDrawable, IWalkOnAble {
 		// TODO Auto-generated method stub
 		return new Vector3(x, y, z - 0.48f);
 	}
-	
-	public static void draw(Graphics2D g, Camera camera, ObjectVector position) {
-		Vector2 centerPos = camera.getDrawPosition(position.toVector3());
-		int width = (int) camera.getDrawSizeX(TELEPORT_DEST_MARK_RADIUS * 2);
-		int height = (int) camera.getDrawSizeY(TELEPORT_DEST_MARK_RADIUS * 2);
-		int x = (int) (centerPos.getX() - camera.getDrawSizeX(TELEPORT_DEST_MARK_RADIUS));
-		int y = (int) (centerPos.getY() - camera.getDrawSizeY(TELEPORT_DEST_MARK_RADIUS));
 
-		g.setColor(ColorSwatch.FOREGROUND);
-		g.setStroke(new BasicStroke(2));
-		g.drawOval(x, y, width, height);
+	public static void draw(Graphics2D g, Camera camera, ObjectVector position) {
+		int x = position.getX();
+		int y = position.getY();
+		int z = position.getZ();
+
+		Vector2 bottom = camera.getDrawPosition(x, y, z);
+		Vector2 top = camera.getDrawPosition(x, y, z + 0.6f);
+		Vector2 left = camera.getDrawPosition(x, y, z + 0.25f).add(camera.getDrawSizeX(0.25f), 0);
+		Vector2 right = camera.getDrawPosition(x, y, z + 0.25f).add(camera.getDrawSizeX(-0.25f), 0);
+
+		g.setStroke(Resource.getGameObjectThickStroke());
+		g.setColor(Color.PINK);
+
+		g.drawLine(bottom.getIntX(), bottom.getIntY(), top.getIntX(), top.getIntY());
+		g.drawLine(bottom.getIntX(), bottom.getIntY(), left.getIntX(), left.getIntY());
+		g.drawLine(bottom.getIntX(), bottom.getIntY(), right.getIntX(), right.getIntY());
 	}
 
 	@Override

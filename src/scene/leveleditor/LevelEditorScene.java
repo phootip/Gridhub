@@ -27,6 +27,7 @@ public final class LevelEditorScene extends PlayScene {
 		if (selectedMenuItem == 0) {
 			try {
 				LevelFileManager.getInstance().saveLevelData(gameStage.buildLevelData());
+				isPause = !isPause;
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

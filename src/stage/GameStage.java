@@ -42,6 +42,7 @@ import stage.gameobj.IDrawable;
 import stage.gameobj.ObjectVector;
 import stage.gameobj.Player;
 import stage.gameobj.Slope;
+import stage.gameobj.StartArea;
 import stage.gameobj.SwitchController;
 import stage.gameobj.TeleportDestionation;
 import stage.gameobj.TeleportGate;
@@ -331,6 +332,8 @@ public class GameStage {
 
 			this.editorManager = new LevelEditorManager(cursor, this);
 
+			addPlayerStartAreas();
+
 		} else if (gameStageType == GameStageType.THUMBNAIL) {
 
 			this.cameraList.add(new Camera(new IDrawable() {
@@ -482,6 +485,15 @@ public class GameStage {
 		}
 		/////////////////////////////////////// End of Deserialize //////////////////////////////////////////////////
 
+	}
+
+	private void addPlayerStartAreas() {
+		for (int i = 0; i < playerCount; i++) {
+			int x = dataSetStartX[i];
+			int y = dataSetStartY[i];
+			int z = dataSetFloorLevel.getZValueFromXY(x, y);
+			objectMap.drawableObjectHashMap.put(new ObjectVector(x, y, z, "START"), new StartArea(x, y, z));
+		}
 	}
 
 	public void update(int step) {

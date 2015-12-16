@@ -96,17 +96,17 @@ final public class LevelFileManager {
 		PrintWriter writer = new PrintWriter(getLevelDataOutputStream(levelData));
 		writer.print(levelData.getLevelDataJSON());
 		writer.close();
-		
+
 		String fileName = levelData.getLevelFileName();
 		Chapter chapter = levelData.getChapter();
 		for (int i = 0; i < chapter.getLevelDataList().size(); i++) {
 			if (chapter.getLevelDataList().get(i).getLevelFileName().equals(fileName)) {
 				chapter.getLevelDataList().remove(i);
-				chapter.getLevelDataList().add(levelData);
+				chapter.getLevelDataList().add(i, levelData);
 				break;
 			}
 		}
-		
+
 		return levelData;
 	}
 
@@ -190,8 +190,7 @@ final public class LevelFileManager {
 
 			int i = chapterList.indexOf(chapter) + 1;
 			while (i < chapterList.size()) {
-				if (!chapterList.get(i).isUserFolder()
-						&& chapterList.get(i).getLevelDataList().size() > 0) {
+				if (!chapterList.get(i).isUserFolder() && chapterList.get(i).getLevelDataList().size() > 0) {
 					return new PlayScene(chapterList.get(i).getLevelDataList().get(0));
 				}
 				i++;

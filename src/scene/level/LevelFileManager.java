@@ -92,10 +92,22 @@ final public class LevelFileManager {
 
 	}
 
-	public void saveLevelData(LevelData levelData) throws FileNotFoundException {
+	public LevelData saveLevelData(LevelData levelData) throws FileNotFoundException {
 		PrintWriter writer = new PrintWriter(getLevelDataOutputStream(levelData));
 		writer.print(levelData.getLevelDataJSON());
 		writer.close();
+		
+		String fileName = levelData.getLevelFileName();
+		Chapter chapter = levelData.getChapter();
+		for (int i = 0; i < chapter.getLevelDataList().size(); i++) {
+			if (chapter.getLevelDataList().get(i).getLevelFileName().equals(fileName)) {
+				chapter.getLevelDataList().remove(i);
+				chapter.getLevelDataList().add(levelData);
+				break;
+			}
+		}
+		
+		return levelData;
 	}
 
 	private String getFileContentFromPath(String levelFilePath, PlayMode playMode) throws FileNotFoundException {
@@ -176,11 +188,11 @@ final public class LevelFileManager {
 			List<Chapter> chapterList = (currentLevel.getPlayerCount() == 1) ? singlePlayerChapterList
 					: coopModeChapterList;
 
-			int i = singlePlayerChapterList.indexOf(chapter) + 1;
-			while (i < singlePlayerChapterList.size()) {
-				if (!singlePlayerChapterList.get(i).isUserFolder()
-						&& singlePlayerChapterList.get(i).getLevelDataList().size() > 0) {
-					return new PlayScene(singlePlayerChapterList.get(i).getLevelDataList().get(0));
+			int i = chapterList.indexOf(chapter) + 1;
+			while (i < chapterList.size()) {
+				if (!chapterList.get(i).isUserFolder()
+						&& chapterList.get(i).getLevelDataList().size() > 0) {
+					return new PlayScene(chapterList.get(i).getLevelDataList().get(0));
 				}
 				i++;
 			}

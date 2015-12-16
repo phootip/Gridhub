@@ -1,5 +1,7 @@
 package util;
 
+import java.applet.Applet;
+import java.applet.AudioClip;
 import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.FontFormatException;
@@ -8,8 +10,11 @@ import java.awt.Stroke;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+
 
 /**
  * This class contains resources that is required in the game. The game will load the required resource from file
@@ -47,7 +52,7 @@ public class Resource {
 	public boolean initialize() {
 		try {
 			loadFont();
-
+			loadSound();
 			return true;
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -139,5 +144,22 @@ public class Resource {
 	public static Stroke getGameObjectThinStroke() {
 		return gameObjThinStroke;
 	}
-
+	
+	public AudioClip themeSong;
+	public AudioClip warpEffect;
+	private void loadSound() {
+		try {
+			themeSong = Applet.newAudioClip(this.getClass().getClassLoader().getResource("res/sound/themeSong.wav").toURI().toURL());
+			warpEffect = Applet.newAudioClip(this.getClass().getClassLoader().getResource("res/sound/teleport.wav").toURI().toURL());
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
 }

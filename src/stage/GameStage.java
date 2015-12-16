@@ -130,7 +130,7 @@ public class GameStage {
 		this.gameStageType = gameStageType;
 		this.levelData = lvlData;
 		objectMap.drawableObjectHashMap = new HashMap<ObjectVector, IDrawable>();
-
+		
 		// floorLevelMap = new FloorLevel(25, 25);
 		// int floorMapXSize = floorLevelMap.getSizeX();
 		// int floorMapYSize = floorLevelMap.getSizeY();

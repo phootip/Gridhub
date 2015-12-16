@@ -12,6 +12,7 @@ import stage.gameobj.IDrawable;
 import stage.gameobj.IWalkOnAble;
 import util.Constants.ColorSwatch;
 import util.Helper;
+import util.Resource;
 
 /**
  * The TeleportGate is the object that can transfer {@link Player} to some specific area when player stand on the
@@ -70,6 +71,7 @@ public abstract class TeleportGate implements IDrawable, IWalkOnAble, IControlab
 		if (teleportProgress >= TELEPORT_PROGRESS_CONTROL) {
 			teleportProgress = 0;
 			teleport(getPlayerAbove());
+			Resource.getInstance().warpEffect.play();
 		}
 
 		if (teleportSpinSpeed < teleportProgress) {

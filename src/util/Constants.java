@@ -19,7 +19,7 @@ public final class Constants {
 	/**
 	 * Determines whether the game will be run in full screen mode or not.
 	 */
-	public static final boolean IS_FULLSCREEN = false;
+	public static final boolean IS_FULLSCREEN = true;
 
 	/**
 	 * The size of the game screen, excluding the window border. This is used when {@link #IS_FULLSCREEN} is false.
@@ -29,7 +29,7 @@ public final class Constants {
 	/**
 	 * Determines whether the FPS monitor should be shown.
 	 */
-	public static final boolean SHOW_FPS_MONITOR = true;
+	public static final boolean SHOW_FPS_MONITOR = false;
 
 	/**
 	 * Whether or not to cache the drawable things to improve performance.

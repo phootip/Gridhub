@@ -13,6 +13,9 @@ import java.util.Scanner;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+import scene.core.Scene;
+import scene.mainmenu.MainMenuScene;
+import scene.play.PlayScene;
 import util.Constants;
 import util.Constants.PlayMode;
 
@@ -23,7 +26,7 @@ final public class LevelFileManager {
 	public static final LevelFileManager getInstance() {
 		return instance;
 	}
-	
+
 	public static final String LEVEL_FILE_NAME_SUFFIX = ".json";
 
 	private List<Chapter> singlePlayerChapterList;
@@ -68,7 +71,7 @@ final public class LevelFileManager {
 		Chapter chapter = levelData.getChapter();
 		return getLevelResourceFileAsOutputStream(chapter.getPlayMode().getLevelFolderName() + "/"
 				+ chapter.getFolderName() + "/" + levelData.getLevelFileName());
-	}	
+	}
 
 	private InputStream getChapterFileInputStream(String chapterFilePath, PlayMode playMode)
 			throws FileNotFoundException {
@@ -78,7 +81,7 @@ final public class LevelFileManager {
 	private String getFileContent(InputStream stream) {
 		// From http://stackoverflow.com/a/5445161
 
-		Scanner s = new Scanner(stream,"UTF-8");
+		Scanner s = new Scanner(stream, "UTF-8");
 		s.useDelimiter("\\A");
 
 		String content = s.hasNext() ? s.next() : "";
@@ -86,7 +89,7 @@ final public class LevelFileManager {
 		s.close();
 
 		return content;
-		
+
 	}
 
 	public void saveLevelData(LevelData levelData) throws FileNotFoundException {
@@ -161,6 +164,30 @@ final public class LevelFileManager {
 				break;
 			}
 		}
+	}
+
+	public Scene getNextLevelPlayScene(LevelData currentLevel) {
+		Chapter chapter = currentLevel.getChapter();
+		List<LevelData> levelList = chapter.getLevelDataList();
+
+		if (levelList.indexOf(currentLevel) < levelList.size() - 1) { // Not last level
+			return new PlayScene(levelList.get(levelList.indexOf(currentLevel) + 1));
+		} else {
+			List<Chapter> chapterList = (currentLevel.getPlayerCount() == 1) ? singlePlayerChapterList
+					: coopModeChapterList;
+
+			int i = singlePlayerChapterList.indexOf(chapter) + 1;
+			while (i < singlePlayerChapterList.size()) {
+				if (!singlePlayerChapterList.get(i).isUserFolder()
+						&& singlePlayerChapterList.get(i).getLevelDataList().size() > 0) {
+					return new PlayScene(singlePlayerChapterList.get(i).getLevelDataList().get(0));
+				}
+				i++;
+			}
+		}
+
+		return new MainMenuScene(false);
+
 	}
 
 	public List<Chapter> getChapterList(PlayMode playMode) {

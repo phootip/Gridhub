@@ -68,13 +68,6 @@ public class FinishArea implements IDrawable, IWalkOnAble {
 		return isPlayerAbove;
 	}
 	/**
-	 * This method is called by {@link Player} to perform the finish action when player clear the stage
-	 */
-	public void perFormFinish() {
-		System.out.println("You won");
-		
-	}
-	/**
 	 * @return whether or not there is a player on the area
 	 */
 	@Override

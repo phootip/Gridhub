@@ -526,8 +526,22 @@ public final class LevelData implements IScrollableListItem {
 	private LevelData(String jsonContent) {
 
 		levelDataJSON = jsonContent;
+		
+		refreshData();
 
-		levelContents = getContentList(jsonContent);
+	}
+
+	/**
+	 * Refresh the internal data of the LevelData with another data, so that the all the external references link are
+	 * broken.
+	 */
+	public void refreshData() {
+		populateDataFromJson();
+	}
+
+	private void populateDataFromJson() {
+
+		levelContents = getContentList(levelDataJSON);
 		blocks = getBlocks(levelContents.get("Block"));
 		slopes = getSlopes(levelContents.get("Slope"));
 		floorSwitches = getFloorSwitches(levelContents.get("FloorSwitch"));
@@ -547,7 +561,6 @@ public final class LevelData implements IScrollableListItem {
 		finishY = getFisnishArea(levelContents.get("FinishY"));
 		startX = getPositionArray(levelContents.get("StartX"));
 		startY = getPositionArray(levelContents.get("StartY"));
-
 	}
 
 	/**
@@ -563,14 +576,14 @@ public final class LevelData implements IScrollableListItem {
 	public HashMap<String, String> getContentList(String json) {
 		Gson gson = new Gson();
 		try {
-			if(!isJSONValid(json)) {
+			if (!isJSONValid(json)) {
 				throw new JsonInvalidFormatException(false);
 			}
 		} catch (JsonInvalidFormatException e) {
 			e.getMessage();
 			System.out.println("The input File format may not be .json File");
 		}
-		
+
 		HashMap<String, String> hMap = gson.fromJson(json, hashType);
 		if (hMap == null)
 			return new HashMap<String, String>();
@@ -713,6 +726,7 @@ public final class LevelData implements IScrollableListItem {
 			return new ArrayList<int[]>();
 		return g;
 	}
+
 	/**
 	 * 
 	 * @param json
@@ -726,6 +740,7 @@ public final class LevelData implements IScrollableListItem {
 			return new ArrayList<int[]>();
 		return g;
 	}
+
 	/**
 	 * 
 	 * @param json
@@ -738,8 +753,10 @@ public final class LevelData implements IScrollableListItem {
 			return new FloorLevel(10, 10);
 		return f;
 	}
+
 	/**
-	 * This method will be used to get StartX and StartY array 
+	 * This method will be used to get StartX and StartY array
+	 * 
 	 * @param json
 	 * @return Array of int
 	 */
@@ -750,6 +767,7 @@ public final class LevelData implements IScrollableListItem {
 			return new int[0];
 		return g;
 	}
+
 	/**
 	 * 
 	 * @param json
@@ -762,8 +780,10 @@ public final class LevelData implements IScrollableListItem {
 			return new ArrayList<Integer>();
 		return g;
 	}
+
 	/**
 	 * This method will return the levelName of each Level
+	 * 
 	 * @param json
 	 * @return String of levelName
 	 */
@@ -774,8 +794,10 @@ public final class LevelData implements IScrollableListItem {
 			return "N/A";
 		return g;
 	}
+
 	/**
 	 * This will return the amount of player to play in the level
+	 * 
 	 * @param json
 	 * @return
 	 */
@@ -862,7 +884,6 @@ public final class LevelData implements IScrollableListItem {
 	public String getLevelName() {
 		return levelName;
 	}
-	
 
 	/**
 	 * 

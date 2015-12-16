@@ -176,11 +176,11 @@ final public class LevelFileManager {
 			List<Chapter> chapterList = (currentLevel.getPlayerCount() == 1) ? singlePlayerChapterList
 					: coopModeChapterList;
 
-			int i = singlePlayerChapterList.indexOf(chapter) + 1;
-			while (i < singlePlayerChapterList.size()) {
-				if (!singlePlayerChapterList.get(i).isUserFolder()
-						&& singlePlayerChapterList.get(i).getLevelDataList().size() > 0) {
-					return new PlayScene(singlePlayerChapterList.get(i).getLevelDataList().get(0));
+			int i = chapterList.indexOf(chapter) + 1;
+			while (i < chapterList.size()) {
+				if (!chapterList.get(i).isUserFolder()
+						&& chapterList.get(i).getLevelDataList().size() > 0) {
+					return new PlayScene(chapterList.get(i).getLevelDataList().get(0));
 				}
 				i++;
 			}

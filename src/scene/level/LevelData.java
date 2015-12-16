@@ -73,6 +73,15 @@ public final class LevelData implements IScrollableListItem {
 
 	private transient BufferedImage thumbnail = null;
 	private transient Chapter chapter;
+	private transient boolean thumbnailRenderJobOccupied = false;
+
+	protected boolean isThumbnailRenderJobOccupied() {
+		return thumbnailRenderJobOccupied;
+	}
+
+	protected void setThumbnailRenderJobOccupied() {
+		this.thumbnailRenderJobOccupied = true;
+	}
 
 	public Chapter getChapter() {
 		return chapter;

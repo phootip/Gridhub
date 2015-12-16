@@ -129,19 +129,20 @@ class LevelThumbnailRenderer {
 	 *            a {@link Chapter} that all of its {@link LevelData}'s thumbnail images will be rendered.
 	 */
 	protected static void startRenderThumbnail(Chapter chapter) {
-		if (!chapter.isRenderingJobStarted()) {
-			chapter.setRenderingJobStarted(true);
+		// if (!chapter.isRenderingJobStarted()) {
+		chapter.setRenderingJobStarted(true);
 
-			System.out.println("Thumbnail rendering job of chapter \"" + chapter.getChapterName() + "\" has started");
+		System.out.println("Thumbnail rendering job of chapter \"" + chapter.getChapterName() + "\" has started");
 
-			RendererRunnable previousJob = null;
-			for (LevelData level : chapter.getLevelDataList()) {
-				if (level.getThumbnail() == null) {
-					previousJob = new RendererRunnable(level, previousJob);
-					new Thread(previousJob).start();
-				}
+		RendererRunnable previousJob = null;
+		for (LevelData level : chapter.getLevelDataList()) {
+			if (!level.isThumbnailRenderJobOccupied()) {
+				level.setThumbnailRenderJobOccupied();
+				previousJob = new RendererRunnable(level, previousJob);
+				new Thread(previousJob).start();
 			}
 		}
+		// }
 	}
 
 }

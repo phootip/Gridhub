@@ -803,6 +803,9 @@ public class GameStage {
 			obj.setObjectMap(objectMap);
 			dataSetfinishArea.add(obj);
 			objectMap.drawableObjectHashMap.put(new ObjectVector(obj.getX(), obj.getY(), obj.getZ()), obj);
+			
+			dataSetFinishX.add(obj.getX());
+			dataSetFinishY.add(obj.getY());
 		}
 	}
 

@@ -106,9 +106,16 @@ public final class LevelData implements IScrollableListItem {
 		return mapName;
 	}
 
-	// public static void createBlank(PlayerMode playerMode ,int sizeX , int sizeY) {
-	//
-	// }
+	/**
+	 * Create a black Level Space With default value preset
+	 * 
+	 * @param playerCount
+	 * @param levelName
+	 * @param floorWidth
+	 * @param floorHeight
+	 * @param chapter
+	 * @param levelFileName
+	 */
 	public LevelData(int playerCount, String levelName, int floorWidth, int floorHeight, Chapter chapter,
 			String levelFileName) {
 		this.playerCount = playerCount;
@@ -182,10 +189,21 @@ public final class LevelData implements IScrollableListItem {
 	private LevelDataBuilder levelDataBuilder;
 	private String levelDataJSON;
 
+	/**
+	 * This method is called when we need to create all the levels content and store as JSON.
+	 * 
+	 * @param builder
+	 *            {@Link LevelDataBuilder} will contain all necessary file to create level as JSON
+	 * @return LevelData Object which contains JSON String of the file content
+	 */
 	public static LevelData createLevelDataAsJSON(LevelDataBuilder builder) {
 		return new LevelData(builder);
 	}
 
+	/**
+	 * 
+	 * @param builder
+	 */
 	private LevelData(LevelDataBuilder builder) {
 		this.levelDataBuilder = builder;
 		levelDataJSON = createLevelData(builder.getBlocks(), builder.getSlopes(), builder.getFloorSwitches(),
@@ -195,6 +213,42 @@ public final class LevelData implements IScrollableListItem {
 				builder.getPlayerCount());
 	}
 
+	/**
+	 * This method create JSON String contains all neccessary data to be read by {@GameStage} and Write. This method use
+	 * Gson library to convert data into JSON String
+	 * 
+	 * @param blocks
+	 *            ArrayList of BLock Object
+	 * @param slopes
+	 *            ArrayList of Slope Object
+	 * @param floorSwitches
+	 *            ArrayList of FloorSwitch Object
+	 * @param gateTogateTeles
+	 *            ArrayList of GateToGateTeleport Object
+	 * @param teleportToArea
+	 *            ArrayList of TeleportToArea Object
+	 * @param telportDests
+	 *            ArrayList of TeleportDestination Object
+	 * @param gates
+	 *            ArrayList of Gate Object
+	 * @param swControllers
+	 *            ArrayList of the controller Object
+	 * @param floorLevel
+	 *            floorLevelObject which indicate the geometry of the map
+	 * @param levelName
+	 *            name of the level
+	 * @param finishX
+	 *            ArrayList of {@link FinishArea} x position
+	 * @param finishY
+	 *            ArrayList of {@link FinishArea} y position
+	 * @param startX
+	 *            array of Player starting x position
+	 * @param startY
+	 *            array of Player starting y postion
+	 * @param playerCount
+	 *            the amount of player in the game
+	 * @return JSON String of the object
+	 */
 	private String createLevelData(ArrayList<Block> blocks, ArrayList<Slope> slopes,
 			ArrayList<FloorSwitch> floorSwitches, ArrayList<GateToGateTeleport> gateTogateTeles,
 			ArrayList<TeleportToArea> teleportToArea, ArrayList<TeleportDestionation> telportDests,
@@ -246,22 +300,42 @@ public final class LevelData implements IScrollableListItem {
 
 	}
 
+	/**
+	 * Getter of levelDataJSON object
+	 * 
+	 * @return JSON String of the levelData
+	 */
 	public String getLevelDataJSON() {
 		return levelDataJSON;
 	}
 
+	/**
+	 * 
+	 * @param a
+	 * @return JSON String of Block ArrayList
+	 */
 	private String getBlockArrayAsJSON(ArrayList<Block> a) {
 		Gson gson = new Gson();
 		return gson.toJson(a);
 
 	}
 
+	/**
+	 * 
+	 * @param s
+	 * @return JSON String of Slope ArrayList
+	 */
 	private String getSlopeArrayAsJSON(ArrayList<Slope> s) {
 		Gson gson = new Gson();
 		return gson.toJson(s);
 
 	}
 
+	/**
+	 * 
+	 * @param fs
+	 * @return JSON String of FloorSwitch ArrayList
+	 */
 	private String getFloorSwitchesArrayAsJSON(ArrayList<FloorSwitch> fs) {
 		Gson gson = new Gson();
 		return gson.toJson(fs);
@@ -443,6 +517,12 @@ public final class LevelData implements IScrollableListItem {
 	private int[] startX;
 	private int[] startY;
 
+	/**
+	 * This method will parse jsonContent and convert it in to The Program's usable object
+	 * 
+	 * @param jsonContent
+	 *            JSON String which represent the whole file of the
+	 */
 	private LevelData(String jsonContent) {
 
 		levelDataJSON = jsonContent;
@@ -470,28 +550,39 @@ public final class LevelData implements IScrollableListItem {
 
 	}
 
-	public static LevelData parse(int p, String jsonContent) {
-		return new LevelData(jsonContent);
-	}
-
+	/**
+	 * This method will parse the JsonContent and store in the LevelDataObject
+	 * 
+	 * @param jsonContent
+	 * @return
+	 */
 	public static LevelData parse(String jsonContent) {
 		return new LevelData(jsonContent);
 	}
 
-	// mock up only
-	private LevelData(int p, String jsonContent) {
-		this.mapName = jsonContent;
-		this.playerCount = p;
-	}
-
 	public HashMap<String, String> getContentList(String json) {
 		Gson gson = new Gson();
+		try {
+			if(!isJSONValid(json)) {
+				throw new JsonInvalidFormatException(false);
+			}
+		} catch (JsonInvalidFormatException e) {
+			e.getMessage();
+			System.out.println("The input File format may not be .json File");
+		}
+		
 		HashMap<String, String> hMap = gson.fromJson(json, hashType);
 		if (hMap == null)
 			return new HashMap<String, String>();
 		return hMap;
 	}
 
+	/**
+	 * This method check whether the JSON Input is Valid JSON
+	 * 
+	 * @param JSON_STRING
+	 * @return
+	 */
 	public static boolean isJSONValid(String JSON_STRING) {
 		Gson gson = new Gson();
 		try {
@@ -502,14 +593,12 @@ public final class LevelData implements IScrollableListItem {
 		}
 	}
 
-	public ArrayList<Block> getBlocks(String json) {
-		Gson gson = new Gson();
-		ArrayList<Block> bl = gson.fromJson(json, blockType);
-		if (bl == null)
-			return new ArrayList<Block>();
-		return bl;
-	}
-
+	/**
+	 * 
+	 * 
+	 * @param json
+	 * @return ArrayList of Slope Type Object
+	 */
 	public ArrayList<Slope> getSlopes(String json) {
 		Gson gson = new Gson();
 		ArrayList<Slope> as = gson.fromJson(json, slopeType);
@@ -518,6 +607,11 @@ public final class LevelData implements IScrollableListItem {
 		return as;
 	}
 
+	/**
+	 * 
+	 * @param json
+	 * @return ArrayList of FloorSwitch Type Object
+	 */
 	public ArrayList<FloorSwitch> getFloorSwitches(String json) {
 		Gson gson = new Gson();
 		ArrayList<FloorSwitch> fs = gson.fromJson(json, floorSwitchType);
@@ -526,6 +620,11 @@ public final class LevelData implements IScrollableListItem {
 		return fs;
 	}
 
+	/**
+	 * 
+	 * @param json
+	 * @return ArrayList of GateToGateTeleport Type
+	 */
 	public ArrayList<GateToGateTeleport> getGateToGateTeleport(String json) {
 		Gson gson = new Gson();
 		ArrayList<GateToGateTeleport> g = gson.fromJson(json, teleportToGateType);
@@ -534,6 +633,13 @@ public final class LevelData implements IScrollableListItem {
 		return g;
 	}
 
+	/**
+	 * This method return the gate link in the index type. This index will be called by {@link GameStage} when the game
+	 * serialize JSON
+	 * 
+	 * @param json
+	 * @return
+	 */
 	public int[] getGateLink(String json) {
 		Gson gson = new Gson();
 		int[] g = gson.fromJson(json, int[].class);
@@ -542,6 +648,11 @@ public final class LevelData implements IScrollableListItem {
 		return g;
 	}
 
+	/**
+	 * 
+	 * @param json
+	 * @return ArrayList of TelepotyToArea Type Object
+	 */
 	public ArrayList<TeleportToArea> getTeleportToArea(String json) {
 		Gson gson = new Gson();
 		ArrayList<TeleportToArea> g = gson.fromJson(json, teleportToAreaType);
@@ -550,6 +661,11 @@ public final class LevelData implements IScrollableListItem {
 		return g;
 	}
 
+	/**
+	 * 
+	 * @param json
+	 * @return ArrayList of TeleportDestination Type Object
+	 */
 	public ArrayList<TeleportDestionation> getTeleportDestination(String json) {
 		Gson gson = new Gson();
 		ArrayList<TeleportDestionation> g = gson.fromJson(json, teleportDestinationType);
@@ -558,6 +674,11 @@ public final class LevelData implements IScrollableListItem {
 		return g;
 	}
 
+	/**
+	 * 
+	 * @param json
+	 * @return ArrayList of Gate Type Object
+	 */
 	public ArrayList<Gate> getGates(String json) {
 		Gson gson = new Gson();
 		ArrayList<Gate> g = gson.fromJson(json, gateType);
@@ -566,6 +687,11 @@ public final class LevelData implements IScrollableListItem {
 		return g;
 	}
 
+	/**
+	 * 
+	 * @param json
+	 * @return ArrayList of SwitchController Type Object
+	 */
 	public ArrayList<SwitchController> getController(String json) {
 		Gson gson = new Gson();
 		ArrayList<SwitchController> g = gson.fromJson(json, switchControllerType);
@@ -574,6 +700,12 @@ public final class LevelData implements IScrollableListItem {
 		return g;
 	}
 
+	/**
+	 * 
+	 * @param json
+	 * @return ArrayList of SwitchsSet index for each SwitchController . This will be called by {@GameStage} when
+	 *         deserialze the JSON and match the ArrayList<FloorSwitch> to each SwitchController
+	 */
 	public ArrayList<int[]> getSwitchSetIndex(String json) {
 		Gson gson = new Gson();
 		ArrayList<int[]> g = gson.fromJson(json, switchSetIndexType);
@@ -581,7 +713,12 @@ public final class LevelData implements IScrollableListItem {
 			return new ArrayList<int[]>();
 		return g;
 	}
-
+	/**
+	 * 
+	 * @param json
+	 * @return ArrayList of IControlable index for each SwitchController . This will be called by {@GameStage} when
+	 *         deserialze the JSON to match the each ControlObject to each SwitchController
+	 */
 	public ArrayList<int[]> getControlObject(String json) {
 		Gson gson = new Gson();
 		ArrayList<int[]> g = gson.fromJson(json, controlObjectIndexType);
@@ -589,7 +726,11 @@ public final class LevelData implements IScrollableListItem {
 			return new ArrayList<int[]>();
 		return g;
 	}
-
+	/**
+	 * 
+	 * @param json
+	 * @return FloorLevel Object of the game
+	 */
 	public FloorLevel getFloorLevel(String json) {
 		Gson gson = new Gson();
 		FloorLevel f = gson.fromJson(json, FloorLevel.class);
@@ -597,7 +738,11 @@ public final class LevelData implements IScrollableListItem {
 			return new FloorLevel(10, 10);
 		return f;
 	}
-
+	/**
+	 * This method will be used to get StartX and StartY array 
+	 * @param json
+	 * @return Array of int
+	 */
 	public int[] getPositionArray(String json) {
 		Gson gson = new Gson();
 		int[] g = gson.fromJson(json, int[].class);
@@ -605,7 +750,11 @@ public final class LevelData implements IScrollableListItem {
 			return new int[0];
 		return g;
 	}
-
+	/**
+	 * 
+	 * @param json
+	 * @return
+	 */
 	public ArrayList<Integer> getFisnishArea(String json) {
 		Gson gson = new Gson();
 		ArrayList<Integer> g = gson.fromJson(json, integerType);
@@ -613,7 +762,11 @@ public final class LevelData implements IScrollableListItem {
 			return new ArrayList<Integer>();
 		return g;
 	}
-
+	/**
+	 * This method will return the levelName of each Level
+	 * @param json
+	 * @return String of levelName
+	 */
 	public String getLevelNameFromGson(String json) {
 		Gson gson = new Gson();
 		String g = gson.fromJson(json, String.class);
@@ -621,7 +774,11 @@ public final class LevelData implements IScrollableListItem {
 			return "N/A";
 		return g;
 	}
-
+	/**
+	 * This will return the amount of player to play in the level
+	 * @param json
+	 * @return
+	 */
 	public int getPlayerCountFromGson(String json) {
 		Gson gson = new Gson();
 		return gson.fromJson(json, int.class);
@@ -704,6 +861,20 @@ public final class LevelData implements IScrollableListItem {
 
 	public String getLevelName() {
 		return levelName;
+	}
+	
+
+	/**
+	 * 
+	 * @param json
+	 * @return ArrayList of Block Type Object
+	 */
+	public ArrayList<Block> getBlocks(String json) {
+		Gson gson = new Gson();
+		ArrayList<Block> bl = gson.fromJson(json, blockType);
+		if (bl == null)
+			return new ArrayList<Block>();
+		return bl;
 	}
 
 }

@@ -9,10 +9,17 @@ import stage.Camera;
 import stage.ObjectMap;
 import util.Constants.ColorSwatch;
 
+/**
+ * This method represents the marked destination of {@link TeleportToArea} method which is used to ensure that there
+ * will be no other objects in the area of the teleport Destination
+ * 
+ * @author Thanat
+ *
+ */
 public class TeleportDestionation implements IDrawable, IWalkOnAble {
 	private int x, y, z;
 	private transient ObjectMap objectMap;
-	
+
 	private static final float TELEPORT_DEST_MARK_RADIUS = 0.2f;
 
 	public TeleportDestionation(int x, int y, int z) {
@@ -30,11 +37,17 @@ public class TeleportDestionation implements IDrawable, IWalkOnAble {
 
 		return false;
 	}
-	
+	/**
+	 * This method is used to set {@link ObjecMap} to the object
+	 * @param objectMap
+	 */
 	public void setObjectMap(ObjectMap objectMap) {
 		this.objectMap = objectMap;
 	}
-
+	/**
+	 * 
+	 * @return whether there is a player above
+	 */
 	public Player getPlayerAbove() {
 		if (objectMap.drawableObjectHashMap
 				.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER1_ID)) != null) {
@@ -49,7 +62,7 @@ public class TeleportDestionation implements IDrawable, IWalkOnAble {
 
 		return null;
 	}
-	
+
 	public int getX() {
 		return x;
 	}
@@ -67,7 +80,12 @@ public class TeleportDestionation implements IDrawable, IWalkOnAble {
 		// TODO Auto-generated method stub
 		return new Vector3(x, y, z - 0.48f);
 	}
-	
+	/**
+	 * The method which is used to draw the TeleportDestination on the screen
+	 * @param g
+	 * @param camera
+	 * @param position
+	 */
 	public static void draw(Graphics2D g, Camera camera, ObjectVector position) {
 		Vector2 centerPos = camera.getDrawPosition(position.toVector3());
 		int width = (int) camera.getDrawSizeX(TELEPORT_DEST_MARK_RADIUS * 2);

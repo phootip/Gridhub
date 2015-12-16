@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import stage.gameobj.FloorSwitch;
 
 /**
+ * This method represent the switch controller set which is used to control {@link IControlable} object 
+ * This method will check the activated switches with the preset value of truth table.
+ * 
  * @author Thanat
  *
  */

@@ -14,6 +14,9 @@ import util.Constants.ColorSwatch;
 import util.Helper;
 
 /**
+ * The TeleportGate is the object that can transfer {@link Player} to some specific area when player stand on the
+ * TeleportGate for the sufficient amount of time.
+ * 
  * @author Thanat
  *
  */
@@ -31,6 +34,11 @@ public abstract class TeleportGate implements IDrawable, IWalkOnAble, IControlab
 		isAsserted = true;
 	}
 
+	/**
+	 * This method is called when the gate teleports player to specific area.
+	 * 
+	 * @param p
+	 */
 	protected abstract void teleport(Player p);
 
 	// the progress checking is just a mock up. It should be set up later
@@ -43,6 +51,11 @@ public abstract class TeleportGate implements IDrawable, IWalkOnAble, IControlab
 		this.objectMap = objectMap;
 	}
 
+	/**
+	 * This method is called by {@GameStage} to update the state of the TeleportGate
+	 * 
+	 * @param step
+	 */
 	public void update(int step) {
 
 		if (!isObjectAbove()) {
@@ -79,6 +92,16 @@ public abstract class TeleportGate implements IDrawable, IWalkOnAble, IControlab
 		draw(g, camera, position, 0, 0, 0);
 	}
 
+	/**
+	 * This method is used to draw the object and perform the object animation when it is activated
+	 * 
+	 * @param g
+	 * @param camera
+	 * @param position
+	 * @param teleportSpinPhase
+	 * @param spinLength
+	 * @param teleportSpinSpeed
+	 */
 	public static void draw(Graphics2D g, Camera camera, ObjectVector position, float teleportSpinPhase, int spinLength,
 			int teleportSpinSpeed) {
 
@@ -124,6 +147,11 @@ public abstract class TeleportGate implements IDrawable, IWalkOnAble, IControlab
 		return false;
 	}
 
+	/**
+	 * This method check if there is a player above the telelport.
+	 * 
+	 * @return whether there is a player above the Teleport gate.
+	 */
 	public Player getPlayerAbove() {
 		if (objectMap.drawableObjectHashMap
 				.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER1_ID)) != null) {

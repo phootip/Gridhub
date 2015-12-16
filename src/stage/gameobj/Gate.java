@@ -11,7 +11,15 @@ import stage.ObjectMap;
 import util.Helper;
 import util.Resource;
 
-public class Gate implements IDrawable, IControlable {
+/**
+ * This Class represent Gate object in the game. Gate will be controlled by the switches. The player will not be able 
+ * to move across the gate unless it is activated
+ * 
+ * @author Thanat
+ *
+ */
+public class Gate implements IDrawable , IControlable {
+
 	private boolean isAsserted;
 	private int x, y, z;
 	private transient ObjectMap objectMap;
@@ -25,12 +33,23 @@ public class Gate implements IDrawable, IControlable {
 
 	protected final int gateProgressControl = 100 * 20;
 	protected int gateActivationProgress = 0;
+
+	/**
+	 * set the {@link ObjectMap} above the player
+	 * @param objectMap
+	 */
+
 	protected int gateActivationAnim = 0;
+
 
 	public void setObjectMap(ObjectMap objectMap) {
 		this.objectMap = objectMap;
 	}
 
+	/**
+	 * This method is called by {@link GameStage} to update the state of the switch.
+	 * @param step
+	 */
 	public void update(int step) {
 
 		gateActivationAnim -= step;
@@ -53,6 +72,11 @@ public class Gate implements IDrawable, IControlable {
 			gateActivationProgress = 0;
 		}
 	}
+
+	
+	/**
+	 * This method perform an action when the Gate is being activated
+	 */
 
 	public void performAction() {
 		// do action
@@ -82,6 +106,12 @@ public class Gate implements IDrawable, IControlable {
 	public int getZ() {
 		return z;
 	}
+	
+	/**
+	 * 
+	 * @return boolean indicate whether there is an object above
+	 */
+	
 
 	public boolean isObjectAbove() {
 		if (getPlayerAbove() != null || getBlockAbove() != null) {
@@ -90,6 +120,13 @@ public class Gate implements IDrawable, IControlable {
 
 		return false;
 	}
+
+	
+	/**
+	 * The method is used to get the player standing above the gate when it is deactivated
+	 * @return the player over the gate
+	 */
+
 
 	public Player getPlayerAbove() {
 		if (objectMap.drawableObjectHashMap
@@ -105,6 +142,11 @@ public class Gate implements IDrawable, IControlable {
 
 		return null;
 	}
+
+	/**
+	 * The method is used to get the block above the gate when it is deactivated
+	 * @return the block over the gate
+	 */
 
 	private Block getBlockAbove() {
 		IDrawable objectAbove = objectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z));

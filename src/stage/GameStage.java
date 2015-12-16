@@ -276,7 +276,7 @@ public class GameStage {
 		dataSetFinishY = levelData.getFinishY();
 		dataSetStartX = levelData.getStartX();
 		dataSetStartY = levelData.getStartY();
-		playerCount = levelData.getPlayerCount();
+		dataPlayerCount = levelData.getPlayerCount();
 
 		if (dataSetBlock == null)
 			dataSetBlock = new ArrayList<>();
@@ -316,13 +316,13 @@ public class GameStage {
 			playerCount = 1;
 
 		if (gameStageType == GameStageType.PLAY) {
-			player1 = new Player(util.Constants.PLAYER1_ID, dataSetFloorLevel, dataSetStartX[0], dataSetStartX[0],
-					dataSetFloorLevel.getZValueFromXY(dataSetStartX[0], dataSetStartX[0]));
+			player1 = new Player(util.Constants.PLAYER1_ID, dataSetFloorLevel, dataSetStartX[0], dataSetStartY[0],
+					dataSetFloorLevel.getZValueFromXY(dataSetStartX[0], dataSetStartY[0]));
 			this.cameraList.add(new Camera(player1));
 
 			if (levelData.getPlayerCount() == 2) {
-				player2 = new Player(util.Constants.PLAYER2_ID, dataSetFloorLevel, dataSetStartX[1], dataSetStartX[1],
-						dataSetFloorLevel.getZValueFromXY(dataSetStartX[1], dataSetStartX[1]));
+				player2 = new Player(util.Constants.PLAYER2_ID, dataSetFloorLevel, dataSetStartX[1], dataSetStartY[1],
+						dataSetFloorLevel.getZValueFromXY(dataSetStartX[1], dataSetStartY[1]));
 				this.cameraList.add(new Camera(player2));
 			}
 		} else if (gameStageType == GameStageType.LEVEL_EDITOR) {

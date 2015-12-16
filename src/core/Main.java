@@ -94,6 +94,7 @@ public class Main {
 		// Game looper
 		final long maximumWaitTime = 1000000000 / Constants.MAX_FRAME_PER_SECOND;
 		long updateTime;
+		Resource.getInstance().themeSong.loop();
 		while (true) {
 			// Perform a game update (including game logic and painting)
 			updateTime = System.nanoTime();

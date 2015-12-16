@@ -285,6 +285,14 @@ public class Slope implements ILargeDrawable {
 		return positionList;
 	}
 
+	/**
+	 * Draw the starting piece of the slope. Because each slopes occupies three cell.Threrefore it is drawn seperately.
+	 * 
+	 * @param g
+	 * @param camera
+	 * @param startPos
+	 * @param endPos
+	 */
 	public static void drawStartPiece(Graphics2D g, Camera camera, ObjectVector startPos, ObjectVector endPos) {
 		int startX = startPos.getX();
 		int startY = startPos.getY();
@@ -398,6 +406,14 @@ public class Slope implements ILargeDrawable {
 		g.drawLine(endV1.getIntX(), endV1.getIntY(), startV1.getIntX(), startV1.getIntY());
 	}
 
+	/**
+	 * Draw the middle piece of the slope. Because each slopes occupies three cell.Threrefore it is drawn seperately.
+	 * 
+	 * @param g
+	 * @param camera
+	 * @param startPos
+	 * @param endPos
+	 */
 	public static void drawMiddlePiece(Graphics2D g, Camera camera, ObjectVector startPos, ObjectVector endPos) {
 		int startX = startPos.getX();
 		int startY = startPos.getY();
@@ -479,6 +495,14 @@ public class Slope implements ILargeDrawable {
 		}
 	}
 
+	/**
+	 * Draw the End piece of the slope. Because each slopes occupies three cell.Threrefore it is drawn seperately.
+	 * 
+	 * @param g
+	 * @param camera
+	 * @param startPos
+	 * @param endPos
+	 */
 	public static void drawEndPiece(Graphics2D g, Camera camera, ObjectVector startPos, ObjectVector endPos) {
 		int startX = startPos.getX();
 		int startY = startPos.getY();
@@ -703,7 +727,7 @@ public class Slope implements ILargeDrawable {
 	public Vector3 getDrawPosition() {
 		throw new UnsupportedOperationException("Please call getDrawPositionList() method instead.");
 	}
-	
+
 	public static ObjectVector getSlopeStartPosition(ObjectVector middlePos, int alignment) {
 		switch (alignment) {
 			case Slope.ALIGNMENT_RIGHT:
@@ -719,6 +743,13 @@ public class Slope implements ILargeDrawable {
 		}
 	}
 
+	/**
+	 * This method indicate the slope End (the higher side) of each slopes.
+	 * 
+	 * @param middlePos
+	 * @param alignment
+	 * @return
+	 */
 	public static ObjectVector getSlopeEndPosition(ObjectVector middlePos, int alignment) {
 		switch (alignment) {
 			case Slope.ALIGNMENT_RIGHT:

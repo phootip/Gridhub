@@ -2,6 +2,9 @@ package stage.gameobj;
 
 
 /**
+ * This Class represent TeleportGate Object which is used to Teleport player from one portal to another preset portal.
+ * The object which is not player will not be able to move over it.
+ * 
  * @author Thanat
  *
  */
@@ -39,11 +42,17 @@ public class GateToGateTeleport extends TeleportGate {
 		}
 		
 	}
-	
+	/**
+	 * Set the destination gate which player will be teleport to.
+	 * @param destination
+	 */
 	public void setDestinationTelelportGate(TeleportGate destination) {
 		this.destinationGate = destination;
 	}
-
+	/**
+	 * Get the destination gate which player will be teleport to.
+	 * @return TeleportGate which is destination of this teleportGate
+	 */
 	public TeleportGate getDestinationGate() {
 		return destinationGate;
 	}

@@ -7,7 +7,10 @@ package stage.gameobj;
  *
  */
 public interface IWalkOnAble {
-	
+	/**
+	 * 
+	 * @return whether or not the object above this object
+	 */
 	public boolean isObjectAbove();
 	
 }

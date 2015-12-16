@@ -97,9 +97,6 @@ public final class LevelData implements IScrollableListItem {
 		return mapName;
 	}
 
-	// public static void createBlank(PlayerMode playerMode ,int sizeX , int sizeY) {
-	//
-	// }
 	public LevelData(int playerCount, String levelName, int floorWidth, int floorHeight, Chapter chapter,
 			String levelFileName) {
 		this.playerCount = playerCount;
@@ -173,10 +170,21 @@ public final class LevelData implements IScrollableListItem {
 	private LevelDataBuilder levelDataBuilder;
 	private String levelDataJSON;
 
+	/**
+	 * This method is called when we need to create all the levels content and store as JSON.
+	 * 
+	 * @param builder
+	 *            {@Link LevelDataBuilder} will contain all necessary file to create level as JSON
+	 * @return LevelData Object which contains JSON String of the file content
+	 */
 	public static LevelData createLevelDataAsJSON(LevelDataBuilder builder) {
 		return new LevelData(builder);
 	}
 
+	/**
+	 * 
+	 * @param builder
+	 */
 	private LevelData(LevelDataBuilder builder) {
 		this.levelDataBuilder = builder;
 		levelDataJSON = createLevelData(builder.getBlocks(), builder.getSlopes(), builder.getFloorSwitches(),
@@ -186,6 +194,42 @@ public final class LevelData implements IScrollableListItem {
 				builder.getPlayerCount());
 	}
 
+	/**
+	 * This method create JSON String contains all neccessary data to be read by {@GameStage} and Write. This method use
+	 * Gson library to convert data into JSON String
+	 * 
+	 * @param blocks
+	 *            ArrayList of BLock Object
+	 * @param slopes
+	 *            ArrayList of Slope Object
+	 * @param floorSwitches
+	 *            ArrayList of FloorSwitch Object
+	 * @param gateTogateTeles
+	 *            ArrayList of GateToGateTeleport Object
+	 * @param teleportToArea
+	 *            ArrayList of TeleportToArea Object
+	 * @param telportDests
+	 *            ArrayList of TeleportDestination Object
+	 * @param gates
+	 *            ArrayList of Gate Object
+	 * @param swControllers
+	 *            ArrayList of the controller Object
+	 * @param floorLevel
+	 *            floorLevelObject which indicate the geometry of the map
+	 * @param levelName
+	 *            name of the level
+	 * @param finishX
+	 *            ArrayList of {@link FinishArea} x position
+	 * @param finishY
+	 *            ArrayList of {@link FinishArea} y position
+	 * @param startX
+	 *            array of Player starting x position
+	 * @param startY
+	 *            array of Player starting y postion
+	 * @param playerCount
+	 *            the amount of player in the game
+	 * @return JSON String of the object
+	 */
 	private String createLevelData(ArrayList<Block> blocks, ArrayList<Slope> slopes,
 			ArrayList<FloorSwitch> floorSwitches, ArrayList<GateToGateTeleport> gateTogateTeles,
 			ArrayList<TeleportToArea> teleportToArea, ArrayList<TeleportDestionation> telportDests,
@@ -236,11 +280,14 @@ public final class LevelData implements IScrollableListItem {
 		return gson.toJson(levelDataMap);
 
 	}
-
+	/**
+	 * Getter of levelDataJSON object
+	 * @return JSON String of the levelData 
+	 */
 	public String getLevelDataJSON() {
 		return levelDataJSON;
 	}
-
+	
 	private String getBlockArrayAsJSON(ArrayList<Block> a) {
 		Gson gson = new Gson();
 		return gson.toJson(a);
@@ -363,7 +410,7 @@ public final class LevelData implements IScrollableListItem {
 		}
 		return gson.toJson(indexList);
 	}
-
+	
 	private String getFloorLevelAsString(FloorLevel floorLevel) {
 		Gson gson = new Gson();
 		return gson.toJson(floorLevel);
@@ -388,7 +435,7 @@ public final class LevelData implements IScrollableListItem {
 		Gson gson = new Gson();
 		return gson.toJson(start);
 	}
-
+	
 	private final Type blockType = new TypeToken<ArrayList<Block>>() {
 	}.getType();
 	private final Type slopeType = new TypeToken<ArrayList<Slope>>() {
@@ -433,7 +480,11 @@ public final class LevelData implements IScrollableListItem {
 	private ArrayList<Integer> finishY;
 	private int[] startX;
 	private int[] startY;
-
+	/**
+	 * This method will parse jsonContent and convert it in to The Program's usable object
+	 * @param jsonContent
+	 * JSON String which represent the whole file of the 
+	 */
 	private LevelData(String jsonContent) {
 
 		levelDataJSON = jsonContent;
@@ -460,19 +511,18 @@ public final class LevelData implements IScrollableListItem {
 		startY = getPositionArray(levelContents.get("StartY"));
 
 	}
-
+	/**
+	 * This method will parse the JsonContent and store in the LevelDataObject
+	 * @param p
+	 * @param jsonContent
+	 * @return
+	 */
 	public static LevelData parse(int p, String jsonContent) {
 		return new LevelData(jsonContent);
 	}
 
 	public static LevelData parse(String jsonContent) {
 		return new LevelData(jsonContent);
-	}
-
-	// mock up only
-	private LevelData(int p, String jsonContent) {
-		this.mapName = jsonContent;
-		this.playerCount = p;
 	}
 
 	public HashMap<String, String> getContentList(String json) {

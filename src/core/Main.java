@@ -87,7 +87,7 @@ public class Main {
 
 		// Set initial scene
 
-		SceneManager.getInstance().setNextScene(new scene.mainmenu.MainMenuScene(false));
+		SceneManager.getInstance().setNextScene(new scene.mainmenu.MainMenuScene(true));
 		// SceneManager.getInstance().setNextScene(new stage.GameStage(GameStageType.PLAY));
 
 

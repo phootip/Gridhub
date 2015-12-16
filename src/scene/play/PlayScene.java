@@ -118,8 +118,8 @@ public class PlayScene extends Scene {
 	private boolean isSceneFadingIn = true;
 	private int sceneFadeProgress = 0;
 	private final int sceneFadeDuration = 100 * 10;
-	private boolean isSceneFadingOut = false;
-	private Scene nextScene;
+	protected boolean isSceneFadingOut = false;
+	protected Scene nextScene;
 
 	@Override
 	public void draw(Graphics2D g, int sceneWidth, int sceneHeight) {

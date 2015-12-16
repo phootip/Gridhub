@@ -16,6 +16,7 @@ import java.lang.reflect.Type;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import core.SceneManager;
 import core.geom.Vector2;
 import core.geom.Vector3;
 import stage.renderer.LevelRenderer;
@@ -23,6 +24,7 @@ import scene.core.Scene;
 import scene.level.Chapter;
 import scene.level.LevelData;
 import scene.level.LevelDataBuilder;
+import scene.level.LevelFileManager;
 import stage.editor.EditorCursor.EditorCursorState;
 import stage.editor.AddableObject;
 import stage.editor.EditorCursor;
@@ -87,7 +89,6 @@ public class GameStage {
 	private ArrayList<Integer> finishY = new ArrayList<>();
 	private int[] startX;
 	private int[] startY;
-	private int playerCount;
 
 	// Testing DataSet
 	private ArrayList<Block> dataSetBlock;
@@ -123,6 +124,9 @@ public class GameStage {
 	}
 
 	public GameStage(LevelData lvlData, GameStageType gameStageType, boolean showLevelName) {
+		lvlData.refreshData();
+		
+		
 		this.gameStageType = gameStageType;
 		this.levelData = lvlData;
 		objectMap.drawableObjectHashMap = new HashMap<ObjectVector, IDrawable>();
@@ -277,8 +281,7 @@ public class GameStage {
 		dataSetFinishY = levelData.getFinishY();
 		dataSetStartX = levelData.getStartX();
 		dataSetStartY = levelData.getStartY();
-		playerCount = levelData.getPlayerCount();
-
+		dataPlayerCount = levelData.getPlayerCount();
 
 		if (dataSetBlock == null)
 			dataSetBlock = new ArrayList<>();
@@ -314,18 +317,17 @@ public class GameStage {
 			dataSetStartX = new int[] { 0, 0 };
 		if (dataSetStartY == null)
 			dataSetStartY = new int[] { 0, 1 };
-		if (playerCount <= 0 || playerCount > 2)
-			playerCount = 1;
-
+		if (dataPlayerCount <= 0 || dataPlayerCount > 2)
+			dataPlayerCount = 1;
 
 		if (gameStageType == GameStageType.PLAY) {
-			player1 = new Player(util.Constants.PLAYER1_ID, dataSetFloorLevel, dataSetStartX[0], dataSetStartX[0],
-					dataSetFloorLevel.getZValueFromXY(dataSetStartX[0], dataSetStartX[0]));
+			player1 = new Player(util.Constants.PLAYER1_ID, dataSetFloorLevel, dataSetStartX[0], dataSetStartY[0],
+					dataSetFloorLevel.getZValueFromXY(dataSetStartX[0], dataSetStartY[0]));
 			this.cameraList.add(new Camera(player1));
 
 			if (levelData.getPlayerCount() == 2) {
-				player2 = new Player(util.Constants.PLAYER2_ID, dataSetFloorLevel, dataSetStartX[1], dataSetStartX[1],
-						dataSetFloorLevel.getZValueFromXY(dataSetStartX[1], dataSetStartX[1]));
+				player2 = new Player(util.Constants.PLAYER2_ID, dataSetFloorLevel, dataSetStartX[1], dataSetStartY[1],
+						dataSetFloorLevel.getZValueFromXY(dataSetStartX[1], dataSetStartY[1]));
 				this.cameraList.add(new Camera(player2));
 			}
 		} else if (gameStageType == GameStageType.LEVEL_EDITOR) {
@@ -440,7 +442,7 @@ public class GameStage {
 		}
 
 		System.out.println("Level : " + dataLevelName);
-		System.out.println(playerCount);
+		System.out.println(dataPlayerCount);
 
 		for (int i = 0; i < dataSetFinishX.size(); i++) {
 			int finX = dataSetFinishX.get(i);
@@ -491,12 +493,28 @@ public class GameStage {
 	}
 
 	private void addPlayerStartAreas() {
-		for (int i = 0; i < playerCount; i++) {
+		for (int i = 0; i < dataPlayerCount; i++) {
 			int x = dataSetStartX[i];
 			int y = dataSetStartY[i];
 			int z = dataSetFloorLevel.getZValueFromXY(x, y);
 			objectMap.drawableObjectHashMap.put(new ObjectVector(x, y, z), new StartArea(x, y, z));
 		}
+	}
+
+	protected void placeStartArea(int x, int y) {
+		int oldX = dataSetStartX[0];
+		int oldY = dataSetStartY[0];
+		int oldZ = dataSetFloorLevel.getZValueFromXY(oldX, oldY);
+		objectMap.drawableObjectHashMap.remove(new ObjectVector(oldX, oldY, oldZ));
+
+		for (int i = 0; i < dataPlayerCount - 1; i++) {
+			dataSetStartX[i] = dataSetStartX[i + 1];
+			dataSetStartY[i] = dataSetStartY[i + 1];
+		}
+		dataSetStartX[dataPlayerCount - 1] = x;
+		dataSetStartY[dataPlayerCount - 1] = y;
+		int z = dataSetFloorLevel.getZValueFromXY(x, y);
+		objectMap.drawableObjectHashMap.put(new ObjectVector(x, y, z), new StartArea(x, y, z));
 	}
 
 	public void update(int step) {
@@ -535,15 +553,15 @@ public class GameStage {
 			each.update(step);
 		}
 		int count = 0;
-		for(int i= 0 ; i < dataSetfinishArea.size() ; i++) {
+		for (int i = 0; i < dataSetfinishArea.size(); i++) {
 			dataSetfinishArea.get(i).update();
-			if(dataSetfinishArea.get(i).isPlayerAbove()) {
+			if (dataSetfinishArea.get(i).isPlayerAbove()) {
 				count++;
 			}
-			if(count == dataPlayerCount) {
-				dataSetfinishArea.get(i).perFormFinish();
+			if (count == dataPlayerCount) {
+				win();
 			}
-			
+
 		}
 
 		if (this.editorManager != null) {
@@ -561,6 +579,23 @@ public class GameStage {
 			levelNameShowTimer = levelNameShowDuration;
 		}
 
+		if (isWin) {
+			winShowTimer += step;
+			if (winShowTimer >= winShowDuration) {
+				winShowTimer = winShowDuration;
+				SceneManager.getInstance()
+						.setNextScene(LevelFileManager.getInstance().getNextLevelPlayScene(levelData));
+			}
+		}
+
+	}
+
+	private int winShowTimer = 0;
+	private int winShowDuration = 100 * 120;
+	private boolean isWin = false;
+
+	private void win() {
+		isWin = true;
 	}
 
 	private int levelNameShowTimer = 0;
@@ -568,6 +603,62 @@ public class GameStage {
 	private static final int OVERLAY_LEVEL_NAME_TEXT_SIZE = 50;
 	private static final int OVERLAY_CHAPTER_NAME_TEXT_SIZE = 30;
 	private static final int OVERLAY_BOX_VERTICAL_MARGIN = 20;
+
+	private void drawWinMessage(Graphics2D g, int x, int y, int width, int height) {
+		if (gameStageType == GameStageType.PLAY && winShowTimer < levelNameShowDuration) {
+			Rectangle oldClip = g.getClipBounds();
+
+			Font chapterNameFont = Resource.getInstance().getDefaultFont(OVERLAY_CHAPTER_NAME_TEXT_SIZE);
+			Font levelNameFont = Resource.getInstance().getDefaultFont(OVERLAY_LEVEL_NAME_TEXT_SIZE,
+					Resource.FontWeight.BOLD);
+			String chapterName = levelData.getLevelName();
+			String levelName = "Level Complete";
+
+			final int boxWidth = 100 + g.getFontMetrics(levelNameFont).stringWidth(levelName);
+			final int boxHeight = OVERLAY_BOX_VERTICAL_MARGIN * 2 + OVERLAY_LEVEL_NAME_TEXT_SIZE
+					+ OVERLAY_CHAPTER_NAME_TEXT_SIZE;
+			int boxLeft = x + (width - boxWidth) / 2;
+			int boxTop = y + 100;
+
+			int clipperHeight = boxHeight;
+			if (winShowTimer < 100 * 20) {
+				clipperHeight = (int) Helper.sineInterpolate(0, clipperHeight, winShowTimer / (100 * 20f), false,
+						true);
+			} else if (winShowTimer > 100 * 100) {
+				clipperHeight = (int) Helper.sineInterpolate(clipperHeight, 0,
+						(winShowTimer - 100 * 100) / (100 * 20f), true, false);
+			}
+			int clipperTop = boxTop + (boxHeight - clipperHeight) / 2;
+			g.setClip(boxLeft, clipperTop, boxWidth, clipperHeight);
+
+			g.setColor(ColorSwatch.SHADOW);
+			g.fillRect(boxLeft, boxTop, boxWidth, boxHeight);
+
+			boxTop = clipperTop;
+
+			// Chapter Name
+
+			Vector2 chapterNameCenterPos = Helper.getCenteredTextPosition(chapterName, chapterNameFont, g, boxLeft, 0,
+					boxWidth, 0);
+
+			g.setFont(chapterNameFont);
+			g.setColor(ColorSwatch.FOREGROUND);
+			g.drawString(chapterName, chapterNameCenterPos.getX(),
+					boxTop + OVERLAY_BOX_VERTICAL_MARGIN + g.getFontMetrics().getAscent());
+
+			// Level Name
+
+			Vector2 levelNameCenterPos = Helper.getCenteredTextPosition(levelName, levelNameFont, g, boxLeft, 0,
+					boxWidth, 0);
+
+			g.setFont(levelNameFont);
+			g.setColor(ColorSwatch.FOREGROUND);
+			g.drawString(levelName, levelNameCenterPos.getX(), boxTop + OVERLAY_BOX_VERTICAL_MARGIN
+					+ OVERLAY_CHAPTER_NAME_TEXT_SIZE + g.getFontMetrics().getAscent());
+
+			g.setClip(oldClip);
+		}
+	}
 
 	private void drawLevelName(Graphics2D g, int x, int y, int width, int height) {
 		if (gameStageType == GameStageType.PLAY && levelNameShowTimer < levelNameShowDuration) {
@@ -666,6 +757,8 @@ public class GameStage {
 
 			drawLevelName(g, shifter + totalViewportWidth * i / cameraCount, 0, totalViewportWidth / cameraCount,
 					sceneHeight);
+			drawWinMessage(g, shifter + totalViewportWidth * i / cameraCount, 0, totalViewportWidth / cameraCount,
+					sceneHeight);
 
 			if (i > 0) {
 				g.setColor(Helper.getAlphaColorPercentage(ColorSwatch.BACKGROUND, 1));
@@ -760,6 +853,8 @@ public class GameStage {
 			return obj == null;
 		} else if (objectType == AddableObject.FINISH_POINT) {
 			return obj == null;
+		} else if (objectType == AddableObject.GATE_SWITCH) {
+			return obj == null;
 		}
 		return false;
 	}
@@ -796,6 +891,9 @@ public class GameStage {
 			obj.setObjectMap(objectMap);
 			dataSetfinishArea.add(obj);
 			objectMap.drawableObjectHashMap.put(new ObjectVector(obj.getX(), obj.getY(), obj.getZ()), obj);
+
+			dataSetFinishX.add(obj.getX());
+			dataSetFinishY.add(obj.getY());
 		}
 	}
 
@@ -845,7 +943,7 @@ public class GameStage {
 		TeleportToArea teleporter = new TeleportToArea(from.getX(), from.getY(), from.getZ(), to.getX(), to.getY(),
 				to.getZ());
 
-		teleportToAreas.add(teleporter);
+		dataSetTeleportToArea.add(teleporter);
 
 		teleporter.setObjectMap(objectMap);
 		objectMap.drawableObjectHashMap.put(new ObjectVector(teleporter.getX(), teleporter.getY(), teleporter.getZ()),
@@ -854,11 +952,33 @@ public class GameStage {
 		// ============
 
 		TeleportDestionation teleDest = teleporter.getTeleportDestination();
-		teleportDests.add(teleDest);
+		dataSetTeleportDests.add(teleDest);
 
 		teleDest.setObjectMap(objectMap);
 		objectMap.drawableObjectHashMap.put(new ObjectVector(teleDest.getX(), teleDest.getY(), teleDest.getZ()),
 				teleDest);
+	}
+
+	protected void addSwitchGatePairAt(ObjectVector switchPos, ObjectVector gatePos) {
+
+		FloorSwitch floorSwitch = new FloorSwitch(switchPos.getX(), switchPos.getY(), switchPos.getZ(), false, 60);
+		dataSetFloorSwitches.add(floorSwitch);
+		floorSwitch.setObjectMap(objectMap);
+		objectMap.drawableObjectHashMap.put(floorSwitch.getObjectVectorWithName(), floorSwitch);
+
+		Gate gate = new Gate(gatePos.getX(), gatePos.getY(), gatePos.getZ());
+		dataSetsGate.add(gate);
+		gate.setObjectMap(objectMap);
+		objectMap.drawableObjectHashMap.put(new ObjectVector(gatePos.getX(), gatePos.getY(), gatePos.getZ()), gate);
+
+		// Controller
+
+		ArrayList<FloorSwitch> fsList = new ArrayList<>();
+		fsList.add(floorSwitch);
+
+		SwitchController switchCtrl = new SwitchController(fsList, new int[] { 0, 1 }, gate);
+		dataSetSWControllers.add(switchCtrl);
+
 	}
 
 }

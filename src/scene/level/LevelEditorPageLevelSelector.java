@@ -40,10 +40,6 @@ public final class LevelEditorPageLevelSelector {
 				return "New";
 			case 1:
 				return "Edit";
-			case 2:
-				return "Import";
-			case 3:
-				return "Export";
 			default:
 				return null;
 		}
@@ -141,11 +137,7 @@ public final class LevelEditorPageLevelSelector {
 						
 						playModeSelected = true;
 						break;
-					case 2: // Import
-						importLevelFile();
-						break;
 					case 1: // Edit
-					case 3: // Export
 
 						levelList = new ScrollableUIList();
 						levelList.setFocusing(true);
@@ -159,14 +151,7 @@ public final class LevelEditorPageLevelSelector {
 			}
 		}
 	}
-
-	private void importLevelFile() {
-		JFileChooser levelFileChooser = new JFileChooser();
-		levelFileChooser.setDialogTitle("Import Level File");
-		levelFileChooser.showOpenDialog(null);
-
-	}
-
+	
 	private void populateLevelList() {
 		Chapter chapter = LevelFileManager.getInstance().getUserChapter(selectedPlayMode);
 
@@ -208,13 +193,13 @@ public final class LevelEditorPageLevelSelector {
 		g.drawString(PlayMode.SINGLE_PLAYER.getFullModeName(), x, y + g.getFontMetrics().getAscent());
 		g.drawString(PlayMode.COOP_MODE.getFullModeName(), x, middleStartY + g.getFontMetrics().getAscent());
 
-		int buttonWidth = (width - buttonMarginX * 3) / 4;
+		int buttonWidth = (width - buttonMarginX ) / 2;
 		int buttonHeight = height / 2 - HEADER_TEXT_SIZE - buttonMarginY * 2 - 20;
 
 		g.setStroke(new BasicStroke(3, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER));
 		g.setFont(Resource.getInstance().getDefaultFont(75, FontWeight.BOLD));
 
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 2; i++) {
 			drawPlayModeButton(g, getModeSelectName(i), x + (buttonWidth + buttonMarginX) * i,
 					y + HEADER_TEXT_SIZE + buttonMarginY, buttonWidth, buttonHeight,
 					playModeAnimStep[0][i] / (float) playModeAnimLength);

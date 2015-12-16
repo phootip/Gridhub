@@ -94,19 +94,16 @@ final public class TopMainMenuPage extends MainMenuPage {
 					this.parent.setPage(MainMenuScene.PageName.LEVEL_EDITOR);
 					break;
 				case 2:
-					this.parent.setPage(MainMenuScene.PageName.OPTION);
-					break;
-				case 3:
 					this.parent.setPage(MainMenuScene.PageName.ABOUT);
 					break;
-				case 4:
+				case 3:
 					System.exit(0);
 					break;
 			}
 		}
 	}
 
-	private final String[] menuItem = new String[] { "Play", "Level Editor", "Option", "About Us", "Exit" };
+	private final String[] menuItem = new String[] { "Play", "Level Editor", "About Us", "Exit" };
 	private final float menuItemSpacing = 30f;
 	private int selectingMenu = 0;
 	private float currentMenuPosition = 0f;

@@ -553,6 +553,15 @@ public final class LevelData implements IScrollableListItem {
 
 	public HashMap<String, String> getContentList(String json) {
 		Gson gson = new Gson();
+		try {
+			if(!isJSONValid(json)) {
+				throw new JsonInvalidFormatException(false);
+			}
+		} catch (JsonInvalidFormatException e) {
+			e.getMessage();
+			System.out.println("The input File format may not be .json File");
+		}
+		
 		HashMap<String, String> hMap = gson.fromJson(json, hashType);
 		if (hMap == null)
 			return new HashMap<String, String>();
@@ -573,19 +582,6 @@ public final class LevelData implements IScrollableListItem {
 		} catch (com.google.gson.JsonSyntaxException ex) {
 			return false;
 		}
-	}
-
-	/**
-	 * 
-	 * @param json
-	 * @return ArrayList of Block Type Object
-	 */
-	public ArrayList<Block> getBlocks(String json) {
-		Gson gson = new Gson();
-		ArrayList<Block> bl = gson.fromJson(json, blockType);
-		if (bl == null)
-			return new ArrayList<Block>();
-		return bl;
 	}
 
 	/**
@@ -856,6 +852,20 @@ public final class LevelData implements IScrollableListItem {
 
 	public String getLevelName() {
 		return levelName;
+	}
+	
+
+	/**
+	 * 
+	 * @param json
+	 * @return ArrayList of Block Type Object
+	 */
+	public ArrayList<Block> getBlocks(String json) {
+		Gson gson = new Gson();
+		ArrayList<Block> bl = gson.fromJson(json, blockType);
+		if (bl == null)
+			return new ArrayList<Block>();
+		return bl;
 	}
 
 }

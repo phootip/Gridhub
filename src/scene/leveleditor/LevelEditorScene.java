@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import scene.level.LevelData;
 import scene.level.LevelDataBuilder;
 import scene.level.LevelFileManager;
+import scene.mainmenu.MainMenuScene;
 import scene.play.PlayScene;
 import stage.GameStage;
 import stage.GameStageType;
@@ -24,16 +25,26 @@ public final class LevelEditorScene extends PlayScene {
 
 	@Override
 	protected void performMenuAction(int selectedMenuItem) {
-		if (selectedMenuItem == 0) {
-			try {
-				LevelFileManager.getInstance().saveLevelData(gameStage.buildLevelData());
-				isPause = !isPause;
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-			super.performMenuAction(selectedMenuItem - 1);
+
+		switch (selectedMenuItem) {
+			case 0:
+				try {
+					LevelFileManager.getInstance().saveLevelData(gameStage.buildLevelData());
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} finally {
+					isPause = !isPause;
+				}
+				break;
+			case 1: // Load Last Saved. Same as Restart
+				isSceneFadingOut = true;
+				nextScene = new LevelEditorScene(levelData);
+				break;
+			case 2: // Exit
+				isSceneFadingOut = true;
+				nextScene = new MainMenuScene(false);
+				break;
 		}
 	}
 

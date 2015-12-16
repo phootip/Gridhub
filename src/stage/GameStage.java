@@ -89,7 +89,6 @@ public class GameStage {
 	private ArrayList<Integer> finishY = new ArrayList<>();
 	private int[] startX;
 	private int[] startY;
-	private int playerCount;
 
 	// Testing DataSet
 	private ArrayList<Block> dataSetBlock;
@@ -318,8 +317,8 @@ public class GameStage {
 			dataSetStartX = new int[] { 0, 0 };
 		if (dataSetStartY == null)
 			dataSetStartY = new int[] { 0, 1 };
-		if (playerCount <= 0 || playerCount > 2)
-			playerCount = 1;
+		if (dataPlayerCount <= 0 || dataPlayerCount > 2)
+			dataPlayerCount = 1;
 
 		if (gameStageType == GameStageType.PLAY) {
 			player1 = new Player(util.Constants.PLAYER1_ID, dataSetFloorLevel, dataSetStartX[0], dataSetStartY[0],
@@ -443,7 +442,7 @@ public class GameStage {
 		}
 
 		System.out.println("Level : " + dataLevelName);
-		System.out.println(playerCount);
+		System.out.println(dataPlayerCount);
 
 		for (int i = 0; i < dataSetFinishX.size(); i++) {
 			int finX = dataSetFinishX.get(i);
@@ -494,7 +493,7 @@ public class GameStage {
 	}
 
 	private void addPlayerStartAreas() {
-		for (int i = 0; i < playerCount; i++) {
+		for (int i = 0; i < dataPlayerCount; i++) {
 			int x = dataSetStartX[i];
 			int y = dataSetStartY[i];
 			int z = dataSetFloorLevel.getZValueFromXY(x, y);
@@ -508,12 +507,12 @@ public class GameStage {
 		int oldZ = dataSetFloorLevel.getZValueFromXY(oldX, oldY);
 		objectMap.drawableObjectHashMap.remove(new ObjectVector(oldX, oldY, oldZ));
 
-		for (int i = 0; i < playerCount - 1; i++) {
+		for (int i = 0; i < dataPlayerCount - 1; i++) {
 			dataSetStartX[i] = dataSetStartX[i + 1];
 			dataSetStartY[i] = dataSetStartY[i + 1];
 		}
-		dataSetStartX[playerCount - 1] = x;
-		dataSetStartY[playerCount - 1] = y;
+		dataSetStartX[dataPlayerCount - 1] = x;
+		dataSetStartY[dataPlayerCount - 1] = y;
 		int z = dataSetFloorLevel.getZValueFromXY(x, y);
 		objectMap.drawableObjectHashMap.put(new ObjectVector(x, y, z), new StartArea(x, y, z));
 	}

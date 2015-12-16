@@ -92,10 +92,22 @@ final public class LevelFileManager {
 
 	}
 
-	public void saveLevelData(LevelData levelData) throws FileNotFoundException {
+	public LevelData saveLevelData(LevelData levelData) throws FileNotFoundException {
 		PrintWriter writer = new PrintWriter(getLevelDataOutputStream(levelData));
 		writer.print(levelData.getLevelDataJSON());
 		writer.close();
+		
+		String fileName = levelData.getLevelFileName();
+		Chapter chapter = levelData.getChapter();
+		for (int i = 0; i < chapter.getLevelDataList().size(); i++) {
+			if (chapter.getLevelDataList().get(i).getLevelFileName().equals(fileName)) {
+				chapter.getLevelDataList().remove(i);
+				chapter.getLevelDataList().add(levelData);
+				break;
+			}
+		}
+		
+		return levelData;
 	}
 
 	private String getFileContentFromPath(String levelFilePath, PlayMode playMode) throws FileNotFoundException {

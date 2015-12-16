@@ -58,6 +58,7 @@ public class GameStage {
 	private Player player1 = null, player2 = null;
 	private EditorCursor cursor = null;
 	private FloorLevel floorLevelMap;
+	private boolean isPlayerWin = false;
 
 	protected FloorLevel getFloorLevelMap() {
 		return dataSetFloorLevel;
@@ -298,7 +299,7 @@ public class GameStage {
 		if(dataSetFinishY == null) dataSetFinishY = new ArrayList<>();
 		if(dataSetStartX == null) dataSetStartX = new int[]{0,0};
 		if(dataSetStartY == null) dataSetStartY = new int[]{0,1};
-		if(playerCount <= 0 || playerCount > 2) playerCount = 1;
+		if(dataPlayerCount <= 0 || dataPlayerCount > 2) dataPlayerCount = 1;
 		
 		if (gameStageType == GameStageType.PLAY) {
 			player1 = new Player(util.Constants.PLAYER1_ID, dataSetFloorLevel, dataSetStartX[0], dataSetStartX[0], dataSetFloorLevel.getZValueFromXY(dataSetStartX[0], dataSetStartX[0]));
@@ -503,8 +504,16 @@ public class GameStage {
 		for (Gate each : dataSetsGate) {
 			each.update(step);
 		}
-		for (FinishArea each : dataSetfinishArea) {
-			each.update();
+		int count = 0;
+		for(int i= 0 ; i < dataSetfinishArea.size() ; i++) {
+			dataSetfinishArea.get(i).update();
+			if(dataSetfinishArea.get(i).isPlayerAbove()) {
+				count++;
+			}
+			if(count == dataPlayerCount) {
+				dataSetfinishArea.get(i).perFormFinish();
+			}
+			
 		}
 
 		if (this.editorManager != null) {

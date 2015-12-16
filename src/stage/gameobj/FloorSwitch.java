@@ -17,6 +17,13 @@ import stage.gameobj.Player;
 import stage.gameobj.ObjectVector;
 import util.Helper;
 
+/**
+ * FloorSwitch class represent the switch on the floor which will be activated when there is an object over it
+ * If the weight pressed over the switch exceed minimum weight it will be activated.
+ * 
+ * @author Thanat Jatuphattharachat
+ *
+ */
 public class FloorSwitch implements IDrawable, IWalkOnAble {
 
 	private final float EPS = 1e-3f;
@@ -61,7 +68,7 @@ public class FloorSwitch implements IDrawable, IWalkOnAble {
 	public void setObjectMap(ObjectMap objectMap) {
 		this.objectMap = objectMap;
 	}
-
+	
 	public FloorSwitch(int x, int y, int z, boolean defaultAssertion, int minimumWeight) {
 		this.x = x;
 		this.y = y;
@@ -83,7 +90,10 @@ public class FloorSwitch implements IDrawable, IWalkOnAble {
 	private boolean isAsserting;
 	private float currentCenterAlpha;
 	private final float centerAlphaSpeedFactor = 100 * 10.0f;
-
+	/**
+	 * This method is called by {@GameStage} to update the current Stage of the switch
+	 * @param step
+	 */
 	public void update(int step) {
 
 		// This is just for testing. In production, link FloorSwitch with the
@@ -129,7 +139,10 @@ public class FloorSwitch implements IDrawable, IWalkOnAble {
 
 	private final float innerCellShift = 0.4f;
 	private final float innerCellSize = 0.8f;
-
+	
+	/**
+	 * This method is called when the object is being drawn
+	 */
 	public void draw(Graphics2D g, Camera camera) {
 	}
 	
@@ -186,7 +199,10 @@ public class FloorSwitch implements IDrawable, IWalkOnAble {
 
 		return false;
 	}
-
+	/**
+	 * This method check the player above
+	 * @return boolean indicate whether there is a player standing above
+	 */
 	private Player getPlayerAbove() {
 		if (objectMap.drawableObjectHashMap
 				.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER1_ID)) != null) {
@@ -201,7 +217,10 @@ public class FloorSwitch implements IDrawable, IWalkOnAble {
 
 		return null;
 	}
-
+	/**
+	 * This method check the block above
+	 * @return boolean indicate whether there is a block above
+	 */
 	private Block getBlockAbove() {
 		IDrawable objectAbove = objectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z));
 		if (objectAbove != null && objectAbove instanceof Block) {

@@ -6,6 +6,13 @@ import core.geom.Vector3;
 import stage.Camera;
 import stage.ObjectMap;
 
+/**
+ * This Class represent Gate object in the game. Gate will be controlled by the switches. The player will not be able 
+ * to move across the gate unless it is activated
+ * 
+ * @author Thanat
+ *
+ */
 public class Gate implements IDrawable , IControlable {
 	private boolean isAsserted;
 	private int x, y, z;
@@ -20,11 +27,18 @@ public class Gate implements IDrawable , IControlable {
 	
 	protected final int gateProgressControl = 100 * 50;
 	protected int gateActivationProgress = 0;
-	
+	/**
+	 * set the {@link ObjectMap} above the player
+	 * @param objectMap
+	 */
 	public void setObjectMap(ObjectMap objectMap) {
 		this.objectMap = objectMap;
 	}
 
+	/**
+	 * This method is called by {@link GameStage} to update the state of the switch.
+	 * @param step
+	 */
 	public void update(int step) {
 		
 		if(isAsserted) {
@@ -43,6 +57,9 @@ public class Gate implements IDrawable , IControlable {
 		}
 	}
 	
+	/**
+	 * This method perform an action when the Gate is being activated
+	 */
 	public void performAction() {
 		// do action
 		if(isObjectAbove()) {
@@ -73,7 +90,11 @@ public class Gate implements IDrawable , IControlable {
 	public int getZ() {
 		return z;
 	}
-
+	
+	/**
+	 * 
+	 * @return boolean indicate whether there is an object above
+	 */
 	
 	public boolean isObjectAbove() {
 		if (getPlayerAbove() != null || getBlockAbove() != null) {
@@ -83,7 +104,10 @@ public class Gate implements IDrawable , IControlable {
 		return false;
 	}
 	
-
+	/**
+	 * The method is used to get the player standing above the gate when it is deactivated
+	 * @return the player over the gate
+	 */
 	public Player getPlayerAbove() {
 		if (objectMap.drawableObjectHashMap
 				.get(new ObjectVector(x, y, z, "Player" + util.Constants.PLAYER1_ID)) != null) {
@@ -99,7 +123,10 @@ public class Gate implements IDrawable , IControlable {
 		return null;
 	}
 
-
+	/**
+	 * The method is used to get the block above the gate when it is deactivated
+	 * @return the block over the gate
+	 */
 	private Block getBlockAbove() {
 		IDrawable objectAbove = objectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z));
 		if (objectAbove != null && objectAbove instanceof Block) {

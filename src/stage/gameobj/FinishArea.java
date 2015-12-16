@@ -6,6 +6,11 @@ import core.geom.Vector3;
 import stage.Camera;
 import stage.ObjectMap;
 
+/**
+ * The FinishArea indicate whether player clear the stage
+ * @author Thanat Jatuphattharachat
+ *
+ */
 public class FinishArea implements IDrawable, IWalkOnAble {
 	private int x, y, z;
 	private transient boolean isPlayerAbove;
@@ -19,7 +24,10 @@ public class FinishArea implements IDrawable, IWalkOnAble {
 		this.z = z;
 		this.isPlayerAbove = false;
 	}
-
+	/**
+	 * This method is called via{@link Player} to update the state of the area
+	 * This will set whether or not the player is over this area
+	 */
 	public void update() {
 		if (isObjectAbove()) {
 			isPlayerAbove = true;
@@ -41,19 +49,30 @@ public class FinishArea implements IDrawable, IWalkOnAble {
 	public int getZ() {
 		return z;
 	}
-
+	/**
+	 * Set the @{link ObjectMap} to the area
+	 * @param objectMap
+	 */
 	public void setObjectMap(ObjectMap objectMap) {
 		this.objectMap = objectMap;
 	}
-
+	/**
+	 * 
+	 * @return the boolean indicate whether the player is standing over this area
+	 */
 	public boolean isPlayerAbove() {
 		return isPlayerAbove;
 	}
-
+	/**
+	 * This method is called by {@link Player} to perform the finish action when player clear the stage
+	 */
 	public void perFormFinish() {
 		System.out.println("You won");
+		
 	}
-
+	/**
+	 * @return whether or not there is a player on the area
+	 */
 	@Override
 	public boolean isObjectAbove() {
 		if (getPlayerAbove() != null) {
@@ -77,7 +96,7 @@ public class FinishArea implements IDrawable, IWalkOnAble {
 
 		return null;
 	}
-
+	
 	@Override
 	public Vector3 getDrawPosition() {
 		// TODO Auto-generated method stub

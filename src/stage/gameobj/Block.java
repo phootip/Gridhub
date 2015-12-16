@@ -21,11 +21,12 @@ import util.Resource;
 import util.Constants.ColorSwatch;
 
 /**
- * This class represents the object Block 
+ * This class represents the object Block in the game
+ * 
  * @author Thanat Jatuphattharachat
- *	
+ * 
  */
-public class Block implements PushableObject, WalkThroughable {
+public class Block implements PushableObject {
 
 	private static final float BLOCK_SIZE = 0.5f;
 	protected static final float BLOCK_HEIGHT = 1.0f;
@@ -35,23 +36,49 @@ public class Block implements PushableObject, WalkThroughable {
 	private transient FloorLevel floorLevelMap;
 	private transient ObjectMap objectMap;
 	// private boolean isObjectAbove;
-	
+
+	/**
+	 * Get the x position of the Block
+	 * 
+	 * @return x postion of the block
+	 */
 	public int getX() {
 		return x;
 	}
 
+	/**
+	 * Set {@link ObjectMap} to block
+	 * 
+	 * @param objectMap
+	 */
 	public void setObjectMap(ObjectMap objectMap) {
 		this.objectMap = objectMap;
 	}
 
+	/**
+	 * Get the y position of the Block
+	 * 
+	 * @return y postion of the block
+	 */
 	public int getY() {
 		return y;
 	}
 
+	/**
+	 * Get the z position of the Block
+	 * 
+	 * @return z postion of the block
+	 */
 	public int getZ() {
 		return z;
 	}
 
+	/**
+	 * This method is used to get the weight of the block The weight will be used to calculate when player {@code push}
+	 * the block
+	 * 
+	 * @return current weight of the block
+	 */
 	public int getWeight() {
 		return weight;
 	}
@@ -60,6 +87,13 @@ public class Block implements PushableObject, WalkThroughable {
 		this(x, y, z, 50, false, floorLevelMap);
 	}
 
+	/**
+	 * This method is used to setZ of the block It will be called via @{link SwitchController} to control Z position of
+	 * the Block
+	 * 
+	 * @param diffZ
+	 *            the z direction which the block will be moved
+	 */
 	public void setZ(int diffZ) {
 		if (z + diffZ < 0)
 			return;
@@ -90,10 +124,15 @@ public class Block implements PushableObject, WalkThroughable {
 		this.nextZ = z;
 		this.weight = weight;
 		this.isWalkThroughable = isWalkThroughable;
-		
+
 		this.drawPosition = new Vector3(x, y, z);
 	}
 
+	/**
+	 * this method override the interface isPushable method
+	 * 
+	 * @return whether or not the block is in the state which be able to pushed
+	 */
 	public boolean isPushable() {
 
 		if (weight >= 100 || objectMap.drawableObjectHashMap.get(new ObjectVector(x, y, z + 1)) != null)
@@ -106,6 +145,11 @@ public class Block implements PushableObject, WalkThroughable {
 		return true;
 	}
 
+	/**
+	 * This method will be called recursively by {@link Player} to push all the block in a row
+	 * 
+	 * @return whether or not the block can be pushed over.
+	 */
 	public boolean push(int previousWeight, int diffX, int diffY, int diffZ) {
 		if (z + diffZ < 0)
 			return false;
@@ -158,23 +202,32 @@ public class Block implements PushableObject, WalkThroughable {
 		return false;
 	}
 
-	@Override
-	public boolean isWalkThroughable() {
-		return isWalkThroughable;
-	}
-	
-
+	/**
+	 * This method set the @{Link FloorLevel} for the block to check for the map geometry
+	 * 
+	 * @param floorLevelMap
+	 */
 	public void setFloorLevelMap(FloorLevel floorLevelMap) {
 		this.floorLevelMap = floorLevelMap;
 	}
-
-
 
 	private static HashMap<Camera, BufferedImage> cachedBoxImg = new HashMap<>();
 	private static int cachedBoxImgSize = 150;
 	private static final float[][] cornerShifter = new float[][] { { -BLOCK_SIZE, -BLOCK_SIZE },
 			{ +BLOCK_SIZE, -BLOCK_SIZE }, { +BLOCK_SIZE, +BLOCK_SIZE }, { -BLOCK_SIZE, +BLOCK_SIZE } };
 
+	/**
+	 * This method is called to draw the block on the screnn.
+	 * 
+	 * @param g
+	 *            graphics2D which is used to draw the Block
+	 * @param camera
+	 *            the {@link Camera} of the object
+	 * @param pos
+	 *            the position in @{link Vector3D} of the object
+	 * @param isRawDrawPosition
+	 *            this parameter define whether or not the object should be draw in raw position
+	 */
 	public static void drawBlock(Graphics2D g, Camera camera, Vector3 pos, boolean isRawDrawPosition) {
 
 		float x = pos.getX();
@@ -232,6 +285,11 @@ public class Block implements PushableObject, WalkThroughable {
 		g.drawLine(innerPoint.getIntX(), innerPoint.getIntY(), outerBorder[4].getIntX(), outerBorder[4].getIntY());
 	}
 
+	/**
+	 * This method is used to optimise the performance of the Program by using cache to reduce drawing runtime
+	 * 
+	 * @param camera
+	 */
 	public static void refreshDrawCache(Camera camera) {
 		if (Constants.CACHE_DRAWABLE) {
 			boolean requireRedraw = camera.isDeformationChanged();
@@ -259,7 +317,9 @@ public class Block implements PushableObject, WalkThroughable {
 			}
 		}
 	}
-
+	/**
+	 * This method is called when draw the block
+	 */
 	public void draw(Graphics2D g, Camera camera) {
 
 		if (Constants.CACHE_DRAWABLE) {
@@ -279,7 +339,10 @@ public class Block implements PushableObject, WalkThroughable {
 	public Vector3 getDrawPosition() {
 		return new Vector3(x, y, z);
 	}
-
+	/**
+	 * This method is called in order to perform push animation when the block if the block is pushed 
+	 * @param step
+	 */
 	public void update(int step) {
 		drawPosition.add(new Vector3(x, y, z).subtract(drawPosition)
 				.multiply((float) (1 / Math.pow(Math.pow(5, 1.0 / 100), step))));

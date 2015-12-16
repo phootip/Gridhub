@@ -13,10 +13,11 @@ public class IdlePane extends Pane {
 
 	@Override
 	protected int getMaxPaneWidth() {
-		return 300;
+		return 340;
 	}
 
-	private String[][] tipContents = { { "1", "Add" }, { "-", "Lower Floor" }, { "+", "Raise Floor" } };
+	private String[][] tipContents = { { "1", "Add" }, { "2", "Set Start Pnt." }, { "-", "Lower Floor" },
+			{ "+", "Raise Floor" } };
 	private int tipHeight = 50;
 	private int tipSpacing = 20;
 

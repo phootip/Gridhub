@@ -68,12 +68,15 @@ public class AddPane extends Pane {
 				selectedAddableObject = AddableObject.TELEPORT;
 				oldPlacePosition = null;
 			}
+			if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_5)) {
+				selectedAddableObject = AddableObject.FINISH_POINT;
+			}
 		}
 	}
 
 	@Override
 	protected int getMaxPaneWidth() {
-		return 400;
+		return 450;
 	}
 
 	private void drawAddableObjectList(Graphics2D g, int x, int y) {
@@ -82,7 +85,7 @@ public class AddPane extends Pane {
 
 		int left = x + 20;
 		int width = getMaxPaneWidth() - 40;
-		int height = 100;
+		int height = 60;
 		int top = y;
 
 		for (AddableObject obj : AddableObject.values()) {

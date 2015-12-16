@@ -16,6 +16,7 @@ import stage.editor.IdlePane;
 import stage.editor.EditorCursor;
 import stage.editor.Pane;
 import stage.gameobj.Block;
+import stage.gameobj.FinishArea;
 import stage.gameobj.FloorPiece;
 import stage.gameobj.ObjectVector;
 import stage.gameobj.Slope;
@@ -151,6 +152,12 @@ public class LevelEditorManager {
 												this.stage.getPlacingObjectPositionAtCursor());
 										addPane.setOldPlacePosition(null);
 									}
+									break;
+								case FINISH_POINT:
+									ObjectVector placePosition2 = this.stage.getPlacingObjectPositionAtCursor();
+									FinishArea obj2 = new FinishArea(placePosition2.getX(), placePosition2.getY(),
+											placePosition2.getZ());
+									this.stage.addObjectAtCursor(obj2);
 									break;
 							}
 

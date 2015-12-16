@@ -492,7 +492,7 @@ public class GameStage {
 			int x = dataSetStartX[i];
 			int y = dataSetStartY[i];
 			int z = dataSetFloorLevel.getZValueFromXY(x, y);
-			objectMap.drawableObjectHashMap.put(new ObjectVector(x, y, z, "START"), new StartArea(x, y, z));
+			objectMap.drawableObjectHashMap.put(new ObjectVector(x, y, z), new StartArea(x, y, z));
 		}
 	}
 
@@ -747,6 +747,8 @@ public class GameStage {
 			return obj == null;
 		} else if (objectType == AddableObject.TELEPORT) {
 			return obj == null;
+		} else if (objectType == AddableObject.FINISH_POINT) {
+			return obj == null;
 		}
 		return false;
 	}
@@ -778,6 +780,11 @@ public class GameStage {
 			obj.setObjectMap(objectMap);
 			dataSetBlock.add(obj);
 			objectMap.drawableObjectHashMap.put(obj.getObjectVector(), obj);
+		} else if (object instanceof FinishArea) {
+			FinishArea obj = (FinishArea) object;
+			obj.setObjectMap(objectMap);
+			dataSetfinishArea.add(obj);
+			objectMap.drawableObjectHashMap.put(new ObjectVector(obj.getX(), obj.getY(), obj.getZ()), obj);
 		}
 	}
 

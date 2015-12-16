@@ -1,7 +1,7 @@
 package stage.editor;
 
 public enum AddableObject {
-	BOX("1", "Box"), SLOPE("2", "Slope"), TELEPORT("3", "Teleport");
+	BOX("1", "Box"), SLOPE("2", "Slope"), TELEPORT("3", "Teleport"), FINISH_POINT("5", "Finish Point");
 
 	private String objectName;
 	private String keyName;

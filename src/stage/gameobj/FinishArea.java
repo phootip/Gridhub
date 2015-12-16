@@ -88,8 +88,15 @@ public class FinishArea implements IDrawable, IWalkOnAble {
 		return new Vector3(x, y, z - 0.45f);
 	}
 
-	@Override
-	public void draw(Graphics2D g, Camera camera) {
+	public static void draw(Graphics2D g, Camera camera, ObjectVector position) {
+		draw(g, camera, position, false);
+	}
+
+	public static void draw(Graphics2D g, Camera camera, ObjectVector position, boolean objectAbove) {
+		int x = position.getX();
+		int y = position.getY();
+		int z = position.getZ();
+
 		Vector2 bottom = camera.getDrawPosition(x, y, z);
 		Vector2 top = camera.getDrawPosition(x, y, z + 0.7f);
 		Vector2 middle = camera.getDrawPosition(x, y, z + 0.35f);
@@ -102,7 +109,7 @@ public class FinishArea implements IDrawable, IWalkOnAble {
 		g.drawLine(flagEnd.getIntX(), flagEnd.getIntY(), top.getIntX(), top.getIntY());
 		g.drawLine(flagEnd.getIntX(), flagEnd.getIntY(), middle.getIntX(), middle.getIntY());
 
-		if (getPlayerAbove() != null) {
+		if (objectAbove) {
 			final float innerCellShift = 0.4f;
 
 			Vector2 cornerA = camera.getDrawPosition(x + innerCellShift, y + innerCellShift, z);
@@ -117,10 +124,14 @@ public class FinishArea implements IDrawable, IWalkOnAble {
 			innerBorderPath.lineTo(cornerD.getX(), cornerD.getY());
 			innerBorderPath.closePath();
 
-//			g.setStroke(new BasicStroke(2));
+			// g.setStroke(new BasicStroke(2));
 			g.setColor(Helper.getAlphaColor(Color.GREEN, 150));
 			g.fill(innerBorderPath);
 		}
+	}
 
+	@Override
+	public void draw(Graphics2D g, Camera camera) {
+		draw(g, camera, new ObjectVector(x, y, z), getPlayerAbove() != null);
 	}
 }

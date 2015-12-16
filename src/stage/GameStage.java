@@ -496,6 +496,22 @@ public class GameStage {
 		}
 	}
 
+	protected void placeStartArea(int x, int y) {
+		int oldX = dataSetStartX[0];
+		int oldY = dataSetStartY[0];
+		int oldZ = dataSetFloorLevel.getZValueFromXY(oldX, oldY);
+		objectMap.drawableObjectHashMap.remove(new ObjectVector(oldX, oldY, oldZ));
+
+		for (int i = 0; i < playerCount - 1; i++) {
+			dataSetStartX[i] = dataSetStartX[i + 1];
+			dataSetStartY[i] = dataSetStartY[i + 1];
+		}
+		dataSetStartX[playerCount - 1] = x;
+		dataSetStartY[playerCount - 1] = y;
+		int z = dataSetFloorLevel.getZValueFromXY(x, y);
+		objectMap.drawableObjectHashMap.put(new ObjectVector(x, y, z), new StartArea(x, y, z));
+	}
+
 	public void update(int step) {
 
 		for (Camera camera : cameraList) {

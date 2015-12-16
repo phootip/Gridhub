@@ -70,6 +70,13 @@ public class LevelEditorManager {
 
 					this.idlePane.setVisible(false);
 				}
+				if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_2)) {
+					int zValue = this.stage.getFloorLevelMap().getZValueFromXY(cursor.getCurrentX(),
+							cursor.getCurrentY());
+					if (this.stage.isAbleToPlaceObjectAtCursor(null)) {
+						this.stage.placeStartArea(cursor.getCurrentX(), cursor.getCurrentY());
+					}
+				}
 				if (InputManager.getInstance().isKeyTriggering(KeyEvent.VK_MINUS)) {
 					int oldZValue = this.stage.getFloorLevelMap().getZValueFromXY(cursor.getCurrentX(),
 							cursor.getCurrentY());

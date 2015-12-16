@@ -99,6 +99,16 @@ public class Chapter implements IScrollableListItem {
 	}
 
 	/**
+	 * Add new level to this chapter.
+	 * 
+	 * @param levelData
+	 *            a level data.
+	 */
+	protected void addLevel(LevelData levelData) {
+		levelDataList.add(levelData);
+	}
+
+	/**
 	 * Get the order number of this {@link Chapter}.
 	 * 
 	 * @return The chapter order number.

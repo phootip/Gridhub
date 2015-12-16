@@ -79,7 +79,10 @@ public class NewLevelPage {
 					String fileName = chapter.getLevelDataList().size() + LevelFileManager.LEVEL_FILE_NAME_SUFFIX;
 
 					// LevelData levelData = new ...;
-					LevelData levelData = new LevelData(playerCount, levelName, levelWidth, levelHeight, chapter,fileName);
+					LevelData levelData = new LevelData(playerCount, levelName, levelWidth, levelHeight, chapter,
+							fileName);
+					chapter.addLevel(levelData);
+					
 					try {
 						LevelFileManager.getInstance().saveLevelData(levelData);
 					} catch (FileNotFoundException e) {

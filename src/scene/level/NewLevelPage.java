@@ -73,7 +73,7 @@ public class NewLevelPage {
 				String levelName = JOptionPane.showInputDialog("Please enter a non-empty level name:");
 				if (levelName != null && levelName.length() > 0) {
 					int levelWidth = ((IntegerListItem) (widthSpinner.getSelectedItem())).getNumber();
-					int levelHeight = ((IntegerListItem) (widthSpinner.getSelectedItem())).getNumber();
+					int levelHeight = ((IntegerListItem) (heightSpinner.getSelectedItem())).getNumber();
 					Chapter chapter = LevelFileManager.getInstance().getUserChapter(playMode);
 					int playerCount = (playMode == PlayMode.SINGLE_PLAYER) ? 1 : 2;
 					String fileName = chapter.getLevelDataList().size() + LevelFileManager.LEVEL_FILE_NAME_SUFFIX;

@@ -51,6 +51,6 @@ In this game, you can also create and edit the stage. Cool, right? Let's try it 
 
 # Forking Our Project
 Feel free to fork our project and send us pull request. However, these are the things that should be minded:
-- We wrote the code so that the game is functional enough can be played before the deadline, To do so, our code is *not* clean.
+- We wrote the code so that the game is functional enough (playable) before the deadline, To do so, our code is *not* clean.
 - There is a _collection_ of bugs. Some might be known to us (but too lazy to fix them), some might not. Anyway, feel free to create a new issue or send us pull request. We appreciate your contributions!
 - Expect weird things in our code. :D

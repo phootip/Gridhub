@@ -1,8 +1,8 @@
 # Gridhub
-GridHub is the puzzle game which the player will be able to control the ball and moving around to the finish area. It is designed to be a community-contributed game.  The player can play around with the stage which has already been designed, or can create new stage for other people to play as well.
+_GridHub_ is the puzzle game which the player will be able to control the ball and moving around to the finish area. It is designed to be a community-contributed game.  The player can play around with the stage which has already been designed, or can create new stage for other people to play as well.
 
 # How to Play
-This game is keyboard-oriented.
+This game is keyboard-oriented. To navigate throughout the game, use the arrow keys, escape key, and enter key.
 
 ## Player 1
 - `A` : Move left
@@ -19,9 +19,11 @@ This game is keyboard-oriented.
 - `O` and `[` : Camera turning
 
 # The Rule
-The rule of game is very simple. There is only one way to clear the stage: just reach the flag (or finish area) in the stage. In co-op modes, to be considered winning, both players must be on any flags (or finish area) at the same time.
+The rule of game is very simple. There is only one way to clear the stage: *just reach the flag* (or finish area). In co-op modes, to be considered winning, both players must be on any flags (or finish area) at the same time.
 
-# Game Object
+# Game Objects
+
+There are many objects available in this game.
 
 ## Box
 Can be pushed from the same floor level and can be walked on if you are above the box.
@@ -40,3 +42,6 @@ If you want to activate the gate, you have to stand over this thing. You can als
 
 ## Gate
 The red *X* mark show that the gate *has not been activated* yet, and will not let anything going through it! You have to turn the switch on first to activate the gate.
+
+# Level Editor
+In this game, you can also create and edit the stage. Cool, right? Let's try it out and create your own level.

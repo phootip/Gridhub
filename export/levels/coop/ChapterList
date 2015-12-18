@@ -1,0 +1,24 @@
+[
+
+	{
+		"chapterName": "Tutorial",
+		"folderName": "000",
+		"userFolder": false
+	},
+	{
+		"chapterName": "The Love",
+		"folderName": "001",
+		"userFolder": false
+	},
+	{
+		"chapterName": "The Hate",
+		"folderName": "002",
+		"userFolder": false
+	},
+	{
+		"chapterName": "Custom Level",
+		"folderName": "user",
+		"userFolder": true
+	}
+
+]

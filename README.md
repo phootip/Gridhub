@@ -1,6 +1,9 @@
 # Gridhub
 _GridHub_ is the puzzle game which the player will be able to control the ball and moving around to the finish area. It is designed to be a community-contributed game.  The player can play around with the stage which has already been designed, or can create new stage for other people to play as well.
 
+# Let's Play!
+To start the game, you computer need to have install Java 8 or higher installed already. You can build the game yourself using Eclipse. Alternatively, you can just run the `.jar` file that we have built in `export` folder. Note that the game require the folder `levels` attached with the `.jar` file, so if you want to copy the game to other place, do not forget to copy the `levels` along with it.
+
 # How to Play
 This game is keyboard-oriented. To navigate throughout the game, use the arrow keys, escape key, and enter key.
 

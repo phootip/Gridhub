@@ -3,8 +3,17 @@ package util;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.net.Socket;
 
 /**
  * This manages the input of the game, e.g. keyboard. It also support inputing in the triggering way, in the similar
@@ -16,6 +25,10 @@ import java.util.Set;
 public class InputManager implements KeyListener {
 	private final static InputManager instance = new InputManager();
 
+	static Socket socket;
+	public static BufferedReader in;
+	static PrintWriter out;
+	static BlockingQueue<Integer> queue;
 	/**
 	 * Get an instance of {@link InputManager}.
 	 * 
@@ -104,24 +117,48 @@ public class InputManager implements KeyListener {
 			return false;
 	}
 
-	/**
-	 * This should be called from only from listener, and should not be called explicitly by user.
-	 */
+	public static void createClient() throws UnknownHostException, IOException{	
+		//	String host = "ec2-54-169-13-133.ap-southeast-1.compute.amazonaws.com";
+		String host = "localhost";
+		int port = 3004;
+		
+		socket = new Socket(host,port);
+		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		out = new PrintWriter(socket.getOutputStream(),true);
+		queue = new LinkedBlockingQueue<Integer>();
+	}
+	
 	@Override
 	public synchronized void keyPressed(KeyEvent e) {
 		int keyCode = (e.getKeyCode() != 0) ? e.getKeyCode() : e.getExtendedKeyCode();
-		// if (!keyPressHasher.contains(keyCode)) {
-		keyPressBuffer.add(keyCode);
-		// }
+		
+		this.out.println("keypress "+keyCode);
+		System.out.println("key press :" + (char) keyCode);
+		
+//		keyPressBuffer.add(keyCode);
 	}
 
+	public synchronized void addKeyPress(int keyCode){
+		System.out.println("in addKeyPress");
+		keyPressBuffer.add(keyCode);
+	}
+	
+	public synchronized void addKeyRelease(int keyCode){
+		System.out.println("in addKeyRelease");
+		keyReleaseBuffer.add(keyCode);
+	}
+	
 	/**
 	 * This should be called from only from listener, and should not be called explicitly by user.
 	 */
 	@Override
 	public synchronized void keyReleased(KeyEvent e) {
 		int keyCode = (e.getKeyCode() != 0) ? e.getKeyCode() : e.getExtendedKeyCode();
-		keyReleaseBuffer.add(keyCode);
+		
+		this.out.println("keyrelease "+keyCode);
+		System.out.println("key release:" + (char) keyCode);
+		
+//		keyReleaseBuffer.add(keyCode);
 	}
 
 	/**
@@ -136,6 +173,8 @@ public class InputManager implements KeyListener {
 	 * operation.
 	 */
 	public synchronized void update() {
+//		System.out.println(keyPressBuffer);
+		
 		keyTriggerHasher.clear();
 		keyRepeatedTriggerHasher.clear();
 

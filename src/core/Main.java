@@ -2,6 +2,8 @@ package core;
 
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.io.IOException;
+import java.net.UnknownHostException;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -12,6 +14,7 @@ import stage.GameStageType;
 import util.Constants;
 import util.Constants.ColorSwatch;
 import util.InputManager;
+import util.Receiver;
 import util.Resource;
 
 /**
@@ -28,7 +31,7 @@ public class Main {
 	 * @param args
 	 *            passed command line arguments.
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws UnknownHostException, IOException, InterruptedException{
 
 		if (!Resource.getInstance().initialize()) {
 			JOptionPane.showMessageDialog(null, "Resource loading fail.", "Cannot open game",
@@ -77,7 +80,10 @@ public class Main {
 		}
 
 		InputManager.setListenerTo(frame);
-
+		// Socket
+		InputManager.createClient();
+		new Receiver(InputManager.in).start();
+		
 		frame.getContentPane().setBackground(ColorSwatch.BACKGROUND);
 		frame.setVisible(true);
 

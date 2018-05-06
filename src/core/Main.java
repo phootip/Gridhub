@@ -81,7 +81,7 @@ public class Main {
 
 		InputManager.setListenerTo(frame);
 		// Socket
-		InputManager.createClient();
+		InputManager.createClient(args[0]);
 		new Receiver(InputManager.in).start();
 		
 		frame.getContentPane().setBackground(ColorSwatch.BACKGROUND);

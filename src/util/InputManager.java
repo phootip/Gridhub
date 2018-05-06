@@ -117,9 +117,8 @@ public class InputManager implements KeyListener {
 			return false;
 	}
 
-	public static void createClient() throws UnknownHostException, IOException{	
-		//	String host = "ec2-54-169-13-133.ap-southeast-1.compute.amazonaws.com";
-		String host = "localhost";
+	public static void createClient(String host) throws UnknownHostException, IOException{	
+//		host = "13.229.84.93";
 		int port = 3004;
 		
 		socket = new Socket(host,port);
